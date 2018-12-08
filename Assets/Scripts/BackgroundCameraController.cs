@@ -37,6 +37,7 @@ public class BackgroundCameraController : MonoBehaviour {
     {
         Camera = GetComponent<Camera>();
         StarsTransform = new GameObject("Stars");
+        StarsTransform.SetActive(true);
         StarsTransform.transform.SetParent(transform);
         CreateParallaxLayers();
     }
@@ -58,8 +59,9 @@ public class BackgroundCameraController : MonoBehaviour {
         ParallaxLayers[layer, materialVariant].transform.SetParent(StarsTransform.transform);
         ParallaxLayers[layer, materialVariant].GetComponent<ParticleSystem>().GetComponent<ParticleSystemRenderer>().material = StarMaterial[materialVariant];
         ParallaxLayerController script = ParallaxLayers[layer, materialVariant].GetComponent<ParallaxLayerController>();
-        float starDensity = MaxStarDensity[materialVariant] - (MaxStarDensity[materialVariant] - MinStarDensity[materialVariant]) * (float)layer / (float)ParallaxLayers.Length;
-        float starSize = MinStarSize[materialVariant] + (MaxStarSize[materialVariant] - MinStarSize[materialVariant]) * (float)layer / (float)ParallaxLayers.Length;
+        float starDensity = MaxStarDensity[materialVariant] - (MaxStarDensity[materialVariant] - MinStarDensity[materialVariant]) * (float)layer / (float)NumParallaxLayers;
+        starDensity /= (float)NumParallaxLayers;
+        float starSize = MinStarSize[materialVariant] + (MaxStarSize[materialVariant] - MinStarSize[materialVariant]) * (float)layer / (float)NumParallaxLayers;
         starSize *= Random.Range(MinStarSizeMultiplier[materialVariant], MaxStarSizeMultiplier[materialVariant]);
         float parallaxCoefficient = MaxParallaxCoefficient * (float)layer / (float)ParallaxLayers.Length;
         script.Initialize(starDensity, starSize, parallaxCoefficient);
