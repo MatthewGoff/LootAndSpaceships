@@ -2,6 +2,11 @@
 
 public class MasterCameraController : MonoBehaviour
 {
+    public static readonly float MIN_CAMERA_HEIGHT = 1f;
+
+    public static readonly float MAX_CAMERA_HEIGHT = 60f;
+    public static readonly float MAX_CAMERA_WIDTH = 120f;
+
     public GameObject ForgroundCamera;
     public GameObject BackgroundCamera;
 
@@ -28,6 +33,11 @@ public class MasterCameraController : MonoBehaviour
             {
                 BackgroundCamera.GetComponent<Camera>().orthographicSize = 30f;
                 ForgroundCamera.GetComponent<Camera>().orthographicSize = 30f;
+            }
+            else if (BackgroundCamera.GetComponent<Camera>().orthographicSize < 1f)
+            {
+                BackgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
+                ForgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
             }
         }
     }
