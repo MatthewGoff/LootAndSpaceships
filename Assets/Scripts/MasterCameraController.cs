@@ -39,5 +39,10 @@ public class MasterCameraController : MonoBehaviour
                 ForgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 }
