@@ -39,6 +39,7 @@ public class BackgroundCameraController : MonoBehaviour {
     private GameObject[,] ParallaxLayers;
     private GameObject StarsTransform;
     private Camera Camera;
+    private bool ShowGridLines = true;
 
     private void Awake()
     {
@@ -58,6 +59,8 @@ public class BackgroundCameraController : MonoBehaviour {
         backgroundObject.transform.SetParent(transform);
         backgroundObject.AddComponent<SpriteRenderer>();
         backgroundObject.GetComponent<SpriteRenderer>().sprite = backgroundSprite;
+        backgroundObject.GetComponent<SpriteRenderer>().sortingLayerName = "Background";
+        backgroundObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
     }
 
     private Texture2D CreateBackgroundTexture()
@@ -107,7 +110,7 @@ public class BackgroundCameraController : MonoBehaviour {
     }
     private void CreateParallaxLayer(int layer, int materialVariant)
     {
-        ParallaxLayers[layer, materialVariant] = Instantiate(ParallaxLayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        ParallaxLayers[layer, materialVariant] = Instantiate(ParallaxLayerPrefab, new Vector3(0, 0, -2), Quaternion.identity);
         ParallaxLayers[layer, materialVariant].transform.SetParent(StarsTransform.transform);
         ParallaxLayers[layer, materialVariant].GetComponent<ParticleSystem>().GetComponent<ParticleSystemRenderer>().material = StarMaterial[materialVariant];
         ParallaxLayerController script = ParallaxLayers[layer, materialVariant].GetComponent<ParallaxLayerController>();
@@ -119,9 +122,23 @@ public class BackgroundCameraController : MonoBehaviour {
         script.Initialize(starDensity, starSize, parallaxCoefficient);
     }
 
+    private void FixedUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            ShowGridLines = !ShowGridLines;
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            StarsTransform.SetActive(!StarsTransform.activeSelf);
+        }
+    }
     private void OnPostRender()
     {
-        DrawGridLines();
+        if (ShowGridLines)
+        {
+            DrawGridLines();
+        }
     }
 
     private void DrawGridLines()

@@ -9,15 +9,14 @@ public class MasterCameraController : MonoBehaviour
 
     public GameObject ForgroundCamera;
     public GameObject BackgroundCamera;
+    public GameObject Subject;
 
-    private readonly float PanSpeed = 10f;
     private readonly float ZoomSpeed = 1.2f;
 
-    void Update ()
+    void FixedUpdate ()
     {
-
-        Vector3 movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        transform.position += movement * Time.deltaTime * PanSpeed;
+        ForgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, ForgroundCamera.transform.position.z);
+        BackgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, BackgroundCamera.transform.position.z);
 
         var d = Input.GetAxis("Mouse ScrollWheel");
         if (d > 0f)
