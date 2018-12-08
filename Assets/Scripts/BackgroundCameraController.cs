@@ -21,12 +21,11 @@ public class BackgroundCameraController : MonoBehaviour {
     public float MaxParallaxCoefficient;
     public int NumStarVariants;
     public float BackgroundHueRange;
-    public float BackgroundHueFrequency;
-    public float BackgroundSaturationFrequency;
-    public float BackgroundValueFrequency;
+    public readonly float[,] BackgroundHueFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f} };
+    public readonly float[,] BackgroundSaturationFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f } };
+    public readonly float[,] BackgroundValueFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f } };
     public float BackgroundMinimumSaturation;
     public float BackgroundMaximumValue;
-
 
     public Material[] StarMaterial;
     public float[] MinStarSize;
@@ -74,9 +73,12 @@ public class BackgroundCameraController : MonoBehaviour {
         {
             for (int y = 0; y < backgroundTexture.height; y++)
             {
-                float hue = (baseHue + BackgroundHueRange * Mathf.PerlinNoise(x * BackgroundHueFrequency + hueOffset, y * BackgroundHueFrequency + hueOffset)) % 1;
-                float saturation = BackgroundMinimumSaturation + (1f-BackgroundMinimumSaturation) * Mathf.PerlinNoise(x * BackgroundSaturationFrequency + saturationOffset, y * BackgroundSaturationFrequency + saturationOffset);
-                float value = BackgroundMaximumValue * Mathf.PerlinNoise(x * BackgroundValueFrequency + valueOffset, y * BackgroundValueFrequency + valueOffset);
+                float noiseSample = Util.PerlinNoise(x, y, BackgroundHueFrequencies, hueOffset);
+                float hue = (baseHue + BackgroundHueRange * noiseSample) % 1;
+                noiseSample = Util.PerlinNoise(x, y, BackgroundSaturationFrequencies, saturationOffset);
+                float saturation = BackgroundMinimumSaturation + (1f-BackgroundMinimumSaturation) * noiseSample;
+                noiseSample = Util.PerlinNoise(x, y, BackgroundValueFrequencies, valueOffset);
+                float value = BackgroundMaximumValue * noiseSample;
                 if (Random.Range(0f, 1f) < 0.005f)
                 {
                     saturation = Mathf.Min(0f, saturation - 0.5f);
