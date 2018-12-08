@@ -1,0 +1,18 @@
+# Folder where you should store your builds
+[Bb]uilds/
+
+# Folder for persistant data
+LootAndSpaceships_Data/
+
+# Visual Studio Files
+.vs/
+obj/
+*.sln
+*.csproj
+
+# Unity Files
+Library/
+Temp/
+
+# Docfx project
+docfx_project/
