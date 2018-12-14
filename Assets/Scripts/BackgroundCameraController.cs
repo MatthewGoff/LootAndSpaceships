@@ -73,11 +73,11 @@ public class BackgroundCameraController : MonoBehaviour {
         {
             for (int y = 0; y < backgroundTexture.height; y++)
             {
-                float noiseSample = Util.PerlinNoise(x, y, BackgroundHueFrequencies, hueOffset);
+                float noiseSample = Helpwers.PerlinNoise(x, y, BackgroundHueFrequencies, hueOffset);
                 float hue = (baseHue + BackgroundHueRange * noiseSample) % 1;
-                noiseSample = Util.PerlinNoise(x, y, BackgroundSaturationFrequencies, saturationOffset);
+                noiseSample = Helpwers.PerlinNoise(x, y, BackgroundSaturationFrequencies, saturationOffset);
                 float saturation = BackgroundMinimumSaturation + (1f-BackgroundMinimumSaturation) * noiseSample;
-                noiseSample = Util.PerlinNoise(x, y, BackgroundValueFrequencies, valueOffset);
+                noiseSample = Helpwers.PerlinNoise(x, y, BackgroundValueFrequencies, valueOffset);
                 float value = BackgroundMaximumValue * noiseSample;
                 if (Random.Range(0f, 1f) < 0.005f)
                 {

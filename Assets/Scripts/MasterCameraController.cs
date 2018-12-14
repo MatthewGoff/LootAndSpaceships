@@ -3,9 +3,10 @@
 public class MasterCameraController : MonoBehaviour
 {
     public static readonly float MIN_CAMERA_HEIGHT = 1f;
-
     public static readonly float MAX_CAMERA_HEIGHT = 60f;
     public static readonly float MAX_CAMERA_WIDTH = 120f;
+
+    public static MasterCameraController instance;
 
     public GameObject ForgroundCamera;
     public GameObject BackgroundCamera;
@@ -13,7 +14,15 @@ public class MasterCameraController : MonoBehaviour
 
     private readonly float ZoomSpeed = 1.2f;
 
-    void FixedUpdate ()
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
+
+    private void FixedUpdate ()
     {
         ForgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, ForgroundCamera.transform.position.z);
         BackgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, BackgroundCamera.transform.position.z);
@@ -43,6 +52,18 @@ public class MasterCameraController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
+        }
+    }
+
+    public static Vector2 GetMousePosition()
+    {
+        if (instance == null)
+        {
+            return Vector2.zero;
+        }
+        else
+        {
+            return instance.ForgroundCamera.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
         }
     }
 }
