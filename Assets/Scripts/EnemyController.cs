@@ -14,6 +14,8 @@ public class EnemyController : CombatantManager
     private void Awake()
     {
         Team = 1;
+        RadarType = RadarType.Enemy;
+        RadarController.Instance.AddToRadar(this);
         FDNCanvasController = FDNCanvas.GetComponent<FDNCanvasController>();
     }
 
@@ -48,5 +50,13 @@ public class EnemyController : CombatantManager
 
         Burning = false;
         FireEffect.SetActive(false);
+    }
+
+    private void OnMouseDown()
+    {
+        if (!GameManager.MouseOverUI())
+        {
+            GameManager.Instance.ChangeTarget(this);
+        }
     }
 }

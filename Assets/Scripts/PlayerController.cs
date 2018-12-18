@@ -34,7 +34,7 @@ public class PlayerController : Vehicle
             DismissAutopilot();
         }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && !GameManager.MouseOverUI())
         {
             Autopilot.Target = MasterCameraController.GetMousePosition();
             UsingAutopilot = true;

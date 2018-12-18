@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
     public ITargetable PlayerTarget;
     public GameObject[] Enemies;
     public Queue<ITargetable> TargetQueue;
+    public GameObject Player;
 
     private void Awake()
     {
@@ -32,4 +34,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static bool MouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public void ChangeTarget(ITargetable target)
+    {
+        PlayerTarget = target;
+    }
+
+    public Vector2 GetPlayerPosition()
+    {
+        return Player.GetComponent<PlayerController>().GetPosition();
+    }
 }

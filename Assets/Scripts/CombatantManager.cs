@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
-public abstract class CombatantManager : MonoBehaviour, ITargetable
+public abstract class CombatantManager : RadarTarget
 {
-    public int Team;
+    public int Team { get; protected set; }
 
-    public abstract Vector2 GetPosition();
     public abstract void RecieveHit(int damage, DamageType damageType);
 }

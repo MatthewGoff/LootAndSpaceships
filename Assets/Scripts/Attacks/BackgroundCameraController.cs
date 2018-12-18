@@ -44,7 +44,7 @@ public class BackgroundCameraController : MonoBehaviour {
     private void Awake()
     {
         Camera = GetComponent<Camera>();
-        CreateBackgroundImage();
+        //CreateBackgroundImage();
         CreateBackgroundStars();
     }
 
