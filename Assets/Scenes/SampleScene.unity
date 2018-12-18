@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Team: 0
-  MoveTargetEffect: {fileID: 664646699}
+  AutopilotTargetEffect: {fileID: 664646699}
   ExhaustEffect: {fileID: 1846704238}
 --- !u!212 &6806369
 SpriteRenderer:
@@ -25276,7 +25276,7 @@ GameObject:
   - component: {fileID: 664646701}
   - component: {fileID: 664646700}
   m_Layer: 0
-  m_Name: MoveTargetEffect
+  m_Name: AutopilotTargetEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

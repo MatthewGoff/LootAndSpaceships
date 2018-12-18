@@ -22,7 +22,7 @@ public class MasterCameraController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate ()
+    private void Update ()
     {
         ForgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, ForgroundCamera.transform.position.z);
         BackgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, BackgroundCamera.transform.position.z);
@@ -32,6 +32,11 @@ public class MasterCameraController : MonoBehaviour
         {
             BackgroundCamera.GetComponent<Camera>().orthographicSize *= (1f / ZoomSpeed);
             ForgroundCamera.GetComponent<Camera>().orthographicSize *= (1f / ZoomSpeed);
+            if (BackgroundCamera.GetComponent<Camera>().orthographicSize < 1f)
+            {
+                BackgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
+                ForgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
+            }
         }
         else if (d < 0f)
         {
@@ -41,11 +46,6 @@ public class MasterCameraController : MonoBehaviour
             {
                 BackgroundCamera.GetComponent<Camera>().orthographicSize = 30f;
                 ForgroundCamera.GetComponent<Camera>().orthographicSize = 30f;
-            }
-            else if (BackgroundCamera.GetComponent<Camera>().orthographicSize < 1f)
-            {
-                BackgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
-                ForgroundCamera.GetComponent<Camera>().orthographicSize = 1f;
             }
         }
 

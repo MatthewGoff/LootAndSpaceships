@@ -31,7 +31,7 @@ public class RocketController : MonoBehaviour
         {
             Vector2 targetBearing = Manager.Target.GetPosition() - (Vector2)transform.position;
             float angle = Vector2.SignedAngle(Heading, targetBearing);
-            angle = Mathf.Clamp(angle, -TurnRate * Time.deltaTime, TurnRate * Time.deltaTime);
+            angle = Mathf.Clamp(angle, -TurnRate * Time.fixedDeltaTime, TurnRate * Time.fixedDeltaTime);
             Heading = Quaternion.Euler(0, 0, angle) * Heading;
             RB2D.velocity = Quaternion.Euler(0, 0, angle) * RB2D.velocity;
             transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
