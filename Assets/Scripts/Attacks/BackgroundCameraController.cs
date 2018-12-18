@@ -18,6 +18,7 @@ public class BackgroundCameraController : MonoBehaviour {
 
     public GameObject ParallaxLayerPrefab;
     public int NumParallaxLayers;
+    public float MinParallaxCoefficient;
     public float MaxParallaxCoefficient;
     public int NumStarVariants;
     public float BackgroundHueRange;
@@ -120,7 +121,7 @@ public class BackgroundCameraController : MonoBehaviour {
         starDensity /= (float)NumParallaxLayers;
         float starSize = MinStarSize[materialVariant] + (MaxStarSize[materialVariant] - MinStarSize[materialVariant]) * (float)layer / (float)NumParallaxLayers;
         starSize *= Random.Range(MinStarSizeMultiplier[materialVariant], MaxStarSizeMultiplier[materialVariant]);
-        float parallaxCoefficient = MaxParallaxCoefficient * (float)layer / (float)ParallaxLayers.Length;
+        float parallaxCoefficient = MinParallaxCoefficient + (MaxParallaxCoefficient - MinParallaxCoefficient) * (float)layer / (float)ParallaxLayers.Length;
         script.Initialize(starDensity, starSize, parallaxCoefficient);
     }
 

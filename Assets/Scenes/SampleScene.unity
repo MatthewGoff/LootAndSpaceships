@@ -193,6 +193,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Team: 0
+  ThrustForce: 0
+  TurnRate: 0
+  MaximumSpeed: 0
+  RB2D: {fileID: 0}
+  Heading: {x: 0, y: 0}
+  ThrustInput: 0
+  BreakInput: 0
+  TurnInput: 0
   AutopilotTargetEffect: {fileID: 664646699}
   ExhaustEffect: {fileID: 1846704238}
 --- !u!212 &6806369
@@ -24933,8 +24941,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   ParallaxLayerPrefab: {fileID: 1871693845550940, guid: 6bdfbd66fffd96d409531baf6715253b,
     type: 2}
-  NumParallaxLayers: 20
-  MaxParallaxCoefficient: 0.75
+  NumParallaxLayers: 10
+  MinParallaxCoefficient: 0.01
+  MaxParallaxCoefficient: 0.3
   NumStarVariants: 2
   BackgroundHueRange: 0.4
   BackgroundMinimumSaturation: 0.5
@@ -24946,8 +24955,8 @@ MonoBehaviour:
   - 0.02
   - 0.04
   MaxStarSize:
+  - 0.2
   - 0.3
-  - 0.6
   MinStarDensity:
   - 0.15
   - 0.05
