@@ -2,7 +2,7 @@
 
 public class BulletAttackManager : AttackManager
 {
-    public static readonly float Recoil = 50f;
+    public static readonly float Recoil = 1f;
     private static readonly GameObject BULLET_PREFAB = (GameObject)Resources.Load("Prefabs/Bullet");
 
 

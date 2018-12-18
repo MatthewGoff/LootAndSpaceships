@@ -2,7 +2,7 @@
 
 public class RocketAttackManager : AttackManager
 {
-    public static readonly float Recoil = 50f;
+    public static readonly float Recoil = 1f;
     private static readonly GameObject ROCKET_PREFAB = (GameObject)Resources.Load("Prefabs/Rocket");
     private static readonly GameObject EXPLOSION_PREFAB = (GameObject)Resources.Load("Prefabs/Explosion");
 

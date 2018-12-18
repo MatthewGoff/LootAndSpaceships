@@ -1,39 +1,26 @@
 ﻿using UnityEngine;
 
-public class PlayerController : CombatantManager
+public class PlayerController : Vehicle
 {
     public GameObject AutopilotTargetEffect;
     public GameObject ExhaustEffect;
 
-    private readonly float ThrustForce = 15f;
-    private readonly float TurnRate = 360f; // Degrees per Second
-    private readonly float MaximumSpeed = 30f;
-    private readonly float Mass = 1f;
-    private float Acceleration
-    {
-        get
-        {
-            return ThrustForce / Mass;
-        }
-    }
-
-    private Rigidbody2D RB2D;
-    private Vector2 Heading;
-    private Vector2 AutopilotTarget;
-    private bool AutopilotActive;
+    private Autopilot Autopilot;
+    private bool UsingAutopilot;
     private int AttackType;
-
-    private bool ThrustInput;
-    private bool BreakInput;
-    private float TurnInput;
 
     private void Awake()
     {
+        ThrustForce = 10f;
+        TurnRate = 300f;
+        MaximumSpeed = 30f;
         RB2D = GetComponent<Rigidbody2D>();
+        RB2D.mass = 1f;
         Heading = new Vector2(1, 0);
         Team = 0;
         AttackType = 1;
-        AutopilotActive = false;
+        UsingAutopilot = false;
+        Autopilot = new FastAutopilot(this);
     }
 
     private void Update()
@@ -44,20 +31,20 @@ public class PlayerController : CombatantManager
 
         if (TurnInput != 0f || ThrustInput || BreakInput)
         {
-            DismissMoveTarget();
+            DismissAutopilot();
         }
 
         if (Input.GetMouseButton(1))
         {
-            AutopilotTarget = MasterCameraController.GetMousePosition();
-            AutopilotActive = true;
+            Autopilot.Target = MasterCameraController.GetMousePosition();
+            UsingAutopilot = true;
             AutopilotTargetEffect.SetActive(true);
-            AutopilotTargetEffect.transform.position = AutopilotTarget;
+            AutopilotTargetEffect.transform.position = Autopilot.Target;
         }
 
-        if (AutopilotActive)
+        if (UsingAutopilot)
         {
-            RunAutopilot();   
+            Autopilot.Evaluate();   
         }
 
         ExhaustEffect.SetActive(ThrustInput);
@@ -97,84 +84,6 @@ public class PlayerController : CombatantManager
         }
     }
 
-    private void RunAutopilot()
-    {
-        TurnInput = 0;
-        ThrustInput = false;
-        BreakInput = false;
-
-        Vector2 targetVector = AutopilotTarget - RB2D.position;
-        Vector2 perpendicularTargetVector = new Vector2(targetVector.y, -targetVector.x);
-        Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, RB2D.velocity) / Mathf.Pow(targetVector.magnitude, 2f);
-        Vector2 perpendicularVelocity = RB2D.velocity - parallelVelocity;
-        Vector2 nextVelocity = RB2D.velocity + (Heading.normalized * Acceleration * Time.fixedDeltaTime);
-        Vector2 perpendicularNextVelocity = perpendicularTargetVector * Vector2.Dot(perpendicularTargetVector, RB2D.velocity) / Mathf.Pow(perpendicularTargetVector.magnitude, 2f);
-        float headingAngle = Vector2.SignedAngle(targetVector, Heading);
-        float perpendicularAngle = Vector2.SignedAngle(targetVector, perpendicularVelocity);
-
-        if (Vector2.Angle(targetVector, RB2D.velocity) > 45f)
-        {
-            BreakInput = true;
-        }
-        if (Mathf.Abs(headingAngle) < 45f
-            && Vector2.Dot(Heading, RB2D.velocity) < 0f)
-        {
-            ThrustInput = true;
-        }
-        if (Mathf.Abs(headingAngle) < 90f
-            && Vector2.Dot(perpendicularVelocity, Heading) < 0f
-            && Vector2.Dot(perpendicularNextVelocity, perpendicularVelocity) >= 0f)
-        {
-            ThrustInput = true;
-        }
-
-        if (Mathf.Abs(headingAngle) < 1f)
-        {
-            if (RB2D.velocity.magnitude < MaximumSpeed)
-            {
-                ThrustInput = true;
-            }
-            else
-            {
-                ThrustInput = false;
-            }
-        }
-
-        float turnRate = TurnRate * (2f * Mathf.PI / 360f);
-        float thrustDuration = perpendicularVelocity.magnitude / Acceleration;
-        float desiredHeadingAngle;
-        if (turnRate * thrustDuration > 1f)
-        {
-            desiredHeadingAngle = 90f;
-        }
-        else
-        {
-            desiredHeadingAngle = (360f / (2f * Mathf.PI)) * Mathf.Acos(1 - turnRate * thrustDuration);
-        }
-        if (perpendicularAngle > 0f)
-        {
-            desiredHeadingAngle *= -1;
-        }
-
-        if (Mathf.Abs(desiredHeadingAngle) < 15f)
-        {
-            desiredHeadingAngle = 0f;
-        }
-
-        TurnInput = desiredHeadingAngle - headingAngle;
-        if (TurnInput < -180f)
-        {
-            TurnInput += 360f;
-        }
-        else if (TurnInput > 180f)
-        {
-            TurnInput -= 360f;
-        }
-
-        TurnInput = Mathf.Clamp(TurnInput, -TurnRate * Time.fixedDeltaTime, TurnRate * Time.fixedDeltaTime);
-        TurnInput /= TurnRate * Time.fixedDeltaTime;
-    }
-
     private void FixedUpdate()
     {
         if (ThrustInput)
@@ -204,9 +113,9 @@ public class PlayerController : CombatantManager
         }
     }
 
-    private void DismissMoveTarget()
+    private void DismissAutopilot()
     {
-        AutopilotActive = false;
+        UsingAutopilot = false;
         AutopilotTargetEffect.SetActive(false);
     }
 
