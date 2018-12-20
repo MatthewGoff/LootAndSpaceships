@@ -7,9 +7,9 @@ public class BulletAttackManager : AttackManager
     private float Speed = 10f; // In units per second
     private int Damage;
 
-    public BulletAttackManager(Combatant originator, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public BulletAttackManager(Combatant attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
-        Originator = originator;
+        Attacker = attacker;
         Damage = damage;
 
         GameObject bullet = GameObject.Instantiate(Prefabs.Bullet, position, Quaternion.identity);
@@ -19,6 +19,6 @@ public class BulletAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.RecieveHit(Damage, DamageType.Physical);
+        other.TakeDamage(Attacker, Damage, DamageType.Physical);
     }
 }

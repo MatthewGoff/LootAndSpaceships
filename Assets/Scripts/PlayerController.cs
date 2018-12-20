@@ -48,15 +48,19 @@ public class PlayerController : Spaceship
 
         if (Input.GetMouseButton(1) && !GameManager.MouseOverUI())
         {
-            Autopilot.Target = MasterCameraController.GetMousePosition();
+            ITargetable target = new StaticTarget(MasterCameraController.GetMousePosition());
+            Autopilot.SetTarget(target, AutopilotBehaviour.Seek);
             UsingAutopilot = true;
             AutopilotTargetEffect.SetActive(true);
-            AutopilotTargetEffect.transform.position = Autopilot.Target;
+            AutopilotTargetEffect.transform.position = MasterCameraController.GetMousePosition();
         }
 
         if (UsingAutopilot)
         {
-            Autopilot.Evaluate();   
+            if (Autopilot.Update())
+            {
+                DismissAutopilot();
+            }
         }
 
         ExhaustEffect.SetActive(ThrustInput);
@@ -95,7 +99,7 @@ public class PlayerController : Spaceship
             }
         }
     }
-
+    
     private void DismissAutopilot()
     {
         UsingAutopilot = false;
@@ -107,7 +111,7 @@ public class PlayerController : Spaceship
         return RB2D.position;
     }
 
-    public override void RecieveHit(int damage, DamageType damageType)
+    public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
 
     }

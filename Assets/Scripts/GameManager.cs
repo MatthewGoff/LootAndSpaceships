@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public ITargetable PlayerTarget;
+    public ITargetable Player;
     public Queue<ITargetable> TargetQueue;
     public GameObject AutopilotTargetEffect;
 
@@ -23,8 +24,9 @@ public class GameManager : MonoBehaviour
         playerController.AutopilotTargetEffect = AutopilotTargetEffect;
         RadarController.Instance.Subject = playerController;
         MasterCameraController.Instance.Subject = playerController;
+        Player = playerController;
 
-        GameObject enemy = Instantiate(Prefabs.Enemy, new Vector2(10f, 0f), Quaternion.Euler(0f, 0f, 180f));
+        GameObject enemy = Instantiate(Prefabs.Enemy, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
         enemy.GetComponent<EnemyController>().Initialize("Enemy 1");
 
         TargetQueue = new Queue<ITargetable>();

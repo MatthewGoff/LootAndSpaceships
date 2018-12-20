@@ -5,9 +5,9 @@ public class EMPAttackManager : AttackManager
     private float AOE = 4f;
     private int Damage;
 
-    public EMPAttackManager(Combatant originator, Vector2 position, int damage)
+    public EMPAttackManager(Combatant attacker, Vector2 position, int damage)
     {
-        Originator = originator;
+        Attacker = attacker;
         Damage = damage;
 
         GameObject explosion = GameObject.Instantiate(Prefabs.EMP, position, Quaternion.identity);
@@ -17,6 +17,6 @@ public class EMPAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.RecieveHit(Damage, DamageType.Electrical);
+        other.TakeDamage(Attacker, Damage, DamageType.Electrical);
     }
 }

@@ -8,6 +8,7 @@ public class Spaceship : Vehicle
     private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
+    private Combatant BurnPerpetrator;
     private FDNCanvasController FDNCanvasController;
     private float MaxShield;
     private float CurrentShield;
@@ -67,11 +68,12 @@ public class Spaceship : Vehicle
         Name = name;
     }
 
-    public override void RecieveHit(int damage, DamageType damageType)
+    public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
-        FDNCanvasController.Display(damage, damage / 100f);
+        FDNCanvasController.Display(Mathf.RoundToInt(damage), damage / 100f);
         if (damageType == DamageType.Explosion)
         {
+            BurnPerpetrator = attacker;
             BurnEndTime = Time.time + BurnDuration;
             if (!Burning)
             {
@@ -87,16 +89,11 @@ public class Spaceship : Vehicle
 
         while (Time.time < BurnEndTime)
         {
-            RecieveHit(Mathf.RoundToInt(Random.Range(0f, 10f)), DamageType.Fire);
+            TakeDamage(BurnPerpetrator, Mathf.RoundToInt(Random.Range(0f, 10f)), DamageType.Fire);
             yield return new WaitForSeconds(0.1f);
         }
 
         Burning = false;
         FireEffect.SetActive(false);
-    }
-
-    public override Vector2 GetPosition()
-    {
-        return RB2D.position;
     }
 }

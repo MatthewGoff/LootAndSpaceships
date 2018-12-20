@@ -38,7 +38,7 @@ public class ExplosionController : MonoBehaviour
         if (collider.tag == "Hitbox")
         {
             Combatant other = collider.gameObject.GetComponent<Combatant>();
-            if (other.Team != Manager.Originator.Team)
+            if (other.Team != Manager.Attacker.Team)
             {
                 Manager.ResolveCollision(other);
             }

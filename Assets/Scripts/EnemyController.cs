@@ -2,6 +2,8 @@
 
 public class EnemyController : Spaceship
 {
+    private AI AI;
+
     public void Initialize(string name)
     {
         base.Initialize(
@@ -23,6 +25,12 @@ public class EnemyController : Spaceship
             maxHullSpace: 523.6f,
             name: name);
         RadarController.Instance.AddToRadar(this);
+        AI = new SimpleAI(this, new FastAutopilot(this));
+    }
+
+    private void Update()
+    {
+        AI.Update();
     }
 
     private void OnMouseDown()
@@ -31,5 +39,11 @@ public class EnemyController : Spaceship
         {
             GameManager.Instance.ChangeTarget(this);
         }
+    }
+
+    public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
+    {
+        base.TakeDamage(attacker, damage, damageType);
+        AI.TakeDamage(attacker);
     }
 }

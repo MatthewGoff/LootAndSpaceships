@@ -1,4 +1,4 @@
 ﻿public abstract class AttackManager
 {
-    public Combatant Originator;
+    public Combatant Attacker;
 }

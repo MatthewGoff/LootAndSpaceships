@@ -4,13 +4,13 @@ public class FastAutopilot : Autopilot
 {
     public FastAutopilot(Vehicle vehicle) : base(vehicle) { }
 
-    public override void Evaluate()
+    protected override void SeekUpdate()
     {
         Vehicle.TurnInput = 0;
         Vehicle.ThrustInput = false;
         Vehicle.BreakInput = false;
 
-        Vector2 targetVector = Target - Vehicle.Position;
+        Vector2 targetVector = Target.GetPosition() - Vehicle.Position;
         Vector2 perpendicularTargetVector = new Vector2(targetVector.y, -targetVector.x);
         Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, Vehicle.Velocity) / Mathf.Pow(targetVector.magnitude, 2f);
         Vector2 perpendicularVelocity = Vehicle.Velocity - parallelVelocity;
@@ -69,17 +69,50 @@ public class FastAutopilot : Autopilot
             desiredHeadingAngle = 0f;
         }
 
-        Vehicle.TurnInput = desiredHeadingAngle - headingAngle;
-        if (Vehicle.TurnInput < -180f)
+        float desiredHeadingChange = desiredHeadingAngle - headingAngle;
+        Vehicle.TurnInput = CalculateTurnInput(desiredHeadingChange);
+    }
+
+    protected override void ArriveUpdate()
+    {
+        SeekUpdate();
+
+        Vector2 targetVector = Target.GetPosition() - Vehicle.Position;
+        float velocityAngle = Vector2.SignedAngle(targetVector, Vehicle.Velocity);
+        if (Vehicle.Velocity != Vector2.zero && Mathf.Abs(velocityAngle) < 1f)
         {
-            Vehicle.TurnInput += 360f;
+            float remainingFlightDuration = targetVector.magnitude / Vehicle.Velocity.magnitude;
+            float requiredBreakDuration = Vehicle.Velocity.magnitude / (2 * Vehicle.Acceleration);
+            if (remainingFlightDuration <= requiredBreakDuration)
+            {
+                Vehicle.BreakInput = true;
+                float headingAngle = Vector2.SignedAngle(targetVector, Vehicle.Heading);
+                if (Mathf.Abs(headingAngle) > 179f)
+                {
+                    Vehicle.ThrustInput = true;
+                }
+                else
+                {
+                    float desiredHeadingChange = 180 - headingAngle;
+                    Vehicle.TurnInput = CalculateTurnInput(desiredHeadingChange);
+                }
+            }
         }
-        else if (Vehicle.TurnInput > 180f)
+    }
+
+    private float CalculateTurnInput(float desiredHeadingChange)
+    {
+        if (desiredHeadingChange < -180f)
         {
-            Vehicle.TurnInput -= 360f;
+            desiredHeadingChange += 360f;
+        }
+        else if (desiredHeadingChange > 180f)
+        {
+            desiredHeadingChange -= 360f;
         }
 
-        Vehicle.TurnInput = Mathf.Clamp(Vehicle.TurnInput, -Vehicle.TurnRate * Time.fixedDeltaTime, Vehicle.TurnRate * Time.fixedDeltaTime);
-        Vehicle.TurnInput /= Vehicle.TurnRate * Time.fixedDeltaTime;
+        float turnInput = Mathf.Clamp(desiredHeadingChange, -Vehicle.TurnRate * Time.fixedDeltaTime, Vehicle.TurnRate * Time.fixedDeltaTime);
+        turnInput /= Vehicle.TurnRate * Time.fixedDeltaTime;
+        return turnInput;
     }
 }

@@ -10,9 +10,9 @@ public class RocketAttackManager : AttackManager
     private float InitialSpeed = 1f; // In units per second
     private int Damage;
 
-    public RocketAttackManager(Combatant originator, ITargetable target, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public RocketAttackManager(Combatant attacker, ITargetable target, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
-        Originator = originator;
+        Attacker = attacker;
         Target = target;
         Damage = damage;
 
@@ -31,6 +31,6 @@ public class RocketAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.RecieveHit(Damage, DamageType.Explosion);
+        other.TakeDamage(Attacker, Damage, DamageType.Explosion);
     }
 }

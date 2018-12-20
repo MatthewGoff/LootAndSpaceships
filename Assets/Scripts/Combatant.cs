@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public abstract class Combatant : RadarTarget
+﻿public abstract class Combatant : RadarTarget
 {
     public int Team { get; protected set; }
 
@@ -10,5 +8,5 @@ public abstract class Combatant : RadarTarget
         base.Initialize(radarType);
     }
 
-    public abstract void RecieveHit(int damage, DamageType damageType);
+    public abstract void TakeDamage(Combatant attacker, float damage, DamageType damageType);
 }
