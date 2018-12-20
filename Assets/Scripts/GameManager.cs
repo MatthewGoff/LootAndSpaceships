@@ -6,24 +6,29 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public ITargetable PlayerTarget;
-    public GameObject[] Enemies;
     public Queue<ITargetable> TargetQueue;
-    public GameObject Player;
+    public GameObject AutopilotTargetEffect;
 
     private void Awake()
     {
         Instance = this;
         Prefabs.LoadPrefabs();
-        InitializeTargetQueue();
     }
 
-    private void InitializeTargetQueue()
+    private void Start()
     {
+        GameObject player = Instantiate(Prefabs.Player, new Vector2(0f, 0f), Quaternion.identity);
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        playerController.Initialize("Admiral Ackbar");
+        playerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        RadarController.Instance.Subject = playerController;
+        MasterCameraController.Instance.Subject = playerController;
+
+        GameObject enemy = Instantiate(Prefabs.Enemy, new Vector2(10f, 0f), Quaternion.Euler(0f, 0f, 180f));
+        enemy.GetComponent<EnemyController>().Initialize("Enemy 1");
+
         TargetQueue = new Queue<ITargetable>();
-        foreach (GameObject enemy in Enemies)
-        {
-            TargetQueue.Enqueue(enemy.GetComponent<EnemyController>());
-        }
+        TargetQueue.Enqueue(enemy.GetComponent<EnemyController>());
     }
 
     private void Update()
@@ -48,10 +53,5 @@ public class GameManager : MonoBehaviour
     public void ChangeTarget(ITargetable target)
     {
         PlayerTarget = target;
-    }
-
-    public Vector2 GetPlayerPosition()
-    {
-        return Player.GetComponent<PlayerController>().GetPosition();
     }
 }

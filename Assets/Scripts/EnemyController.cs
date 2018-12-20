@@ -2,10 +2,7 @@
 
 public class EnemyController : Spaceship
 {
-    public string NameArgument;
-    public GameObject FireEffectArgument;
-
-    private void Awake()
+    public void Initialize(string name)
     {
         base.Initialize(
             radarType: RadarType.Enemy,
@@ -23,9 +20,8 @@ public class EnemyController : Spaceship
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
-            maxHullSpace: 100f,
-            name: NameArgument,
-            fireEffect: FireEffectArgument);
+            maxHullSpace: 523.6f,
+            name: name);
         RadarController.Instance.AddToRadar(this);
     }
 

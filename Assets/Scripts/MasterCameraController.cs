@@ -6,26 +6,23 @@ public class MasterCameraController : MonoBehaviour
     public static readonly float MAX_CAMERA_HEIGHT = 60f;
     public static readonly float MAX_CAMERA_WIDTH = 120f;
 
-    public static MasterCameraController instance;
+    public static MasterCameraController Instance;
 
     public GameObject ForgroundCamera;
     public GameObject BackgroundCamera;
-    public GameObject Subject;
+    public ITargetable Subject;
 
     private readonly float ZoomSpeed = 1.2f;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        }
+        Instance = this;
     }
 
     private void Update ()
     {
-        ForgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, ForgroundCamera.transform.position.z);
-        BackgroundCamera.transform.position = new Vector3(Subject.transform.position.x, Subject.transform.position.y, BackgroundCamera.transform.position.z);
+        ForgroundCamera.transform.position = new Vector3(Subject.GetPosition().x, Subject.GetPosition().y, ForgroundCamera.transform.position.z);
+        BackgroundCamera.transform.position = new Vector3(Subject.GetPosition().x, Subject.GetPosition().y, BackgroundCamera.transform.position.z);
 
         var d = Input.GetAxis("Mouse ScrollWheel");
         if (d > 0f)
@@ -57,13 +54,13 @@ public class MasterCameraController : MonoBehaviour
 
     public static Vector2 GetMousePosition()
     {
-        if (instance == null)
+        if (Instance == null)
         {
             return Vector2.zero;
         }
         else
         {
-            return instance.ForgroundCamera.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
+            return Instance.ForgroundCamera.GetComponent<Camera>().ScreenToWorldPoint(Input.mousePosition);
         }
     }
 }

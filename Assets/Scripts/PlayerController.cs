@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerController : Vehicle
+public class PlayerController : Spaceship
 {
     public GameObject AutopilotTargetEffect;
     public GameObject ExhaustEffect;
@@ -9,15 +9,27 @@ public class PlayerController : Vehicle
     private bool UsingAutopilot;
     private int AttackType;
 
-    private void Awake()
+    public void Initialize(string name)
     {
-        ThrustForce = 10f;
-        TurnRate = 300f;
-        MaximumSpeed = 30f;
-        RB2D = GetComponent<Rigidbody2D>();
-        RB2D.mass = 1f;
-        Heading = new Vector2(1, 0);
-        Team = 0;
+        base.Initialize(
+            radarType: RadarType.Ally,
+            team: 0,
+            thrustForce: 10f,
+            turnRate: 300f,
+            maximumSpeed: 30f,
+            mass: 1f,
+            burnDuration: 3f,
+            maxShield: 100f,
+            shieldRegen: 1f,
+            maxHP: 100f,
+            hpRegen: 1f,
+            maxEnergy: 10f,
+            energyRegen: 1f,
+            maxFuel: 510,
+            fuelUsage: 0.85f,
+            maxHullSpace: 523.6f,
+            name: name);
+
         AttackType = 1;
         UsingAutopilot = false;
         Autopilot = new FastAutopilot(this);
@@ -84,35 +96,6 @@ public class PlayerController : Vehicle
         }
     }
 
-    private void FixedUpdate()
-    {
-        if (ThrustInput)
-        {
-            RB2D.AddForce(Heading.normalized * ThrustForce);
-        }
-        if (BreakInput)
-        {
-            if (RB2D.velocity.magnitude < Acceleration * Time.fixedDeltaTime)
-            {
-                RB2D.velocity = Vector2.zero;
-            }
-            else
-            {
-                RB2D.AddForce(-RB2D.velocity.normalized * ThrustForce);
-            }
-        }
-        if (TurnInput != 0)
-        {
-            Heading = Quaternion.Euler(new Vector3(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate)) * Heading;
-            transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
-        }
-
-        if (RB2D.velocity.magnitude > MaximumSpeed)
-        {
-            RB2D.velocity = RB2D.velocity.normalized * MaximumSpeed;
-        }
-    }
-
     private void DismissAutopilot()
     {
         UsingAutopilot = false;
@@ -128,5 +111,4 @@ public class PlayerController : Vehicle
     {
 
     }
-
 }

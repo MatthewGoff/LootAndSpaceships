@@ -15,6 +15,7 @@ public class RadarController : MonoBehaviour
 
     public int RadarScale = 10;
     public float PixelRadius;
+    public ITargetable Subject;
 
     private List<RadarPip> RadarEntries;
 

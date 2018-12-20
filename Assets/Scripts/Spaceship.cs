@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Spaceship : Vehicle
 {
+    public GameObject FireEffect;
+
     private float BurnDuration;
-    private GameObject FireEffect;
     private float BurnEndTime;
     private bool Burning;
     private FDNCanvasController FDNCanvasController;
@@ -40,8 +41,7 @@ public class Spaceship : Vehicle
         float maxFuel,
         float fuelUsage,
         float maxHullSpace,
-        string name,
-        GameObject fireEffect
+        string name
         )
     {
         base.Initialize(radarType, team, thrustForce, turnRate, maximumSpeed, mass);
@@ -65,7 +65,6 @@ public class Spaceship : Vehicle
         MaxHullSpace = maxHullSpace;
         CurrentHullSpace = MaxHullSpace;
         Name = name;
-        FireEffect = fireEffect;
     }
 
     public override void RecieveHit(int damage, DamageType damageType)

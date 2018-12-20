@@ -19,8 +19,8 @@ public class RadarPip
 
     public void Update()
     {
-        Vector2 playerPosition = GameManager.Instance.GetPlayerPosition();
-        Vector2 relativePosition = Target.GetPosition() - playerPosition;
+        Vector2 subjectPosition = RadarController.Subject.GetPosition();
+        Vector2 relativePosition = Target.GetPosition() - subjectPosition;
         Vector2 radarPosition = relativePosition * (RadarController.PixelRadius / 3f) / RadarController.RadarScale;
         if (radarPosition.magnitude > RadarController.PixelRadius)
         {
