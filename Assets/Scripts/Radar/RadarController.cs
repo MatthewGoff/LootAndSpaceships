@@ -16,19 +16,19 @@ public class RadarController : MonoBehaviour
     public int RadarScale = 10;
     public float PixelRadius;
 
-    private List<RadarEntry> RadarEntries;
+    private List<RadarPip> RadarEntries;
 
     private void Awake()
     {
         Instance = this;
-        RadarEntries = new List<RadarEntry>();
+        RadarEntries = new List<RadarPip>();
         PixelRadius = GetComponent<RectTransform>().rect.width * 0.9f / 2f;
         UpdateScaleText();
     }
 
     private void Update()
     {
-        foreach (RadarEntry radarEntry in RadarEntries)
+        foreach (RadarPip radarEntry in RadarEntries)
         {
             radarEntry.Update();
         }   
@@ -56,13 +56,13 @@ public class RadarController : MonoBehaviour
 
     public void AddToRadar(RadarTarget radarTarget)
     {
-        RadarEntries.Add(new RadarEntry(this, radarTarget));
+        RadarEntries.Add(new RadarPip(this, radarTarget));
     }
 
     public void RemoveFromRadar(RadarTarget radarTarget)
     {
-        RadarEntry toRemove = null;
-        foreach (RadarEntry entry in RadarEntries)
+        RadarPip toRemove = null;
+        foreach (RadarPip entry in RadarEntries)
         {
             if (entry.MyTarget(radarTarget))
             {

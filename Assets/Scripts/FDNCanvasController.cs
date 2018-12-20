@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class FDNCanvasController : MonoBehaviour
 {
     private static readonly Vector2 HIGHLIGHT_OFFSET = new Vector2(-1f / 54f, 1f / 54f);
-    public GameObject floatingDamageNumberPrefab;
 
     public AnimationCurve TextSize = new AnimationCurve(
         new Keyframe(0f, 14f),
@@ -18,7 +17,7 @@ public class FDNCanvasController : MonoBehaviour
     public void Display(int damage, float intensity)
     {
         // Highlight
-        GameObject fdn = Instantiate(floatingDamageNumberPrefab, Vector2.zero, Quaternion.identity);
+        GameObject fdn = Instantiate(Prefabs.FDN, Vector2.zero, Quaternion.identity);
         fdn.transform.SetParent(transform);
         fdn.transform.localPosition = HIGHLIGHT_OFFSET;
         Text fdnText = fdn.GetComponent<Text>();
@@ -27,7 +26,7 @@ public class FDNCanvasController : MonoBehaviour
         fdnText.fontSize = Mathf.RoundToInt(TextSize.Evaluate(intensity));
 
         // Shadow
-        fdn = Instantiate(floatingDamageNumberPrefab, Vector2.zero, Quaternion.identity);
+        fdn = Instantiate(Prefabs.FDN, Vector2.zero, Quaternion.identity);
         fdn.transform.SetParent(transform);
         fdn.transform.localPosition = -HIGHLIGHT_OFFSET;
         fdnText = fdn.GetComponent<Text>();
@@ -36,7 +35,7 @@ public class FDNCanvasController : MonoBehaviour
         fdnText.fontSize = Mathf.RoundToInt(TextSize.Evaluate(intensity));
 
         // Text
-        fdn = Instantiate(floatingDamageNumberPrefab, Vector2.zero, Quaternion.identity);
+        fdn = Instantiate(Prefabs.FDN, Vector2.zero, Quaternion.identity);
         fdn.transform.SetParent(transform);
         fdn.transform.localPosition = Vector2.zero;
         fdnText = fdn.GetComponent<Text>();
@@ -45,7 +44,7 @@ public class FDNCanvasController : MonoBehaviour
         fdnText.fontSize = Mathf.RoundToInt(TextSize.Evaluate(intensity));
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         transform.position = Subject.transform.position + new Vector3(0f, VerticalOffset);
     }

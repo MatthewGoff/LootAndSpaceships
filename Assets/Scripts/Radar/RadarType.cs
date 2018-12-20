@@ -1,4 +1,5 @@
 ﻿public enum RadarType
 {
-    Enemy
+    Enemy,
+    Ally
 }

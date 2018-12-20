@@ -1,55 +1,32 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class EnemyController : CombatantManager
+public class EnemyController : Spaceship
 {
-    public GameObject FDNCanvas;
-    public GameObject FireEffect;
-
-    private FDNCanvasController FDNCanvasController;
-    private float BurnDuration = 3f;
-    private float BurnEndTime;
-    private bool Burning;
+    public string NameArgument;
+    public GameObject FireEffectArgument;
 
     private void Awake()
     {
-        Team = 1;
-        RadarType = RadarType.Enemy;
+        base.Initialize(
+            radarType: RadarType.Enemy,
+            team: 1,
+            thrustForce: 10f,
+            turnRate: 300f,
+            maximumSpeed: 30f,
+            mass: 1f,
+            burnDuration: 3f,
+            maxShield: 100f,
+            shieldRegen: 1f,
+            maxHP: 100f,
+            hpRegen: 1f,
+            maxEnergy: 10f,
+            energyRegen: 1f,
+            maxFuel: 510,
+            fuelUsage: 0.85f,
+            maxHullSpace: 100f,
+            name: NameArgument,
+            fireEffect: FireEffectArgument);
         RadarController.Instance.AddToRadar(this);
-        FDNCanvasController = FDNCanvas.GetComponent<FDNCanvasController>();
-    }
-
-    public override Vector2 GetPosition()
-    {
-        return transform.position;
-    }
-
-    public override void RecieveHit(int damage, DamageType damageType)
-    {
-        FDNCanvasController.Display(damage, damage/100f);
-        if (damageType == DamageType.Explosion)
-        {
-            BurnEndTime = Time.time + BurnDuration;
-            if (!Burning)
-            {
-                StartCoroutine("Burn");
-            }
-        }
-    }
-
-    private IEnumerator Burn()
-    {
-        Burning = true;
-        FireEffect.SetActive(true);
-
-        while(Time.time < BurnEndTime)
-        {
-            RecieveHit(Mathf.RoundToInt(Random.Range(0f, 10f)), DamageType.Fire);
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        Burning = false;
-        FireEffect.SetActive(false);
     }
 
     private void OnMouseDown()

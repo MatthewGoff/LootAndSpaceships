@@ -66,15 +66,15 @@ public class PlayerController : Vehicle
         {
             if (AttackType == 1)
             {
-                RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
                 int damage = Mathf.RoundToInt(Random.Range(60, 100));
                 new BulletAttackManager(this, RB2D.position, Heading, RB2D.velocity, damage);
+                RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
             }
             else if (AttackType == 2)
             {
-                RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
                 int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
                 new RocketAttackManager(this, GameManager.Instance.PlayerTarget, RB2D.position, Heading, RB2D.velocity, damage);
+                RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
             }
             else
             {

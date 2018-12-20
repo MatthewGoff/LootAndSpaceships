@@ -13,6 +13,12 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Prefabs.LoadPrefabs();
+        InitializeTargetQueue();
+    }
+
+    private void InitializeTargetQueue()
+    {
         TargetQueue = new Queue<ITargetable>();
         foreach (GameObject enemy in Enemies)
         {

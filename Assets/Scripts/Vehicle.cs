@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public abstract class Vehicle : CombatantManager
+public abstract class Vehicle : Combatant
 {
-    public float ThrustForce;
-    public float TurnRate; // Degrees per Second
-    public float MaximumSpeed;
-    public Rigidbody2D RB2D;
+    public float ThrustForce { get; protected set; }
+    public float TurnRate { get; protected set; } // Degrees per Second
+    public float MaximumSpeed { get; protected set; }
+    protected Rigidbody2D RB2D;
     public float Acceleration
     {
         get
@@ -35,8 +35,18 @@ public abstract class Vehicle : CombatantManager
         }
     }
 
-    public Vector2 Heading;
+    public Vector2 Heading { get; protected set; }
     public bool ThrustInput;
     public bool BreakInput;
     public float TurnInput;
+
+    protected void Initialize(RadarType radarType, int team, float thrustForce, float turnRate, float maximumSpeed, float mass)
+    {
+        ThrustForce = thrustForce;
+        TurnRate = turnRate;
+        MaximumSpeed = maximumSpeed;
+        RB2D = GetComponent<Rigidbody2D>();
+        RB2D.mass = mass;
+        base.Initialize(radarType, team);
+    }
 }
