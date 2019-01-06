@@ -8,20 +8,28 @@ public class SimpleAI : AI
 
     private Vector2 Home;
 
-    private bool Agroed;
-    private ITargetable Target;
+    private bool Aggroed;
+    private ITargetable AggroHolder;
 
     public SimpleAI(Spaceship spaceship, Autopilot autopilot) : base(spaceship, autopilot)
-    {
+    { 
         Home = spaceship.GetPosition();
     }
 	
 	public override void Update ()
     {
-		
+        CheckAggro();
+
+
 	}
 
-    public override void TakeDamage(Combatant attacker)
+    private void CheckAggro() 
+    {
+        Vector2 playerPosition = GameManager.Instance.Player.GetPosition();
+        float distance = (Spaceship.GetPosition() - playerPosition).magnitude;
+    }
+
+    public override void AlertDamage(Combatant attacker)
     {
         
     }

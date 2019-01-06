@@ -44,6 +44,6 @@ public class EnemyController : Spaceship
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
         base.TakeDamage(attacker, damage, damageType);
-        AI.TakeDamage(attacker);
+        AI.AlertDamage(attacker);
     }
 }

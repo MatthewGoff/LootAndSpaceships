@@ -1,5 +1,5 @@
 ﻿public enum AutopilotBehaviour
 {
     Seek,
-    Arrive,
+    Arrive
 }
