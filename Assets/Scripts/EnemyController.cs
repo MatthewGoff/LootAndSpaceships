@@ -7,7 +7,6 @@ public class EnemyController : Spaceship
     public void Initialize(string name)
     {
         base.Initialize(
-            radarType: RadarType.Enemy,
             team: 1,
             thrustForce: 10f,
             turnRate: 300f,
@@ -24,7 +23,6 @@ public class EnemyController : Spaceship
             fuelUsage: 0.85f,
             maxHullSpace: 523.6f,
             name: name);
-        RadarController.Instance.AddToRadar(this);
         AI = new SimpleAI(this, new FastAutopilot(this));
     }
 

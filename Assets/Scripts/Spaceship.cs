@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Spaceship : Vehicle
 {
     public GameObject FireEffect;
 
+    private int RadarIdentifier;
     private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
@@ -26,8 +28,7 @@ public class Spaceship : Vehicle
     private float CurrentHullSpace;
     private string Name;
 
-    protected void Initialize(RadarType radarType,
-        int team,
+    protected void Initialize(int team,
         float thrustForce,
         float turnRate,
         float maximumSpeed,
@@ -45,7 +46,7 @@ public class Spaceship : Vehicle
         string name
         )
     {
-        base.Initialize(radarType, team, thrustForce, turnRate, maximumSpeed, mass);
+        base.Initialize(team, thrustForce, turnRate, maximumSpeed, mass);
         GameObject canvas = Instantiate(Prefabs.FDNCanvas, new Vector3(0f, 0f, 0f), Quaternion.identity);
         canvas.transform.SetParent(transform);
         FDNCanvasController = canvas.GetComponent<FDNCanvasController>();
@@ -66,6 +67,8 @@ public class Spaceship : Vehicle
         MaxHullSpace = maxHullSpace;
         CurrentHullSpace = MaxHullSpace;
         Name = name;
+
+        RadarIdentifier = RadarOmniscience.Instance.RegisterNewRadarEntity();
     }
 
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
@@ -95,5 +98,32 @@ public class Spaceship : Vehicle
 
         Burning = false;
         FireEffect.SetActive(false);
+    }
+
+    private void FixedUpdate()
+    {
+        UpdateVehicle();
+        SubmitRadarProfile();
+    }
+
+    private void SubmitRadarProfile()
+    {
+        RadarProfile profile = new RadarProfile(
+            Team,
+            Position,
+            MaxShield,
+            CurrentShield,
+            MaxHP,
+            CurrentHP,
+            MaxEnergy,
+            CurrentEnergy,
+            MaxFuel,
+            CurrentFuel);
+        RadarOmniscience.Instance.SubmitRadarProfile(RadarIdentifier, profile);
+    }
+
+    public LinkedList<RadarProfile> GetRadarReading()
+    {
+        return RadarOmniscience.Instance.PingRadar(RadarIdentifier);
     }
 }

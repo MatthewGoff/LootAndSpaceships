@@ -1,12 +1,15 @@
-﻿public abstract class Combatant : RadarTarget
+﻿using UnityEngine;
+
+public abstract class Combatant : MonoBehaviour, ITargetable
 {
     public int Team { get; protected set; }
 
-    protected void Initialize(RadarType radarType, int team)
+    protected void Initialize(int team)
     {
         Team = team;
-        base.Initialize(radarType);
     }
 
     public abstract void TakeDamage(Combatant attacker, float damage, DamageType damageType);
+
+    public abstract Vector2 GetPosition();
 }

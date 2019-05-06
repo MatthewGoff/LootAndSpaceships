@@ -2,25 +2,26 @@
 
 public class RadarPip
 {
-    public RadarTarget Target { get; private set; }
     private GameObject Pip;
     private GameObject Arrow;
     private RadarController RadarController;
 
-    public RadarPip(RadarController radarController, RadarTarget target)
+    public RadarPip(RadarController radarController)
     {
         RadarController = radarController;
-        Target = target;
         Pip = GameObject.Instantiate(Prefabs.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Pip.transform.SetParent(RadarController.ContentsTransform.transform);
+        Pip.SetActive(false);
         Arrow = GameObject.Instantiate(Prefabs.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Arrow.transform.SetParent(RadarController.ContentsTransform.transform);
+        Arrow.SetActive(false);
     }
 
-    public void Update()
+    public void Show(RadarProfile profile)
     {
+
         Vector2 subjectPosition = RadarController.Subject.GetPosition();
-        Vector2 relativePosition = Target.GetPosition() - subjectPosition;
+        Vector2 relativePosition = profile.Position - subjectPosition;
         Vector2 radarPosition = relativePosition * (RadarController.PixelRadius / 3f) / RadarController.RadarScale;
         if (radarPosition.magnitude > RadarController.PixelRadius)
         {
@@ -38,14 +39,9 @@ public class RadarPip
         }
     }
 
-    public bool MyTarget(RadarTarget target)
+    public void Hide()
     {
-        return Target == target;
-    }
-
-    public void Destroy()
-    {
-        GameObject.Destroy(Pip);
-        GameObject.Destroy(Arrow);
+        Pip.SetActive(false);
+        Arrow.SetActive(false);
     }
 }

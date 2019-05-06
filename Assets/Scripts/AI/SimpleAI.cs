@@ -25,7 +25,7 @@ public class SimpleAI : AI
 
     private void CheckAggro() 
     {
-        Vector2 playerPosition = GameManager.Instance.Player.GetPosition();
+        Vector2 playerPosition = Vector2.zero;
         float distance = (Spaceship.GetPosition() - playerPosition).magnitude;
     }
 

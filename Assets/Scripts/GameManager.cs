@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public ITargetable PlayerTarget;
-    public ITargetable Player;
     public Queue<ITargetable> TargetQueue;
     public GameObject AutopilotTargetEffect;
 
@@ -18,13 +17,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        RadarOmniscience.Initialize();
+
         GameObject player = Instantiate(Prefabs.Player, new Vector2(0f, 0f), Quaternion.identity);
         PlayerController playerController = player.GetComponent<PlayerController>();
         playerController.Initialize("Admiral Ackbar");
         playerController.AutopilotTargetEffect = AutopilotTargetEffect;
         RadarController.Instance.Subject = playerController;
         MasterCameraController.Instance.Subject = playerController;
-        Player = playerController;
 
         GameObject enemy = Instantiate(Prefabs.Enemy, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
         enemy.GetComponent<EnemyController>().Initialize("Enemy 1");

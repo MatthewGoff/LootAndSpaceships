@@ -12,7 +12,6 @@ public class PlayerController : Spaceship
     public void Initialize(string name)
     {
         base.Initialize(
-            radarType: RadarType.Ally,
             team: 0,
             thrustForce: 10f,
             turnRate: 300f,
@@ -63,7 +62,14 @@ public class PlayerController : Spaceship
             }
         }
 
-        ExhaustEffect.SetActive(ThrustInput);
+        if (ThrustInput)
+        {
+            ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
+        }
+        else
+        {
+            ExhaustEffect.GetComponent<ExhaustEffectController>().Disable();
+        }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -83,19 +89,19 @@ public class PlayerController : Spaceship
             if (AttackType == 1)
             {
                 int damage = Mathf.RoundToInt(Random.Range(60, 100));
-                new BulletAttackManager(this, RB2D.position, Heading, RB2D.velocity, damage);
+                new BulletAttackManager(this, Position, Heading, Velocity, damage);
                 RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
             }
             else if (AttackType == 2)
             {
                 int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-                new RocketAttackManager(this, GameManager.Instance.PlayerTarget, RB2D.position, Heading, RB2D.velocity, damage);
+                new RocketAttackManager(this, GameManager.Instance.PlayerTarget, Position, Heading, Velocity, damage);
                 RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
             }
             else
             {
                 int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
-                new EMPAttackManager(this, RB2D.position, damage);
+                new EMPAttackManager(this, Position, damage);
             }
         }
     }
@@ -108,7 +114,7 @@ public class PlayerController : Spaceship
 
     public override Vector2 GetPosition()
     {
-        return RB2D.position;
+        return Position;
     }
 
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)

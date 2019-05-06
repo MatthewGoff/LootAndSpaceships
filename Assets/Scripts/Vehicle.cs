@@ -40,7 +40,7 @@ public abstract class Vehicle : Combatant
     public bool BreakInput;
     public float TurnInput;
 
-    protected void Initialize(RadarType radarType, int team, float thrustForce, float turnRate, float maximumSpeed, float mass)
+    protected void Initialize(int team, float thrustForce, float turnRate, float maximumSpeed, float mass)
     {
         ThrustForce = thrustForce;
         TurnRate = turnRate;
@@ -48,10 +48,10 @@ public abstract class Vehicle : Combatant
         RB2D = GetComponent<Rigidbody2D>();
         RB2D.mass = mass;
         Heading = Quaternion.Euler(transform.eulerAngles) * Vector2.right;
-        base.Initialize(radarType, team);
+        base.Initialize(team);
     }
 
-    private void FixedUpdate()
+    protected void UpdateVehicle()
     {
         if (ThrustInput)
         {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public interface ITargetable {
-
+public interface ITargetable
+{
     Vector2 GetPosition();
 }

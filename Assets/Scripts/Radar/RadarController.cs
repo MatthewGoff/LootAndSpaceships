@@ -14,25 +14,64 @@ public class RadarController : MonoBehaviour
     public GameObject ContentsTransform;
 
     public int RadarScale = 10;
+    public Spaceship Subject;
+    /**
+     * The radius in pixels of the radar display;
+     */
     public float PixelRadius;
-    public ITargetable Subject;
 
-    private List<RadarPip> RadarEntries;
+    private RadarPip[] Pips;
 
     private void Awake()
     {
         Instance = this;
-        RadarEntries = new List<RadarPip>();
+        Pips = new RadarPip[10];
+        for (int i = 0; i < Pips.Length; i++)
+        {
+            Pips[i] = new RadarPip(this);
+        }
+        // Calculate the radius in pixels of the radar display. We multiply
+        // the image width by 0.9f because that happens to be the size of the
+        // radar screen in the image we're using. And we divide by 2f because
+        // we want the radius, not the diameter.
         PixelRadius = GetComponent<RectTransform>().rect.width * 0.9f / 2f;
         UpdateScaleText();
     }
 
     private void Update()
     {
-        foreach (RadarPip radarEntry in RadarEntries)
+        LinkedList<RadarProfile> profiles = Subject.GetRadarReading();
+        ValidatePipPool(profiles.Count);
+        for (int i = 0; i < Pips.Length; i++)
         {
-            radarEntry.Update();
-        }   
+            if (profiles.Count != 0)
+            {
+                Pips[i].Show(profiles.First.Value);
+                profiles.RemoveFirst();
+            }
+            else
+            {
+                Pips[i].Hide();
+            }
+        }
+    }
+
+    private void ValidatePipPool(int count)
+    {
+        if (Pips.Length < count)
+        {
+            RadarPip[] newPips = new RadarPip[Pips.Length * 2];
+            for (int i = 0; i < Pips.Length; i++)
+            {
+                newPips[i] = Pips[i];
+            }
+            for (int i = Pips.Length - 1; i < newPips.Length; i++)
+            {
+                newPips[i] = new RadarPip(this);
+            }
+            Pips = newPips;
+            ValidatePipPool(count);
+        }
     }
 
     public void PlusClicked()
@@ -53,27 +92,5 @@ public class RadarController : MonoBehaviour
     {
         ScaleText1.GetComponent<Text>().text = RadarScale.ToString();
         ScaleText2.GetComponent<Text>().text = RadarScale.ToString();
-    }
-
-    public void AddToRadar(RadarTarget radarTarget)
-    {
-        RadarEntries.Add(new RadarPip(this, radarTarget));
-    }
-
-    public void RemoveFromRadar(RadarTarget radarTarget)
-    {
-        RadarPip toRemove = null;
-        foreach (RadarPip entry in RadarEntries)
-        {
-            if (entry.MyTarget(radarTarget))
-            {
-                toRemove = entry;
-            }
-        }
-        if (toRemove != null)
-        {
-            toRemove.Destroy();
-            RadarEntries.Remove(toRemove);
-        }
     }
 }
