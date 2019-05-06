@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class Helpwers{
+public static class Helpers{
 
 	public static float PerlinNoise(float x, float y, float[,] frequencies, float offset)
     {

@@ -21,12 +21,6 @@ public class BackgroundCameraController : MonoBehaviour {
     public float MinParallaxCoefficient;
     public float MaxParallaxCoefficient;
     public int NumStarVariants;
-    public float BackgroundHueRange;
-    public readonly float[,] BackgroundHueFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f} };
-    public readonly float[,] BackgroundSaturationFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f } };
-    public readonly float[,] BackgroundValueFrequencies = new float[,] { { 0.1f, 0.2f, 0.3f, 0.4f }, { 0.03f, 0.005f, 0.001f, 0.0002f } };
-    public float BackgroundMinimumSaturation;
-    public float BackgroundMaximumValue;
 
     public Material[] StarMaterial;
     public float[] MinStarSize;
@@ -44,52 +38,7 @@ public class BackgroundCameraController : MonoBehaviour {
     private void Awake()
     {
         Camera = GetComponent<Camera>();
-        //CreateBackgroundImage();
         CreateBackgroundStars();
-    }
-
-    private void CreateBackgroundImage()
-    {
-        Texture2D backgroundTexture = CreateBackgroundTexture();
-        Rect backgroundRect = new Rect(0, 0, 1920 * 3, 1080 * 3);
-        Sprite backgroundSprite = Sprite.Create(backgroundTexture, backgroundRect, new Vector2(0.5f, 0.5f), 1080 * 3);
-        GameObject backgroundObject = new GameObject("BackgroundImage");
-        backgroundObject.transform.position = new Vector3(0, 0, -2);
-        backgroundObject.transform.localScale = new Vector3(MasterCameraController.MAX_CAMERA_HEIGHT, MasterCameraController.MAX_CAMERA_HEIGHT, 1);
-        backgroundObject.transform.SetParent(transform);
-        backgroundObject.AddComponent<SpriteRenderer>();
-        backgroundObject.GetComponent<SpriteRenderer>().sprite = backgroundSprite;
-        backgroundObject.GetComponent<SpriteRenderer>().sortingLayerName = "Background";
-        backgroundObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
-    }
-
-    private Texture2D CreateBackgroundTexture()
-    {
-        Texture2D backgroundTexture = new Texture2D(1920 * 3, 1080 * 3);
-        float baseHue = Random.Range(0f, 1f);
-        float hueOffset = Random.Range(0f, 100000f);
-        float saturationOffset = Random.Range(0f, 100000f);
-        float valueOffset = Random.Range(0f, 100000f);
-        for (int x = 0; x < backgroundTexture.width; x++)
-        {
-            for (int y = 0; y < backgroundTexture.height; y++)
-            {
-                float noiseSample = Helpwers.PerlinNoise(x, y, BackgroundHueFrequencies, hueOffset);
-                float hue = (baseHue + BackgroundHueRange * noiseSample) % 1;
-                noiseSample = Helpwers.PerlinNoise(x, y, BackgroundSaturationFrequencies, saturationOffset);
-                float saturation = BackgroundMinimumSaturation + (1f-BackgroundMinimumSaturation) * noiseSample;
-                noiseSample = Helpwers.PerlinNoise(x, y, BackgroundValueFrequencies, valueOffset);
-                float value = BackgroundMaximumValue * noiseSample;
-                if (Random.Range(0f, 1f) < 0.005f)
-                {
-                    saturation = Mathf.Min(0f, saturation - 0.5f);
-                    value = Mathf.Max(value + 0.5f, 1f);
-                }
-                backgroundTexture.SetPixel(x, y, Color.HSVToRGB(hue, saturation, value));
-            }
-        }
-        backgroundTexture.Apply();
-        return backgroundTexture;
     }
     
     private void CreateBackgroundStars()
@@ -136,6 +85,7 @@ public class BackgroundCameraController : MonoBehaviour {
             StarsTransform.SetActive(!StarsTransform.activeSelf);
         }
     }
+
     private void OnPostRender()
     {
         if (ShowGridLines)
