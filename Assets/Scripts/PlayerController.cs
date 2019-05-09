@@ -18,10 +18,10 @@ public class PlayerController : Spaceship
             maximumSpeed: 30f,
             mass: 1f,
             burnDuration: 3f,
-            maxShield: 100f,
-            shieldRegen: 1f,
-            maxHP: 100f,
-            hpRegen: 1f,
+            maxShield: 500f,
+            shieldRegen: 30f,
+            maxHP: 1000f,
+            hpRegen: 5f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
@@ -32,6 +32,7 @@ public class PlayerController : Spaceship
         AttackType = 1;
         UsingAutopilot = false;
         Autopilot = new FastAutopilot(this);
+        ShowFDN = false;
     }
 
     private void Update()
@@ -47,7 +48,7 @@ public class PlayerController : Spaceship
 
         if (Input.GetMouseButton(1) && !GameManager.MouseOverUI())
         {
-            ITargetable target = new StaticTarget(MasterCameraController.GetMousePosition());
+            Vector2 target = MasterCameraController.GetMousePosition();
             Autopilot.SetTarget(target, AutopilotBehaviour.Seek);
             UsingAutopilot = true;
             AutopilotTargetEffect.SetActive(true);
@@ -88,20 +89,15 @@ public class PlayerController : Spaceship
         {
             if (AttackType == 1)
             {
-                int damage = Mathf.RoundToInt(Random.Range(60, 100));
-                new BulletAttackManager(this, Position, Heading, Velocity, damage);
-                RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
+                FireBullet = true;
             }
             else if (AttackType == 2)
             {
-                int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-                new RocketAttackManager(this, GameManager.Instance.PlayerTarget, Position, Heading, Velocity, damage);
-                RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
+                FireRocket = true;
             }
-            else
+            else if (AttackType == 3)
             {
-                int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
-                new EMPAttackManager(this, Position, damage);
+                FireEMP = true;
             }
         }
     }
@@ -119,6 +115,6 @@ public class PlayerController : Spaceship
 
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
-
+        base.TakeDamage(attacker, damage, damageType);
     }
 }

@@ -9,17 +9,16 @@ public class RadarPip
     public RadarPip(RadarController radarController)
     {
         RadarController = radarController;
-        Pip = GameObject.Instantiate(Prefabs.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Pip = GameObject.Instantiate(Prefabs.Instance.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Pip.transform.SetParent(RadarController.ContentsTransform.transform);
         Pip.SetActive(false);
-        Arrow = GameObject.Instantiate(Prefabs.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Arrow = GameObject.Instantiate(Prefabs.Instance.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Arrow.transform.SetParent(RadarController.ContentsTransform.transform);
         Arrow.SetActive(false);
     }
 
     public void Show(RadarProfile profile)
     {
-
         Vector2 subjectPosition = RadarController.Subject.GetPosition();
         Vector2 relativePosition = profile.Position - subjectPosition;
         Vector2 radarPosition = relativePosition * (RadarController.PixelRadius / 3f) / RadarController.RadarScale;

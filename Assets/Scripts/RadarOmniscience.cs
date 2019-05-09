@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 /**
  * The Radar Omniscience is a singleton class which is responsible for
@@ -78,7 +79,7 @@ public class RadarOmniscience
         LinkedList<RadarProfile> profiles = new LinkedList<RadarProfile>();
         for (int i = 0; i < RadarProfiles.Length; i++)
         {
-            if (i != radarIdentifier && RadarIdentifierInUse[i])
+            if (i != radarIdentifier && RadarProfiles[i] != null)
             {
                 profiles.AddFirst(RadarProfiles[i]);
             }

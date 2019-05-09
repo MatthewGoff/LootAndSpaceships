@@ -1,4 +1,6 @@
-﻿public abstract class AI
+﻿using System.Collections.Generic;
+
+public abstract class AI
 {
     protected readonly Spaceship Spaceship;
     protected readonly Autopilot Autopilot;
@@ -9,6 +11,6 @@
         Autopilot = autopilot;
     }
 
-    public abstract void Update();
+    public abstract void Update(LinkedList<RadarProfile> radarProfiles);
     public abstract void AlertDamage(Combatant attacker);
 }

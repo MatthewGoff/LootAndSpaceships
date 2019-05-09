@@ -10,7 +10,7 @@ public class FastAutopilot : Autopilot
         Vehicle.ThrustInput = false;
         Vehicle.BreakInput = false;
 
-        Vector2 targetVector = Target.GetPosition() - Vehicle.Position;
+        Vector2 targetVector = Target - Vehicle.Position;
         Vector2 perpendicularTargetVector = new Vector2(targetVector.y, -targetVector.x);
         Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, Vehicle.Velocity) / Mathf.Pow(targetVector.magnitude, 2f);
         Vector2 perpendicularVelocity = Vehicle.Velocity - parallelVelocity;
@@ -77,7 +77,7 @@ public class FastAutopilot : Autopilot
     {
         SeekUpdate();
 
-        Vector2 targetVector = Target.GetPosition() - Vehicle.Position;
+        Vector2 targetVector = Target - Vehicle.Position;
         float velocityAngle = Vector2.SignedAngle(targetVector, Vehicle.Velocity);
         if (Vehicle.Velocity != Vector2.zero && Mathf.Abs(velocityAngle) < 1f)
         {

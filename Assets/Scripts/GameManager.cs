@@ -5,46 +5,62 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public ITargetable PlayerTarget;
-    public Queue<ITargetable> TargetQueue;
+    public EnemyController PlayerTarget;
+    public Queue<EnemyController> TargetQueue;
     public GameObject AutopilotTargetEffect;
+
+    private int EnemyCounter;
 
     private void Awake()
     {
         Instance = this;
-        Prefabs.LoadPrefabs();
     }
 
     private void Start()
     {
         RadarOmniscience.Initialize();
 
-        GameObject player = Instantiate(Prefabs.Player, new Vector2(0f, 0f), Quaternion.identity);
+        GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
         PlayerController playerController = player.GetComponent<PlayerController>();
-        playerController.Initialize("Admiral Ackbar");
+        playerController.Initialize("Player 1 ");
         playerController.AutopilotTargetEffect = AutopilotTargetEffect;
         RadarController.Instance.Subject = playerController;
         MasterCameraController.Instance.Subject = playerController;
+        BottomHUDController.Instance.Subject = playerController;
 
-        GameObject enemy = Instantiate(Prefabs.Enemy, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-        enemy.GetComponent<EnemyController>().Initialize("Enemy 1");
-
-        TargetQueue = new Queue<ITargetable>();
-        TargetQueue.Enqueue(enemy.GetComponent<EnemyController>());
+        TargetQueue = new Queue<EnemyController>();
+        EnemyCounter = 0;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            ITargetable nextTarget = TargetQueue.Dequeue();
-            PlayerTarget = nextTarget;
-            TargetQueue.Enqueue(nextTarget);
+            if (TargetQueue.Count != 0)
+            {
+                EnemyController nextTarget = TargetQueue.Dequeue();
+                PlayerTarget = nextTarget;
+                TargetQueue.Enqueue(nextTarget);
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.U))
         {
             PlayerTarget = null;
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SpawnNewEnemy();
+        }
+    }
+
+    private void SpawnNewEnemy()
+    {
+        EnemyCounter++;
+
+        GameObject enemy = Instantiate(Prefabs.Instance.Enemy, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
+        enemy.GetComponent<EnemyController>().Initialize("Enemy "+EnemyCounter.ToString());
+
+        TargetQueue.Enqueue(enemy.GetComponent<EnemyController>());
     }
 
     public static bool MouseOverUI()
@@ -52,7 +68,7 @@ public class GameManager : MonoBehaviour
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    public void ChangeTarget(ITargetable target)
+    public void ChangeTarget(EnemyController target)
     {
         PlayerTarget = target;
     }

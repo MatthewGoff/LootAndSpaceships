@@ -2,6 +2,7 @@
 
 public class RadarProfile
 {
+    public string Name;
     public int Team;
     public Vector2 Position;
     public float MaxShield;
@@ -14,6 +15,7 @@ public class RadarProfile
     public float CurrentFuel;
 
     public RadarProfile(
+        string name,
         int team,
         Vector2 position,
         float maxShield,
@@ -25,6 +27,7 @@ public class RadarProfile
         float maxFuel,
         float currentFuel)
     {
+        Name = name;
         Team = team;
         Position = position;
         MaxShield = maxShield;

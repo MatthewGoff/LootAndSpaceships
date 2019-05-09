@@ -6,27 +6,36 @@ public class Spaceship : Vehicle
 {
     public GameObject FireEffect;
 
-    private int RadarIdentifier;
+    public string Name;
+
+    public bool FireBullet;
+    public bool FireRocket;
+    public bool FireEMP;
+
+    protected bool ShowFDN;
+
+    protected int RadarIdentifier;
     private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
     private Combatant BurnPerpetrator;
-    private FDNCanvasController FDNCanvasController;
-    private float MaxShield;
-    private float CurrentShield;
+    public float MaxShield;
+    public float CurrentShield;
     private float ShieldRegen;
-    private float MaxHP;
-    private float CurrentHP;
-    private float HPRegen;
-    private float MaxEnergy;
-    private float CurrentEnergy;
+    public float MaxHealth;
+    public float CurrentHealth;
+    private float HealthRegen;
+    public float MaxEnergy;
+    public float CurrentEnergy;
     private float EnergyRegen;
-    private float MaxFuel;
-    private float CurrentFuel;
+    public float MaxFuel;
+    public float CurrentFuel;
     private float FuelUsage;
     private float MaxHullSpace;
     private float CurrentHullSpace;
-    private string Name;
+    private Cooldown AttackCooldown;
+    protected float AttackEnergy;
+    protected float ThrustEnergy;
 
     protected void Initialize(int team,
         float thrustForce,
@@ -47,17 +56,13 @@ public class Spaceship : Vehicle
         )
     {
         base.Initialize(team, thrustForce, turnRate, maximumSpeed, mass);
-        GameObject canvas = Instantiate(Prefabs.FDNCanvas, new Vector3(0f, 0f, 0f), Quaternion.identity);
-        canvas.transform.SetParent(transform);
-        FDNCanvasController = canvas.GetComponent<FDNCanvasController>();
-        FDNCanvasController.Subject = gameObject;
         BurnDuration = burnDuration;
         MaxShield = maxShield;
         CurrentShield = MaxShield;
         ShieldRegen = shieldRegen;
-        MaxHP = maxHP;
-        CurrentHP = MaxHP;
-        HPRegen = hpRegen;
+        MaxHealth = maxHP;
+        CurrentHealth = MaxHealth;
+        HealthRegen = hpRegen;
         MaxEnergy = maxEnergy;
         CurrentEnergy = MaxEnergy;
         EnergyRegen = energyRegen;
@@ -68,12 +73,25 @@ public class Spaceship : Vehicle
         CurrentHullSpace = MaxHullSpace;
         Name = name;
 
+        AttackCooldown = new Cooldown(1f);
+        AttackEnergy = 1.25f;
+        ThrustEnergy = 1.25f;
         RadarIdentifier = RadarOmniscience.Instance.RegisterNewRadarEntity();
     }
 
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
-        FDNCanvasController.Display(Mathf.RoundToInt(damage), damage / 100f);
+        float shieldDamage = Mathf.Min(CurrentShield, damage);
+        CurrentShield -= shieldDamage;
+        float remainingDamage = damage - shieldDamage;
+        CurrentHealth -= remainingDamage;
+
+        if (ShowFDN)
+        {
+            GameObject fdn = Instantiate(Prefabs.Instance.FDN, transform.position, Quaternion.identity);
+            fdn.GetComponent<FDNController>().Display(Mathf.RoundToInt(damage), damage / 100f);
+        }
+
         if (damageType == DamageType.Explosion)
         {
             BurnPerpetrator = attacker;
@@ -102,19 +120,63 @@ public class Spaceship : Vehicle
 
     private void FixedUpdate()
     {
+        float thrustCost = ThrustEnergy * Time.fixedDeltaTime;
+        if (ThrustInput && CurrentEnergy >= thrustCost)
+        {
+            CurrentEnergy -= thrustCost;
+        }
+        else
+        {
+            ThrustInput = false;
+        }
+
         UpdateVehicle();
         SubmitRadarProfile();
+
+        if (FireBullet && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        {
+            FireBullet = false;
+            CurrentEnergy -= AttackEnergy;
+            int damage = Mathf.RoundToInt(Random.Range(60, 100));
+            new BulletAttackManager(this, Position, Heading, Velocity, damage);
+            RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
+        }
+        if (FireRocket && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        {
+            FireRocket = false;
+            CurrentEnergy -= AttackEnergy;
+            int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
+            new RocketAttackManager(this, GameManager.Instance.PlayerTarget, Position, Heading, Velocity, damage);
+            RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
+        }
+        if (FireEMP && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        {
+            FireEMP = false;
+            CurrentEnergy -= AttackEnergy;
+            int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
+            new EMPAttackManager(this, Position, damage);
+        }
+
+        CurrentHealth += HealthRegen * Time.fixedDeltaTime;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+        CurrentShield += ShieldRegen * Time.fixedDeltaTime;
+        CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
+        CurrentEnergy += EnergyRegen * Time.fixedDeltaTime;
+        CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, MaxEnergy);
+        CurrentFuel -= FuelUsage * Time.fixedDeltaTime;
+        CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
     }
 
     private void SubmitRadarProfile()
     {
         RadarProfile profile = new RadarProfile(
+            Name,
             Team,
             Position,
             MaxShield,
             CurrentShield,
-            MaxHP,
-            CurrentHP,
+            MaxHealth,
+            CurrentHealth,
             MaxEnergy,
             CurrentEnergy,
             MaxFuel,

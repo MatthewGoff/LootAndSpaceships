@@ -2,19 +2,19 @@
 
 public abstract class Autopilot
 {
-    private static readonly float TargetRadius = 0.5f;
+    private static readonly float TARGET_RADIUS = 0.5f;
 
     protected Vehicle Vehicle;
 
     protected AutopilotBehaviour Behaviour;
-    protected ITargetable Target;
+    protected Vector2 Target;
 
     protected Autopilot(Vehicle vehicle)
     {
         Vehicle = vehicle;
     }
 
-    public void SetTarget(ITargetable target, AutopilotBehaviour behaviour)
+    public void SetTarget(Vector2 target, AutopilotBehaviour behaviour)
     {
         Target = target;
         Behaviour = behaviour;
@@ -52,6 +52,6 @@ public abstract class Autopilot
 
     protected bool AtTarget()
     {
-        return (Vehicle.GetPosition() - Target.GetPosition()).magnitude < TargetRadius;
+        return (Vehicle.GetPosition() - Target).magnitude < TARGET_RADIUS;
     }
 }

@@ -65,7 +65,7 @@ public class RadarController : MonoBehaviour
             {
                 newPips[i] = Pips[i];
             }
-            for (int i = Pips.Length - 1; i < newPips.Length; i++)
+            for (int i = Pips.Length; i < newPips.Length; i++)
             {
                 newPips[i] = new RadarPip(this);
             }

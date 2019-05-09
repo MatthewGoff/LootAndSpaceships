@@ -2,6 +2,10 @@
 
 public class EnemyController : Spaceship
 {
+    public GameObject PortraitCamera;
+    public GameObject ExhaustEffect;
+
+    private Autopilot Autopilot;
     private AI AI;
 
     public void Initialize(string name)
@@ -13,22 +17,36 @@ public class EnemyController : Spaceship
             maximumSpeed: 30f,
             mass: 1f,
             burnDuration: 3f,
-            maxShield: 100f,
-            shieldRegen: 1f,
-            maxHP: 100f,
-            hpRegen: 1f,
+            maxShield: 500f,
+            shieldRegen: 30f,
+            maxHP: 1000f,
+            hpRegen: 5f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
             maxHullSpace: 523.6f,
             name: name);
-        AI = new SimpleAI(this, new FastAutopilot(this));
+        Autopilot = new FastAutopilot(this);
+        AI = new SimpleAI(this, Autopilot);
+        ShowFDN = true;
+        AttackEnergy = 0.5f;
+        ThrustEnergy = 0.5f;
     }
 
     private void Update()
     {
-        AI.Update();
+        AI.Update(RadarOmniscience.Instance.PingRadar(RadarIdentifier));
+        Autopilot.Update();
+
+        if (ThrustInput)
+        {
+            ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
+        }
+        else
+        {
+            ExhaustEffect.GetComponent<ExhaustEffectController>().Disable();
+        }
     }
 
     private void OnMouseDown()

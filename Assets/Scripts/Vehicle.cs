@@ -70,7 +70,7 @@ public abstract class Vehicle : Combatant
         }
         if (TurnInput != 0)
         {
-            Heading = Quaternion.Euler(new Vector3(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate)) * Heading;
+            Heading = Quaternion.Euler(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate) * Heading;
             transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
         }
 
