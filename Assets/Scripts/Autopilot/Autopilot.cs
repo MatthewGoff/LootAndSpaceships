@@ -52,6 +52,6 @@ public abstract class Autopilot
 
     protected bool AtTarget()
     {
-        return (Vehicle.GetPosition() - Target).magnitude < TARGET_RADIUS;
+        return (Vehicle.Position - Target).magnitude < TARGET_RADIUS;
     }
 }

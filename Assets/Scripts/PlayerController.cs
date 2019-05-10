@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerController : Spaceship
 {
@@ -18,16 +19,21 @@ public class PlayerController : Spaceship
             maximumSpeed: 30f,
             mass: 1f,
             burnDuration: 3f,
-            maxShield: 500f,
-            shieldRegen: 30f,
-            maxHP: 1000f,
+            maxShield: 250f,
+            shieldRegen: 20f,
+            shieldEnergy: 0.1f,
+            maxHP: 500f,
             hpRegen: 5f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
             maxHullSpace: 523.6f,
-            name: name);
+            name: name,
+            attackEnergy: 1.5f,
+            thrustEnergy: 1.5f,
+            lifeSupportEnergy: 0.1f,
+            lifeSupportDegen: 10f);
 
         AttackType = 1;
         UsingAutopilot = false;
@@ -100,21 +106,72 @@ public class PlayerController : Spaceship
                 FireEMP = true;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Die();
+        }
+
+        UpdateTarget();
     }
-    
+
+    private void UpdateTarget()
+    {
+        if (!GetRadarReading().ContainsKey(TargetUID))
+        {
+            HasTarget = false;
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Debug.Log("tab");
+            CycleTarget();
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            HasTarget = false;
+        }
+    }
+
     private void DismissAutopilot()
     {
         UsingAutopilot = false;
         AutopilotTargetEffect.SetActive(false);
     }
 
-    public override Vector2 GetPosition()
-    {
-        return Position;
-    }
-
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
     {
         base.TakeDamage(attacker, damage, damageType);
+    }
+
+    private void CycleTarget()
+    {
+        List<int> uids = new List<int>(GetRadarReading().Keys);
+        if (uids.Count > 0)
+        {
+            HasTarget = true;
+            uids.Sort();
+            foreach (int uid in uids)
+            {
+                if (uid > TargetUID)
+                {
+                    TargetUID = uid;
+                    return;
+                }
+            }
+            TargetUID = uids[0];
+        }
+    }
+
+    public void SelectTarget(int uid)
+    {
+        HasTarget = true;
+        TargetUID = uid;
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+        Destroy(gameObject.GetComponent<SpriteRenderer>());
+        GameManager.Instance.PlayerDeath();
     }
 }

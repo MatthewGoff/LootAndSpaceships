@@ -11,6 +11,6 @@ public abstract class AI
         Autopilot = autopilot;
     }
 
-    public abstract void Update(LinkedList<RadarProfile> radarProfiles);
+    public abstract void Update(Dictionary<int, RadarProfile> radarProfiles);
     public abstract void AlertDamage(Combatant attacker);
 }

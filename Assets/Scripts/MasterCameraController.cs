@@ -19,7 +19,6 @@ public class MasterCameraController : MonoBehaviour
     public GameObject BackgroundImage;
     public GameObject BackgroundCamera;
     public GameObject ForgroundCamera;
-    public ITargetable Subject;
 
     private readonly float ZoomSpeed = 1.2f;
     private float CameraHeight;
@@ -70,9 +69,10 @@ public class MasterCameraController : MonoBehaviour
 
     private void Update ()
     {
-        BackgroundImage.transform.position = new Vector3(Subject.GetPosition().x, Subject.GetPosition().y, BackgroundImage.transform.position.z);
-        BackgroundCamera.transform.position = new Vector3(Subject.GetPosition().x, Subject.GetPosition().y, BackgroundCamera.transform.position.z);
-        ForgroundCamera.transform.position = new Vector3(Subject.GetPosition().x, Subject.GetPosition().y, ForgroundCamera.transform.position.z);
+        Vector2 SubjectPosition = GameManager.Instance.Subject.GetPosition();
+        BackgroundImage.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, BackgroundImage.transform.position.z);
+        BackgroundCamera.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, BackgroundCamera.transform.position.z);
+        ForgroundCamera.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, ForgroundCamera.transform.position.z);
 
         var d = Input.GetAxis("Mouse ScrollWheel");
         if (d > 0f)

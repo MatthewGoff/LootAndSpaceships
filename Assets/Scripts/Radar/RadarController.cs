@@ -14,7 +14,6 @@ public class RadarController : MonoBehaviour
     public GameObject ContentsTransform;
 
     public int RadarScale = 10;
-    public Spaceship Subject;
     /**
      * The radius in pixels of the radar display;
      */
@@ -40,19 +39,16 @@ public class RadarController : MonoBehaviour
 
     private void Update()
     {
-        LinkedList<RadarProfile> profiles = Subject.GetRadarReading();
+        Dictionary<int, RadarProfile> profiles = GameManager.Instance.Subject.GetRadarReading();
         ValidatePipPool(profiles.Count);
-        for (int i = 0; i < Pips.Length; i++)
+        int i = 0;
+        foreach (int key in profiles.Keys)
         {
-            if (profiles.Count != 0)
-            {
-                Pips[i].Show(profiles.First.Value);
-                profiles.RemoveFirst();
-            }
-            else
-            {
-                Pips[i].Hide();
-            }
+            Pips[i++].Show(profiles[key]);
+        }
+        while (i < Pips.Length)
+        {
+            Pips[i++].Hide();
         }
     }
 

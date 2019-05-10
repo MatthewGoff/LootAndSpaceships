@@ -1,87 +1,83 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-/**
- * The Radar Omniscience is a singleton class which is responsible for
- * administering visibility of information between spaceships. All spaceships
- * are responsible to update the radar omniscience with a RadarProfile once per
- * fixed update. Spaceships can ping the radar omniscience with a
- * clearance level to recieve a list of redacted RadarProfiles for all the
- * spaceships in the scene.
- */
+/// <summary>
+/// The Radar Omniscience is a singleton class responsible for
+/// administering visibility of information between spaceships. All spaceships
+/// are responsible to update the radar omniscience with a RadarProfile once
+/// per fixed update. Spaceships can ping the radar omniscience with a
+/// clearance level to recieve a list of redacted RadarProfiles for all the
+/// spaceships in the scene.
+/// </summary>
 public class RadarOmniscience
 {
     public static RadarOmniscience Instance;
-    private RadarProfile[] RadarProfiles;
-    private bool[] RadarIdentifierInUse;
+    private Dictionary<int, RadarProfile> RadarProfiles;
 
     public static void Initialize()
     {
         Instance = new RadarOmniscience();
-        Instance.RadarProfiles = new RadarProfile[10];
-        Instance.RadarIdentifierInUse = new bool[10];
     }
 
-    /**
-     * Register a new radar entity with the radar omnicience and return
-     * a unique "radar identifier".
-     */
-    public int RegisterNewRadarEntity()
+    private RadarOmniscience()
     {
-        int newRadarIdentifier = GetUnusedIdentifier();
-        RadarIdentifierInUse[newRadarIdentifier] = true;
-        return newRadarIdentifier;
+        RadarProfiles = new Dictionary<int, RadarProfile>();
     }
 
-    /**
-     * Inform the radar omniscience that a registered radar entity is no longer
-     * present in the scene.
-     */
-    public void RemoveRegisteredRadarEntity(int radarIdentifier)
+    /// <summary>
+    /// Register a new radar entity with the radar omnicience
+    /// </summary>
+    /// <param name="uid"></param>
+    public void RegisterNewRadarEntity(int uid)
     {
-        RadarProfiles[radarIdentifier] = null;
-        RadarIdentifierInUse[radarIdentifier] = false;
+        RadarProfiles.Add(uid, null);
     }
 
-    public void SubmitRadarProfile(int radarIdentifier, RadarProfile profile)
+    /// <summary>
+    /// Inform the radar omniscience that a registered radar entity is no
+    /// longer present in the scene.
+    /// </summary>
+    /// <param name="uid"></param>
+    public void UnregisterRadarEntity(int uid)
     {
-        RadarProfiles[radarIdentifier] = profile;
+        RadarProfiles.Remove(uid);
     }
 
-    private int GetUnusedIdentifier()
+    public void SubmitRadarProfile(int uid, RadarProfile profile)
     {
-        for (int i = 0; i < RadarIdentifierInUse.Length; i++)
+        RadarProfiles[uid] = profile;
+    }
+
+    /// <summary>
+    /// Retrieve all radar profiles from the current scene. Excluding the one
+    /// belonging to the provided UID.
+    /// </summary>
+    /// <param name="uid"></param>
+    /// <returns></returns>
+    public Dictionary<int, RadarProfile> PingRadar(int uid)
+    {
+        Dictionary<int, RadarProfile> profiles = new Dictionary<int, RadarProfile>();
+        foreach (int key in RadarProfiles.Keys)
         {
-            if (!RadarIdentifierInUse[i])
+            if (key != uid && RadarProfiles[key] != null)
             {
-                return i;
+                profiles.Add(key, RadarProfiles[key]);
             }
         }
-        ExpandRadarProfiles();
-        return GetUnusedIdentifier();
+        return profiles;
     }
 
-    private void ExpandRadarProfiles()
+    /// <summary>
+    /// Retrieve all radar profiles from the current scene
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<int, RadarProfile> PingRadar()
     {
-        RadarProfile[] newRadarProfiles = new RadarProfile[RadarProfiles.Length * 2];
-        bool[] newRadarIdentifierInUse = new bool[RadarIdentifierInUse.Length * 2];
-        for (int i = 0; i < RadarProfiles.Length; i++)
+        Dictionary<int, RadarProfile> profiles = new Dictionary<int, RadarProfile>();
+        foreach (int key in RadarProfiles.Keys)
         {
-            newRadarProfiles[i] = RadarProfiles[i];
-            newRadarIdentifierInUse[i] = RadarIdentifierInUse[i];
-        }
-        RadarProfiles = newRadarProfiles;
-        RadarIdentifierInUse = newRadarIdentifierInUse;
-    }
-
-    public LinkedList<RadarProfile> PingRadar(int radarIdentifier)
-    {
-        LinkedList<RadarProfile> profiles = new LinkedList<RadarProfile>();
-        for (int i = 0; i < RadarProfiles.Length; i++)
-        {
-            if (i != radarIdentifier && RadarProfiles[i] != null)
+            if (RadarProfiles[key] != null)
             {
-                profiles.AddFirst(RadarProfiles[i]);
+                profiles.Add(key, RadarProfiles[key]);
             }
         }
         return profiles;

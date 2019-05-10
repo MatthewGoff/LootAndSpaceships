@@ -5,9 +5,8 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public EnemyController PlayerTarget;
-    public Queue<EnemyController> TargetQueue;
     public GameObject AutopilotTargetEffect;
+    public PlayerController Subject;
 
     private int EnemyCounter;
 
@@ -19,34 +18,19 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         RadarOmniscience.Initialize();
+        SpaceshipRegistry.Initialize();
 
         GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
         PlayerController playerController = player.GetComponent<PlayerController>();
-        playerController.Initialize("Player 1 ");
+        playerController.Initialize("Player 1");
         playerController.AutopilotTargetEffect = AutopilotTargetEffect;
-        RadarController.Instance.Subject = playerController;
-        MasterCameraController.Instance.Subject = playerController;
-        BottomHUDController.Instance.Subject = playerController;
+        Subject = playerController;
 
-        TargetQueue = new Queue<EnemyController>();
         EnemyCounter = 0;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (TargetQueue.Count != 0)
-            {
-                EnemyController nextTarget = TargetQueue.Dequeue();
-                PlayerTarget = nextTarget;
-                TargetQueue.Enqueue(nextTarget);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            PlayerTarget = null;
-        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             SpawnNewEnemy();
@@ -59,8 +43,6 @@ public class GameManager : MonoBehaviour
 
         GameObject enemy = Instantiate(Prefabs.Instance.Enemy, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
         enemy.GetComponent<EnemyController>().Initialize("Enemy "+EnemyCounter.ToString());
-
-        TargetQueue.Enqueue(enemy.GetComponent<EnemyController>());
     }
 
     public static bool MouseOverUI()
@@ -68,8 +50,13 @@ public class GameManager : MonoBehaviour
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    public void ChangeTarget(EnemyController target)
+    public void SelectTarget(int uid)
     {
-        PlayerTarget = target;
+        Subject.SelectTarget(uid);
+    }
+
+    public void PlayerDeath()
+    {
+
     }
 }

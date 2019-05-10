@@ -2,6 +2,7 @@
 
 public class RadarProfile
 {
+    public int UID;
     public string Name;
     public int Team;
     public Vector2 Position;
@@ -15,6 +16,7 @@ public class RadarProfile
     public float CurrentFuel;
 
     public RadarProfile(
+        int uid,
         string name,
         int team,
         Vector2 position,
@@ -27,6 +29,7 @@ public class RadarProfile
         float maxFuel,
         float currentFuel)
     {
+        UID = uid;
         Name = name;
         Team = team;
         Position = position;

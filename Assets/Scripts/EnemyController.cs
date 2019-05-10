@@ -2,7 +2,6 @@
 
 public class EnemyController : Spaceship
 {
-    public GameObject PortraitCamera;
     public GameObject ExhaustEffect;
 
     private Autopilot Autopilot;
@@ -12,31 +11,35 @@ public class EnemyController : Spaceship
     {
         base.Initialize(
             team: 1,
-            thrustForce: 10f,
+            thrustForce: 8f,
             turnRate: 300f,
-            maximumSpeed: 30f,
+            maximumSpeed: 25f,
             mass: 1f,
             burnDuration: 3f,
-            maxShield: 500f,
-            shieldRegen: 30f,
-            maxHP: 1000f,
-            hpRegen: 5f,
+            maxShield: 250f,
+            shieldRegen: 4f,
+            shieldEnergy: 0.1f,
+            maxHP: 500f,
+            hpRegen: 1f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
             maxHullSpace: 523.6f,
-            name: name);
+            name: name,
+            attackEnergy: 0.5f,
+            thrustEnergy: 1.5f,
+            lifeSupportEnergy: 0.1f,
+            lifeSupportDegen: 10f);
+
         Autopilot = new FastAutopilot(this);
         AI = new SimpleAI(this, Autopilot);
         ShowFDN = true;
-        AttackEnergy = 0.5f;
-        ThrustEnergy = 0.5f;
     }
 
     private void Update()
     {
-        AI.Update(RadarOmniscience.Instance.PingRadar(RadarIdentifier));
+        AI.Update(RadarOmniscience.Instance.PingRadar(UID));
         Autopilot.Update();
 
         if (ThrustInput)
@@ -53,7 +56,7 @@ public class EnemyController : Spaceship
     {
         if (!GameManager.MouseOverUI())
         {
-            GameManager.Instance.ChangeTarget(this);
+            GameManager.Instance.SelectTarget(UID);
         }
     }
 
@@ -61,5 +64,11 @@ public class EnemyController : Spaceship
     {
         base.TakeDamage(attacker, damage, damageType);
         AI.AlertDamage(attacker);
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+        base.Destroy();        
     }
 }

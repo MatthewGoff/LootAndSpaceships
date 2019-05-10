@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spaceship : Vehicle
 {
+    public GameObject PortraitCamera;
     public GameObject FireEffect;
 
     public string Name;
@@ -11,10 +12,14 @@ public class Spaceship : Vehicle
     public bool FireBullet;
     public bool FireRocket;
     public bool FireEMP;
+    public bool HasTarget;
+    public int TargetUID;
+    public bool Alive;
+    public Vector2 DeathPosition;
 
     protected bool ShowFDN;
 
-    protected int RadarIdentifier;
+    protected int UID;
     private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
@@ -22,6 +27,7 @@ public class Spaceship : Vehicle
     public float MaxShield;
     public float CurrentShield;
     private float ShieldRegen;
+    private float ShieldEnergy;
     public float MaxHealth;
     public float CurrentHealth;
     private float HealthRegen;
@@ -36,6 +42,8 @@ public class Spaceship : Vehicle
     private Cooldown AttackCooldown;
     protected float AttackEnergy;
     protected float ThrustEnergy;
+    protected float LifeSupportEnergy;
+    protected float LifeSupportDegen;
 
     protected void Initialize(int team,
         float thrustForce,
@@ -45,6 +53,7 @@ public class Spaceship : Vehicle
         float burnDuration,
         float maxShield,
         float shieldRegen,
+        float shieldEnergy,
         float maxHP,
         float hpRegen,
         float maxEnergy,
@@ -52,7 +61,11 @@ public class Spaceship : Vehicle
         float maxFuel,
         float fuelUsage,
         float maxHullSpace,
-        string name
+        string name,
+        float attackEnergy,
+        float thrustEnergy,
+        float lifeSupportEnergy,
+        float lifeSupportDegen
         )
     {
         base.Initialize(team, thrustForce, turnRate, maximumSpeed, mass);
@@ -60,6 +73,7 @@ public class Spaceship : Vehicle
         MaxShield = maxShield;
         CurrentShield = MaxShield;
         ShieldRegen = shieldRegen;
+        ShieldEnergy = shieldEnergy;
         MaxHealth = maxHP;
         CurrentHealth = MaxHealth;
         HealthRegen = hpRegen;
@@ -72,11 +86,15 @@ public class Spaceship : Vehicle
         MaxHullSpace = maxHullSpace;
         CurrentHullSpace = MaxHullSpace;
         Name = name;
+        AttackEnergy = attackEnergy;
+        ThrustEnergy = thrustEnergy;
+        LifeSupportEnergy = lifeSupportEnergy;
+        LifeSupportDegen = lifeSupportDegen;
 
+        Alive = true;
         AttackCooldown = new Cooldown(1f);
-        AttackEnergy = 1.25f;
-        ThrustEnergy = 1.25f;
-        RadarIdentifier = RadarOmniscience.Instance.RegisterNewRadarEntity();
+        UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
+        RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
     }
 
     public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
@@ -85,6 +103,11 @@ public class Spaceship : Vehicle
         CurrentShield -= shieldDamage;
         float remainingDamage = damage - shieldDamage;
         CurrentHealth -= remainingDamage;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+        if (CurrentHealth == 0)
+        {
+            Die();
+        }
 
         if (ShowFDN)
         {
@@ -120,10 +143,15 @@ public class Spaceship : Vehicle
 
     private void FixedUpdate()
     {
-        float thrustCost = ThrustEnergy * Time.fixedDeltaTime;
-        if (ThrustInput && CurrentEnergy >= thrustCost)
+        if (!Alive)
         {
-            CurrentEnergy -= thrustCost;
+            return;
+        }
+
+        float energyCost = ThrustEnergy * Time.fixedDeltaTime;
+        if (ThrustInput && CurrentEnergy >= energyCost)
+        {
+            CurrentEnergy -= energyCost;
         }
         else
         {
@@ -146,7 +174,7 @@ public class Spaceship : Vehicle
             FireRocket = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-            new RocketAttackManager(this, GameManager.Instance.PlayerTarget, Position, Heading, Velocity, damage);
+            new RocketAttackManager(this, HasTarget, TargetUID, Position, Heading, Velocity, damage);
             RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
         }
         if (FireEMP && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
@@ -157,19 +185,56 @@ public class Spaceship : Vehicle
             new EMPAttackManager(this, Position, damage);
         }
 
-        CurrentHealth += HealthRegen * Time.fixedDeltaTime;
+        energyCost = LifeSupportEnergy * Time.deltaTime;
+        if (CurrentEnergy >= energyCost)
+        {
+            CurrentEnergy -= energyCost;
+            CurrentHealth += HealthRegen * Time.fixedDeltaTime;
+        }
+        else
+        {
+            CurrentHealth -= LifeSupportDegen;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+            if (CurrentHealth == 0)
+            {
+                Die();
+            }
+            CurrentEnergy = 0;
+        }
+            
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
-        CurrentShield += ShieldRegen * Time.fixedDeltaTime;
-        CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
-        CurrentEnergy += EnergyRegen * Time.fixedDeltaTime;
-        CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, MaxEnergy);
-        CurrentFuel -= FuelUsage * Time.fixedDeltaTime;
-        CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
+
+        if (CurrentShield < MaxShield)
+        {
+            energyCost = ShieldEnergy * Time.fixedDeltaTime;
+            if (CurrentEnergy >= energyCost)
+            {
+                CurrentEnergy -= energyCost;
+                CurrentShield += ShieldRegen * Time.fixedDeltaTime;
+                CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
+            }
+        }
+
+        if (CurrentEnergy < MaxEnergy)
+        {
+            float fuelCost = FuelUsage * Time.fixedDeltaTime;
+            if (CurrentFuel >= fuelCost)
+            {
+                CurrentFuel -= fuelCost;
+                CurrentEnergy += EnergyRegen * Time.fixedDeltaTime;
+                CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, MaxEnergy);
+            }
+            else
+            {
+                CurrentFuel = 0f;
+            }
+        }
     }
 
     private void SubmitRadarProfile()
     {
         RadarProfile profile = new RadarProfile(
+            UID,
             Name,
             Team,
             Position,
@@ -181,11 +246,48 @@ public class Spaceship : Vehicle
             CurrentEnergy,
             MaxFuel,
             CurrentFuel);
-        RadarOmniscience.Instance.SubmitRadarProfile(RadarIdentifier, profile);
+        RadarOmniscience.Instance.SubmitRadarProfile(UID, profile);
     }
 
-    public LinkedList<RadarProfile> GetRadarReading()
+    public Dictionary<int, RadarProfile> GetRadarReading()
     {
-        return RadarOmniscience.Instance.PingRadar(RadarIdentifier);
+        if (Alive)
+        {
+            return RadarOmniscience.Instance.PingRadar(UID);
+        }
+        else
+        {
+            return RadarOmniscience.Instance.PingRadar();
+        }
+    }
+
+    protected virtual void Die()
+    {
+        Alive = false;
+        DeathPosition = Position;
+        CurrentHealth = 0f;
+        CurrentShield = 0f;
+        CurrentEnergy = 0f;
+        CurrentFuel = 0f;
+
+        RadarOmniscience.Instance.UnregisterRadarEntity(UID);
+        SpaceshipRegistry.Instance.UnregisterSpaceship(UID);
+    }
+
+    protected virtual void Destroy()
+    {
+        Destroy(gameObject);
+    }
+
+    public Vector2 GetPosition()
+    {
+        if (Alive)
+        {
+            return Position;
+        }
+        else
+        {
+            return DeathPosition;
+        }
     }
 }

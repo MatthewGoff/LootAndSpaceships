@@ -741,8 +741,10 @@ MonoBehaviour:
   EMP: {fileID: 1163234510185328, guid: 3817f54ddf9a8ca43862e347ff25cdcc, type: 3}
   Enemy: {fileID: 1446041541240518, guid: 20a320528c87cf043bedb654c3c20acc, type: 3}
   Explosion: {fileID: 1259393997802944, guid: 2e308a8eb439847488202067b17f2d83, type: 3}
-  FDNText: {fileID: 1966923372839942, guid: 96eaf07f0ba38a14a9c0fc3e186421d0, type: 3}
+  EXPMorsel: {fileID: 4277303356703961943, guid: b064cfea70328764cadbdc74dadbb2df,
+    type: 3}
   FDN: {fileID: 1362625905597064, guid: 9800f44b06faae94a803131e4892a8b0, type: 3}
+  FDNText: {fileID: 1966923372839942, guid: 96eaf07f0ba38a14a9c0fc3e186421d0, type: 3}
   ParallaxLayer: {fileID: 1871693845550940, guid: 6bdfbd66fffd96d409531baf6715253b,
     type: 3}
   Player: {fileID: 1192119201972540, guid: 9953b1c3bd9f5e747974c1bd9ece7fc5, type: 3}
@@ -1215,8 +1217,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabf49fd125f0364d99079edf4bfb12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerTarget: {fileID: 0}
   AutopilotTargetEffect: {fileID: 664646699}
+  Subject: {fileID: 0}
 --- !u!4 &376425909
 Transform:
   m_ObjectHideFlags: 0
@@ -1849,7 +1851,6 @@ MonoBehaviour:
   ScaleText2: {fileID: 372755362}
   ContentsTransform: {fileID: 440866464}
   RadarScale: 10
-  Subject: {fileID: 0}
   PixelRadius: 0
 --- !u!1 &647976068
 GameObject:
@@ -7155,7 +7156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba1a6a9c298ee9441b555cd5821ea774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Subject: {fileID: 0}
   HealthBar: {fileID: 300965276}
   ShieldBar: {fileID: 65649146}
   EnergyBar: {fileID: 838986577}

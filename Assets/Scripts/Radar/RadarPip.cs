@@ -2,9 +2,9 @@
 
 public class RadarPip
 {
-    private GameObject Pip;
-    private GameObject Arrow;
-    private RadarController RadarController;
+    private readonly GameObject Pip;
+    private readonly GameObject Arrow;
+    private readonly RadarController RadarController;
 
     public RadarPip(RadarController radarController)
     {
@@ -19,7 +19,7 @@ public class RadarPip
 
     public void Show(RadarProfile profile)
     {
-        Vector2 subjectPosition = RadarController.Subject.GetPosition();
+        Vector2 subjectPosition = GameManager.Instance.Subject.GetPosition();
         Vector2 relativePosition = profile.Position - subjectPosition;
         Vector2 radarPosition = relativePosition * (RadarController.PixelRadius / 3f) / RadarController.RadarScale;
         if (radarPosition.magnitude > RadarController.PixelRadius)

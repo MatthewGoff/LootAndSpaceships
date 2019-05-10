@@ -79,9 +79,4 @@ public abstract class Vehicle : Combatant
             RB2D.velocity = RB2D.velocity.normalized * MaximumSpeed;
         }
     }
-
-    public override Vector2 GetPosition()
-    {
-        return RB2D.position;
-    }
 }

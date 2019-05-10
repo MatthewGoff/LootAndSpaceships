@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class Combatant : MonoBehaviour, ITargetable
+public abstract class Combatant : MonoBehaviour
 {
     public int Team { get; protected set; }
 
@@ -10,6 +10,4 @@ public abstract class Combatant : MonoBehaviour, ITargetable
     }
 
     public abstract void TakeDamage(Combatant attacker, float damage, DamageType damageType);
-
-    public abstract Vector2 GetPosition();
 }

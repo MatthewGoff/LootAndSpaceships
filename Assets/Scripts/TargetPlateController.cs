@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class TargetPlateController : MonoBehaviour
@@ -11,26 +12,26 @@ public class TargetPlateController : MonoBehaviour
     public GameObject EnergyBar;
     public GameObject FuelBar;
 
-    private EnemyController Target;
+    private bool HasTarget;
+    private Spaceship Target;
 
     void Update()
     {
-        if (GameManager.Instance.PlayerTarget == null)
+        PlayerController subject = GameManager.Instance.Subject;
+        Dictionary<int, Spaceship> spaceships = SpaceshipRegistry.Instance.Spaceships;
+        Debug.Log(subject.HasTarget.ToString() + "     " + subject.TargetUID.ToString());
+        if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
         {
-            Target = null;
-            ContentHolder.SetActive(false);
-        }
-        else
-        {
-            EnemyController newTarget = GameManager.Instance.PlayerTarget;
-            if (newTarget != Target)
+            Spaceship newTarget = spaceships[subject.TargetUID];
+            if (!HasTarget ||  Target != newTarget)
             {
-                if (Target != null)
+                if (HasTarget)
                 {
                     Target.PortraitCamera.SetActive(false);
                 }
-                newTarget.PortraitCamera.SetActive(true);
                 Target = newTarget;
+                HasTarget = true;
+                Target.PortraitCamera.SetActive(true);
 
                 NameText.GetComponent<Text>().text = Target.Name;
                 NameTextHighlight.GetComponent<Text>().text = Target.Name;
@@ -38,11 +39,15 @@ public class TargetPlateController : MonoBehaviour
                 ContentHolder.SetActive(true);
             }
 
-
             HealthBar.transform.localScale = new Vector2(1, Target.CurrentHealth / Target.MaxHealth);
             ShieldBar.transform.localScale = new Vector2(1, Target.CurrentShield / Target.MaxShield);
             EnergyBar.transform.localScale = new Vector2(1, Target.CurrentEnergy / Target.MaxEnergy);
             FuelBar.transform.localScale = new Vector2(1, Target.CurrentFuel / Target.MaxFuel);
+        }
+        else
+        {
+            HasTarget = false;
+            ContentHolder.SetActive(false);
         }
     }
 }

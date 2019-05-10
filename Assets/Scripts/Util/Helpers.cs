@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class Helpers{
 
@@ -12,5 +13,20 @@ public static class Helpers{
             totalWeight += frequencies[0, i];
         }
         return noiseSample / totalWeight;
+    }
+
+    public static string ToString<T>(IEnumerable<T> collection)
+    {
+        string returnString = "[";
+        foreach (T element in collection)
+        {
+            returnString += element.ToString() + ", ";
+        }
+        if (returnString.Length > 1)
+        {
+            returnString = returnString.Substring(0, returnString.Length - 2);
+        }
+        returnString =  returnString + "]";
+        return returnString;
     }
 }

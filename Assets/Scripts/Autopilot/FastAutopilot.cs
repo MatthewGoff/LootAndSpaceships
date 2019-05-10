@@ -98,6 +98,11 @@ public class FastAutopilot : Autopilot
                 }
             }
         }
+        
+        if (targetVector.magnitude < 1f)
+        {
+            Vehicle.TurnInput = 0;
+        }
     }
 
     private float CalculateTurnInput(float desiredHeadingChange)

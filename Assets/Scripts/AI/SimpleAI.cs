@@ -3,46 +3,67 @@ using UnityEngine;
 
 public class SimpleAI : AI
 {
-    private static readonly float AGRO_DISTANCE = 15f;
-    private static readonly float DEAGRO_DISTANCE = 30f;
+    private static readonly float AGRO_DISTANCE = 10f;
+    private static readonly float DEAGRO_DISTANCE = 20f;
     private static readonly float DEAGRO_TIME = 3f;
 
-    private Vector2 Home;
+    private readonly Vector2 Home;
 
     private bool Aggroed;
+    private float AggroCountdown;
 
     public SimpleAI(Spaceship spaceship, Autopilot autopilot) : base(spaceship, autopilot)
     { 
-        Home = spaceship.GetPosition();
+        Home = spaceship.Position;
     }
 	
-	public override void Update (LinkedList<RadarProfile> radarProfiles)
+	public override void Update (Dictionary<int, RadarProfile> radarProfiles)
     {
-        foreach (RadarProfile profile in radarProfiles)
+        bool haveTarget = false;
+        Vector2 closestEnemyPosition = Vector2.zero;
+        float closestEnemyDistance = float.MaxValue;
+        foreach (RadarProfile radarProfile in radarProfiles.Values)
         {
-            if (profile.Team != Spaceship.Team)
+            if (radarProfile.Team != Spaceship.Team)
             {
-                Autopilot.SetTarget(profile.Position, AutopilotBehaviour.Seek);
-                Spaceship.FireBullet = true;
+                float distance = (Spaceship.Position - radarProfile.Position).magnitude;
+                if (distance < closestEnemyDistance)
+                {
+                    haveTarget = true;
+                    closestEnemyPosition = radarProfile.Position;
+                    closestEnemyDistance = distance;
+                }
             }
         }
-	}
 
-    private void CheckAggro(Vector2 playerPosition) 
-    {
-        float distance = (Spaceship.GetPosition() - playerPosition).magnitude;
-        if (distance < AGRO_DISTANCE)
+        if (closestEnemyDistance < AGRO_DISTANCE)
         {
             Aggroed = true;
+            AggroCountdown = DEAGRO_TIME;
         }
-        if (Aggroed)
+        else if (Aggroed == true && closestEnemyDistance > DEAGRO_DISTANCE)
         {
-            Autopilot.SetTarget(playerPosition, AutopilotBehaviour.Seek);
+            AggroCountdown -= Time.deltaTime;
+            if (AggroCountdown <= 0f)
+            {
+                Aggroed = false;
+            }
+        }
+
+        if (Aggroed & haveTarget)
+        {
+            Autopilot.SetTarget(closestEnemyPosition, AutopilotBehaviour.Seek);
+            Spaceship.FireBullet = true;
+        }
+        else
+        {
+            Autopilot.SetTarget(Home, AutopilotBehaviour.Arrive);
         }
     }
 
     public override void AlertDamage(Combatant attacker)
     {
-        
+        Aggroed = true;
+        AggroCountdown = DEAGRO_TIME;
     }
 }

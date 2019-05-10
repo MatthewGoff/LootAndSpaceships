@@ -7,8 +7,9 @@ public class Prefabs : MonoBehaviour
     public GameObject EMP;
     public GameObject Enemy;
     public GameObject Explosion;
-    public GameObject FDNText;
+    public GameObject EXPMorsel;
     public GameObject FDN;
+    public GameObject FDNText;
     public GameObject ParallaxLayer;
     public GameObject Player;
     public GameObject RadarArrow;

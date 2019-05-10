@@ -4,16 +4,18 @@ public class RocketAttackManager : AttackManager
 {
     public static readonly float Recoil = 1f;
 
-    public ITargetable Target;
+    public bool HasTarget;
+    public int TargetUID;
 
-    private float AOE = 2f;
-    private float InitialSpeed = 1f; // In units per second
-    private int Damage;
+    private readonly float AOE = 2f;
+    private readonly float InitialSpeed = 1f; // In units per second
+    private readonly int Damage;
 
-    public RocketAttackManager(Combatant attacker, ITargetable target, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public RocketAttackManager(Combatant attacker, bool hasTarget, int targetUID, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
         Attacker = attacker;
-        Target = target;
+        HasTarget = hasTarget;
+        TargetUID = targetUID;
         Damage = damage;
 
         float angle = Vector2.SignedAngle(Vector2.right, direction);

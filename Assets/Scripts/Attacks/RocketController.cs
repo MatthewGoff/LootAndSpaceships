@@ -1,12 +1,13 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RocketController : MonoBehaviour
 {
     private readonly float Duration = 20f; // In seconds
     private readonly float TurnRate = 90f; // In degrees per second
-    private readonly float MaxSpeed = 10f;
-    private readonly float Acceleration = 5f;
+    private readonly float MaxSpeed = 10f; // In units per second
+    private readonly float Acceleration = 5f; // In units per second squared
 
     private RocketAttackManager Manager;
     private Rigidbody2D RB2D;
@@ -27,9 +28,11 @@ public class RocketController : MonoBehaviour
 
     private void Update()
     {
-        if (Manager.Target != null)
+        Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
+        if (Manager.HasTarget && radarProfiles.ContainsKey(Manager.TargetUID))
         {
-            Vector2 targetBearing = Manager.Target.GetPosition() - (Vector2)transform.position;
+            Vector2 targetPosition = radarProfiles[Manager.TargetUID].Position;
+            Vector2 targetBearing = targetPosition - (Vector2)transform.position;
             float angle = Vector2.SignedAngle(Heading, targetBearing);
             angle = Mathf.Clamp(angle, -TurnRate * Time.fixedDeltaTime, TurnRate * Time.fixedDeltaTime);
             Heading = Quaternion.Euler(0, 0, angle) * Heading;
