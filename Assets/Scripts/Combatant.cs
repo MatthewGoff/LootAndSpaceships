@@ -10,4 +10,14 @@ public abstract class Combatant : MonoBehaviour
     }
 
     public abstract void TakeDamage(Combatant attacker, float damage, DamageType damageType);
+
+    public abstract void PickupExp(float quantity);
+
+    public abstract void PickupGold(float quantity);
+
+    public abstract void PickupFuel(float quantity);
+
+    public abstract void PickupScrap(float quantity);
+
+    public abstract void PickupCrate(int quantity);
 }

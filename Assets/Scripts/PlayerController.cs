@@ -123,7 +123,6 @@ public class PlayerController : Spaceship
         }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Debug.Log("tab");
             CycleTarget();
         }
         if (Input.GetKeyDown(KeyCode.U))

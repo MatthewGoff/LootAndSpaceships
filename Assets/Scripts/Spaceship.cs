@@ -290,4 +290,30 @@ public class Spaceship : Vehicle
             return DeathPosition;
         }
     }
+
+    public override void PickupExp(float quantity)
+    {
+
+    }
+
+    public override void PickupGold(float quantity)
+    {
+
+    }
+
+    public override void PickupFuel(float quantity)
+    {
+        CurrentFuel += quantity;
+        CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
+    }
+
+    public override void PickupScrap(float quantity)
+    {
+
+    }
+
+    public override void PickupCrate(int quantity)
+    {
+
+    }
 }

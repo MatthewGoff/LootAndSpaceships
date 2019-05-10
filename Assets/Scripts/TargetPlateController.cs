@@ -19,7 +19,6 @@ public class TargetPlateController : MonoBehaviour
     {
         PlayerController subject = GameManager.Instance.Subject;
         Dictionary<int, Spaceship> spaceships = SpaceshipRegistry.Instance.Spaceships;
-        Debug.Log(subject.HasTarget.ToString() + "     " + subject.TargetUID.ToString());
         if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
         {
             Spaceship newTarget = spaceships[subject.TargetUID];

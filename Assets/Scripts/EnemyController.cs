@@ -68,6 +68,15 @@ public class EnemyController : Spaceship
 
     protected override void Die()
     {
+        for (int i = 0; i < 3; i++)
+        {
+            Instantiate(Prefabs.Instance.ExpMorsel, Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Coin, Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.FuelRod, Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Scrap, Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Crate, Position, Quaternion.identity);
+        }
+
         base.Die();
         base.Destroy();        
     }
