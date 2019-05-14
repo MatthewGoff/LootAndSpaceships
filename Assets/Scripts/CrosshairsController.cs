@@ -13,12 +13,18 @@ public class CrosshairsController : MonoBehaviour {
 
     private void Update()
     {
-        PlayerController subject = GameManager.Instance.Subject;
+        if (!GameManager.Instance.PlayerAlive)
+        {
+            SpriteRenderer.enabled = false;
+            return;
+        }
+
+        PlayerController subject = GameManager.Instance.PlayerController;
         Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
         if (subject.HasTarget && radarProfiles.ContainsKey(subject.TargetUID))
         {
             SpriteRenderer.enabled = true;
-            transform.position = subject.GetRadarReading()[subject.TargetUID].Position;
+            transform.position = radarProfiles[subject.TargetUID].Position;
             float angle = (transform.eulerAngles.z + TurnRate * Time.deltaTime) % 360;
             transform.eulerAngles = new Vector3(0, 0, angle);
         }

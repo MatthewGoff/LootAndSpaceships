@@ -14,8 +14,6 @@ public class Spaceship : Vehicle
     public bool FireEMP;
     public bool HasTarget;
     public int TargetUID;
-    public bool Alive;
-    public Vector2 DeathPosition;
 
     protected bool ShowFDN;
 
@@ -91,7 +89,6 @@ public class Spaceship : Vehicle
         LifeSupportEnergy = lifeSupportEnergy;
         LifeSupportDegen = lifeSupportDegen;
 
-        Alive = true;
         AttackCooldown = new Cooldown(1f);
         UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
@@ -143,11 +140,6 @@ public class Spaceship : Vehicle
 
     private void FixedUpdate()
     {
-        if (!Alive)
-        {
-            return;
-        }
-
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
         if (ThrustInput && CurrentEnergy >= energyCost)
         {
@@ -249,22 +241,8 @@ public class Spaceship : Vehicle
         RadarOmniscience.Instance.SubmitRadarProfile(UID, profile);
     }
 
-    public Dictionary<int, RadarProfile> GetRadarReading()
-    {
-        if (Alive)
-        {
-            return RadarOmniscience.Instance.PingRadar(UID);
-        }
-        else
-        {
-            return RadarOmniscience.Instance.PingRadar();
-        }
-    }
-
     protected virtual void Die()
     {
-        Alive = false;
-        DeathPosition = Position;
         CurrentHealth = 0f;
         CurrentShield = 0f;
         CurrentEnergy = 0f;
@@ -272,31 +250,15 @@ public class Spaceship : Vehicle
 
         RadarOmniscience.Instance.UnregisterRadarEntity(UID);
         SpaceshipRegistry.Instance.UnregisterSpaceship(UID);
-    }
-
-    protected virtual void Destroy()
-    {
         Destroy(gameObject);
     }
 
-    public Vector2 GetPosition()
-    {
-        if (Alive)
-        {
-            return Position;
-        }
-        else
-        {
-            return DeathPosition;
-        }
-    }
-
-    public override void PickupExp(float quantity)
+    public override void PickupExp(int quantity)
     {
 
     }
 
-    public override void PickupGold(float quantity)
+    public override void PickupGold(int quantity)
     {
 
     }
@@ -315,5 +277,21 @@ public class Spaceship : Vehicle
     public override void PickupCrate(int quantity)
     {
 
+    }
+
+    public void SelectTarget(int uid)
+    {
+        HasTarget = true;
+        TargetUID = uid;
+    }
+
+    public void DropTarget()
+    {
+        HasTarget = false;
+    }
+
+    public Dictionary<int, RadarProfile> GetRadarReading()
+    {
+        return RadarOmniscience.Instance.PingRadar(UID);
     }
 }

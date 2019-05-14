@@ -28,6 +28,8 @@ public class MasterCameraController : MonoBehaviour
         Instance = this;
         CameraHeight = DEFAULT_CAMERA_HEIGHT;
         CreateBackgroundImage();
+
+        UpdateCameraSize();
     }
 
     private void CreateBackgroundImage()
@@ -69,11 +71,15 @@ public class MasterCameraController : MonoBehaviour
 
     private void Update ()
     {
-        Vector2 SubjectPosition = GameManager.Instance.Subject.GetPosition();
-        BackgroundImage.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, BackgroundImage.transform.position.z);
-        BackgroundCamera.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, BackgroundCamera.transform.position.z);
-        ForgroundCamera.transform.position = new Vector3(SubjectPosition.x, SubjectPosition.y, ForgroundCamera.transform.position.z);
-
+        if (!GameManager.Instance.PlayerAlive)
+        {
+            return;
+        }
+        float playerX = GameManager.Instance.PlayerController.Position.x;
+        float playerY = GameManager.Instance.PlayerController.Position.y;
+        BackgroundImage.transform.position = new Vector3(playerX, playerY, BackgroundImage.transform.position.z);
+        BackgroundCamera.transform.position = new Vector3(playerX, playerY, BackgroundCamera.transform.position.z);
+        ForgroundCamera.transform.position = new Vector3(playerX, playerY, ForgroundCamera.transform.position.z);
         var d = Input.GetAxis("Mouse ScrollWheel");
         if (d > 0f)
         {
@@ -92,14 +98,14 @@ public class MasterCameraController : MonoBehaviour
             }
         }
 
+        UpdateCameraSize();
+    }
+
+    private void UpdateCameraSize()
+    {
         BackgroundImage.transform.localScale = new Vector2(CameraHeight, CameraHeight);
         BackgroundCamera.GetComponent<Camera>().orthographicSize = CameraHeight / 2;
         ForgroundCamera.GetComponent<Camera>().orthographicSize = CameraHeight / 2;
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
     }
 
     public static Vector2 GetMousePosition()

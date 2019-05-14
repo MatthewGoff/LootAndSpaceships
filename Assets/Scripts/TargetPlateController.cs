@@ -17,7 +17,14 @@ public class TargetPlateController : MonoBehaviour
 
     void Update()
     {
-        PlayerController subject = GameManager.Instance.Subject;
+        if (!GameManager.Instance.PlayerAlive)
+        {
+            HasTarget = false;
+            ContentHolder.SetActive(false);
+            return;
+        }
+
+        PlayerController subject = GameManager.Instance.PlayerController;
         Dictionary<int, Spaceship> spaceships = SpaceshipRegistry.Instance.Spaceships;
         if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
         {

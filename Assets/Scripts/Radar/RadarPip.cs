@@ -19,7 +19,7 @@ public class RadarPip
 
     public void Show(RadarProfile profile)
     {
-        Vector2 subjectPosition = GameManager.Instance.Subject.GetPosition();
+        Vector2 subjectPosition = GameManager.Instance.PlayerController.Position;
         Vector2 relativePosition = profile.Position - subjectPosition;
         Vector2 radarPosition = relativePosition * (RadarController.PixelRadius / 3f) / RadarController.RadarScale;
         if (radarPosition.magnitude > RadarController.PixelRadius)

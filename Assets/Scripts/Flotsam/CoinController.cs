@@ -1,33 +1,30 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class CoinController : MonoBehaviour
+public class CoinController : FlotsamController
 {
     public readonly AnimationCurve FLIP_CURVE = new AnimationCurve(
         new Keyframe(0f, 1f),
         new Keyframe(0.5f, 0.1f),
         new Keyframe(1f, 1f)
     );
-    private readonly float INITIAL_VELOCITY = 5f;
     private readonly float FLIP_PERIOD = 1f;
     private readonly float ROTATION_SPEED = 90f; // In degrees per second
 
     private Vector2 InitialScale;
-    private Vector2 Velocity;
     private float FlipTime;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         InitialScale = transform.localScale;
-        Velocity = INITIAL_VELOCITY * Random.insideUnitCircle;
         FlipTime = Random.Range(0, FLIP_PERIOD);
         transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360)) * transform.rotation;
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        transform.position += (Vector3)Velocity * Time.fixedDeltaTime;
-        Velocity *= Mathf.Pow(0.5f, Time.fixedDeltaTime);
-
+        base.FixedUpdate();
         UpdateFlip();
         UpdateRotation();
     }
@@ -53,7 +50,7 @@ public class CoinController : MonoBehaviour
             Combatant combatant = collider.gameObject.GetComponent<Combatant>();
             if (combatant.Team == 0)
             {
-                combatant.PickupGold(1f);
+                combatant.PickupGold(1);
                 Destroy(gameObject);
             }
         }

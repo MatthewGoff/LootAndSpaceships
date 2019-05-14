@@ -35,6 +35,7 @@ public class EnemyController : Spaceship
         Autopilot = new FastAutopilot(this);
         AI = new SimpleAI(this, Autopilot);
         ShowFDN = true;
+        ExhaustEffect.SetActive(true);
     }
 
     private void Update()
@@ -56,7 +57,7 @@ public class EnemyController : Spaceship
     {
         if (!GameManager.MouseOverUI())
         {
-            GameManager.Instance.SelectTarget(UID);
+            GameManager.Instance.SelectPlayerTarget(UID);
         }
     }
 
@@ -68,7 +69,13 @@ public class EnemyController : Spaceship
 
     protected override void Die()
     {
-        for (int i = 0; i < 3; i++)
+        DropLoot();
+        base.Die();      
+    }
+
+    private void DropLoot()
+    {
+        for (int i = 0; i < 5; i++)
         {
             Instantiate(Prefabs.Instance.ExpMorsel, Position, Quaternion.identity);
             Instantiate(Prefabs.Instance.Coin, Position, Quaternion.identity);
@@ -76,8 +83,5 @@ public class EnemyController : Spaceship
             Instantiate(Prefabs.Instance.Scrap, Position, Quaternion.identity);
             Instantiate(Prefabs.Instance.Crate, Position, Quaternion.identity);
         }
-
-        base.Die();
-        base.Destroy();        
     }
 }

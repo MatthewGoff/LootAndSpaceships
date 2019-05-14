@@ -5,6 +5,8 @@ public class PlayerController : Spaceship
 {
     public GameObject AutopilotTargetEffect;
     public GameObject ExhaustEffect;
+    public int Experience;
+    public int Level;
 
     private Autopilot Autopilot;
     private bool UsingAutopilot;
@@ -35,10 +37,13 @@ public class PlayerController : Spaceship
             lifeSupportEnergy: 0.1f,
             lifeSupportDegen: 10f);
 
+        Experience = 0;
+        Level = 0;
         AttackType = 1;
         UsingAutopilot = false;
         Autopilot = new FastAutopilot(this);
         ShowFDN = false;
+        ExhaustEffect.SetActive(true);
     }
 
     private void Update()
@@ -117,17 +122,35 @@ public class PlayerController : Spaceship
 
     private void UpdateTarget()
     {
-        if (!GetRadarReading().ContainsKey(TargetUID))
-        {
-            HasTarget = false;
-        }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             CycleTarget();
         }
         if (Input.GetKeyDown(KeyCode.U))
         {
-            HasTarget = false;
+            DropTarget();
+        }
+        if (!RadarOmniscience.Instance.PingRadar().ContainsKey(TargetUID))
+        {
+            DropTarget();
+        }
+    }
+
+    public void CycleTarget()
+    {
+        List<int> uids = new List<int>(GetRadarReading().Keys);
+        if (uids.Count > 0)
+        {
+            uids.Sort();
+            foreach (int uid in uids)
+            {
+                if (uid > TargetUID)
+                {
+                    SelectTarget(uid);
+                    return;
+                }
+            }
+            SelectTarget(uids[0]);
         }
     }
 
@@ -142,35 +165,26 @@ public class PlayerController : Spaceship
         base.TakeDamage(attacker, damage, damageType);
     }
 
-    private void CycleTarget()
+    protected override void Die()
     {
-        List<int> uids = new List<int>(GetRadarReading().Keys);
-        if (uids.Count > 0)
+        GameManager.Instance.PlayerDeath();
+        AutopilotTargetEffect.SetActive(false);
+        base.Die();
+    }
+
+    public override void PickupExp(int quantity)
+    {
+        Experience += quantity;
+        if (Experience >= Configuration.ExpForLevel(Level + 1))
         {
-            HasTarget = true;
-            uids.Sort();
-            foreach (int uid in uids)
-            {
-                if (uid > TargetUID)
-                {
-                    TargetUID = uid;
-                    return;
-                }
-            }
-            TargetUID = uids[0];
+            LevelUp();
         }
     }
 
-    public void SelectTarget(int uid)
+    private void LevelUp()
     {
-        HasTarget = true;
-        TargetUID = uid;
-    }
-
-    protected override void Die()
-    {
-        base.Die();
-        Destroy(gameObject.GetComponent<SpriteRenderer>());
-        GameManager.Instance.PlayerDeath();
+        Level++;
+        Experience = 0;
+        GameManager.Instance.PlayerLevelUp(Level);
     }
 }

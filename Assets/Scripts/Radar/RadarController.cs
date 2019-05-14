@@ -39,16 +39,26 @@ public class RadarController : MonoBehaviour
 
     private void Update()
     {
-        Dictionary<int, RadarProfile> profiles = GameManager.Instance.Subject.GetRadarReading();
-        ValidatePipPool(profiles.Count);
-        int i = 0;
-        foreach (int key in profiles.Keys)
+        if (GameManager.Instance.PlayerAlive)
         {
-            Pips[i++].Show(profiles[key]);
+            Dictionary<int, RadarProfile> profiles = GameManager.Instance.PlayerController.GetRadarReading();
+            ValidatePipPool(profiles.Count);
+            int i = 0;
+            foreach (int key in profiles.Keys)
+            {
+                Pips[i++].Show(profiles[key]);
+            }
+            while (i < Pips.Length)
+            {
+                Pips[i++].Hide();
+            }
         }
-        while (i < Pips.Length)
+        else
         {
-            Pips[i++].Hide();
+            foreach (RadarPip pip in Pips)
+            {
+                pip.Hide();
+            }
         }
     }
 

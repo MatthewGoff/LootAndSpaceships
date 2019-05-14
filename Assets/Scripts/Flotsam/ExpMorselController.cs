@@ -1,29 +1,25 @@
 ﻿using UnityEngine;
 
-public class ExpMorselController : MonoBehaviour
+public class ExpMorselController : FlotsamController
 {
     public readonly AnimationCurve ALPHA_CURVE = new AnimationCurve(
         new Keyframe(0f, 1f),
         new Keyframe(0.5f, 0.25f),
         new Keyframe(1f, 1f)
     );
-    private readonly float INITIAL_VELOCITY = 5f;
     private readonly float GLOW_PERIOD = 1f;
 
-    private Vector2 Velocity;
     private float GlowTime;
 
-    private void Start()
+    protected override void Start()
     {
-        Velocity = INITIAL_VELOCITY * Random.insideUnitCircle;
+        base.Start();
         GlowTime = Random.Range(0, GLOW_PERIOD);
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        transform.position += (Vector3)Velocity * Time.fixedDeltaTime;
-        Velocity *= Mathf.Pow(0.5f, Time.fixedDeltaTime);
-
+        base.FixedUpdate();
         UpdateAlpha();
     }
 
@@ -44,7 +40,7 @@ public class ExpMorselController : MonoBehaviour
             Combatant combatant = collider.gameObject.GetComponent<Combatant>();
             if (combatant.Team == 0)
             {
-                combatant.PickupExp(1f);
+                combatant.PickupExp(1);
                 Destroy(gameObject);
             }
         }

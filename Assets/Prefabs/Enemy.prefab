@@ -4867,7 +4867,7 @@ ParticleSystem:
 --- !u!199 &199632390866122294
 ParticleSystemRenderer:
   serializedVersion: 6
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -5085,8 +5085,6 @@ MonoBehaviour:
   FireEMP: 0
   HasTarget: 0
   TargetUID: 0
-  Alive: 0
-  DeathPosition: {x: 0, y: 0}
   MaxShield: 0
   CurrentShield: 0
   MaxHealth: 0
@@ -5283,7 +5281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5581229784241287725
 Transform:
   m_ObjectHideFlags: 0
@@ -9959,7 +9957,7 @@ ParticleSystem:
 --- !u!199 &3052489233040132340
 ParticleSystemRenderer:
   serializedVersion: 6
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

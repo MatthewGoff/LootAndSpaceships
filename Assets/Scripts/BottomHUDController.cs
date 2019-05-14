@@ -16,13 +16,20 @@ public class BottomHUDController : MonoBehaviour
 
     void Update()
     {
-        PlayerController subject = GameManager.Instance.Subject;
-        if (subject != null)
+        if (GameManager.Instance.PlayerAlive)
         {
+            PlayerController subject = GameManager.Instance.PlayerController;
             HealthBar.transform.localScale = new Vector2(1, subject.CurrentHealth / subject.MaxHealth);
             ShieldBar.transform.localScale = new Vector2(1, subject.CurrentShield / subject.MaxShield);
             EnergyBar.transform.localScale = new Vector2(1, subject.CurrentEnergy / subject.MaxEnergy);
             FuelBar.transform.localScale = new Vector2(1, subject.CurrentFuel / subject.MaxFuel);
+        }
+        else
+        {
+            HealthBar.transform.localScale = new Vector2(1, 0);
+            ShieldBar.transform.localScale = new Vector2(1, 0);
+            EnergyBar.transform.localScale = new Vector2(1, 0);
+            FuelBar.transform.localScale = new Vector2(1, 0);
         }
     }
 }

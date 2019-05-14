@@ -1,12 +1,20 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public GameObject AutopilotTargetEffect;
-    public PlayerController Subject;
+
+    public bool PlayerAlive
+    {
+        get
+        {
+            return PlayerController != null;
+        }
+    }
+
+    public PlayerController PlayerController;
+    public GameObject LevelUpText;
 
     private int EnemyCounter;
 
@@ -20,12 +28,6 @@ public class GameManager : MonoBehaviour
         RadarOmniscience.Initialize();
         SpaceshipRegistry.Initialize();
 
-        GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
-        PlayerController playerController = player.GetComponent<PlayerController>();
-        playerController.Initialize("Player 1");
-        playerController.AutopilotTargetEffect = AutopilotTargetEffect;
-        Subject = playerController;
-
         EnemyCounter = 0;
     }
 
@@ -35,6 +37,33 @@ public class GameManager : MonoBehaviour
         {
             SpawnNewEnemy();
         }
+        if (Input.GetKeyDown(KeyCode.R) && !PlayerAlive)
+        {
+            SpawnPlayer();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            PlayerController.PickupExp(1);
+        }
+    }
+
+    public void PlayerLevelUp(int level)
+    {
+        Instantiate(Prefabs.Instance.LevelUpBlast, Vector2.zero, Quaternion.identity);
+        LevelUpText.GetComponent<LevelUpTextController>().Display(level);
+    }
+
+    private void SpawnPlayer()
+    {
+        GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        playerController.Initialize("Player 1");
+        playerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        PlayerController = playerController;
     }
 
     private void SpawnNewEnemy()
@@ -47,16 +76,19 @@ public class GameManager : MonoBehaviour
 
     public static bool MouseOverUI()
     {
-        return EventSystem.current.IsPointerOverGameObject();
+        return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
     }
 
-    public void SelectTarget(int uid)
+    public void SelectPlayerTarget(int uid)
     {
-        Subject.SelectTarget(uid);
+        if (PlayerAlive)
+        {
+            PlayerController.SelectTarget(uid);
+        }
     }
 
     public void PlayerDeath()
     {
-
+        PlayerController = null;
     }
 }

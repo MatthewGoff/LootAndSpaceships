@@ -14,6 +14,7 @@ public class Prefabs : MonoBehaviour
     public GameObject FDN;
     public GameObject FDNText;
     public GameObject FuelRod;
+    public GameObject LevelUpBlast;
     public GameObject ParallaxLayer;
     public GameObject Player;
     public GameObject RadarArrow;
