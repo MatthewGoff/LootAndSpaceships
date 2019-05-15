@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public GameObject Player;
     public PlayerController PlayerController;
     public GameObject LevelUpText;
 
@@ -29,6 +30,10 @@ public class GameManager : MonoBehaviour
         SpaceshipRegistry.Initialize();
 
         EnemyCounter = 0;
+
+        PlayerController = Player.GetComponent<PlayerController>();
+        PlayerController.Initialize("Player 1");
+        PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
     }
 
     private void Update()
@@ -60,10 +65,9 @@ public class GameManager : MonoBehaviour
     private void SpawnPlayer()
     {
         GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
-        PlayerController playerController = player.GetComponent<PlayerController>();
-        playerController.Initialize("Player 1");
-        playerController.AutopilotTargetEffect = AutopilotTargetEffect;
-        PlayerController = playerController;
+        PlayerController = player.GetComponent<PlayerController>();
+        PlayerController.Initialize("Player 1");
+        PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
     }
 
     private void SpawnNewEnemy()

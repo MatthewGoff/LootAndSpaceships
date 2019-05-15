@@ -53,6 +53,8 @@ public abstract class Vehicle : Combatant
 
     protected void UpdateVehicle()
     {
+        Heading = Quaternion.Euler(0, 0, transform.eulerAngles.z) * Vector2.right;
+
         if (ThrustInput)
         {
             RB2D.AddForce(Heading.normalized * ThrustForce);
