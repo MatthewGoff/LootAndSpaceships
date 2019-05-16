@@ -8,6 +8,11 @@ public class ExhaustEffectController : MonoBehaviour
     public GameObject ExhaustGlow;
     public GameObject ExhaustParticles;
 
+    public void Start()
+    {
+        Disable();
+    }
+
     public void Enable()
     {
         ExhaustGlow.SetActive(true);

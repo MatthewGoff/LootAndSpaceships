@@ -5085,6 +5085,7 @@ MonoBehaviour:
   FireEMP: 0
   FireHarpoon: 0
   FireFlamethrower: 0
+  FireLaser: 0
   HasTarget: 0
   TargetUID: 0
   MaxShield: 0
@@ -5283,7 +5284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5581229784241287725
 Transform:
   m_ObjectHideFlags: 0
