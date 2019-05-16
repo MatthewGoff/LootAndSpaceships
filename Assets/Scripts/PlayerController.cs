@@ -101,8 +101,12 @@ public class PlayerController : Spaceship
         {
             AttackType = 4;
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            AttackType = 5;
+        }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             if (AttackType == 1)
             {
@@ -119,6 +123,10 @@ public class PlayerController : Spaceship
             else if (AttackType == 4)
             {
                 FireHarpoon = true;
+            }
+            else if (AttackType == 5)
+            {
+                FireFlamethrower = true;
             }
         }
 
@@ -170,9 +178,9 @@ public class PlayerController : Spaceship
         AutopilotTargetEffect.SetActive(false);
     }
 
-    public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
+    public override void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
     {
-        base.TakeDamage(attacker, damage, damageType);
+        base.TakeDamage(attackManager, damage, damageType);
     }
 
     protected override void Die()

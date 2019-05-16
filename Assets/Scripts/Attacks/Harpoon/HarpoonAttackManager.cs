@@ -22,7 +22,7 @@ public class HarpoonAttackManager : AttackManager
     public void LockHarpoon(Combatant other)
     {
         State = HarpoonState.Locked;
-        other.TakeDamage(Attacker, Damage, DamageType.Physical);
+        other.TakeDamage(this, Damage, DamageType.Physical);
         Harpoon.GetComponent<HarpoonController>().Lock(other);
     }
 

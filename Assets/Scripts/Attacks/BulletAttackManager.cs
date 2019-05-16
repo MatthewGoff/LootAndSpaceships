@@ -19,6 +19,6 @@ public class BulletAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.TakeDamage(Attacker, Damage, DamageType.Physical);
+        other.TakeDamage(this, Damage, DamageType.Physical);
     }
 }

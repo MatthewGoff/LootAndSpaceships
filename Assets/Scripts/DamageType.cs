@@ -3,5 +3,6 @@
     Physical,
     Explosion,
     Fire,
+    Burning,
     Electrical
 }

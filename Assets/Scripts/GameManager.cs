@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public GameObject Player;
     public PlayerController PlayerController;
     public GameObject LevelUpText;
 
@@ -30,12 +29,6 @@ public class GameManager : MonoBehaviour
         SpaceshipRegistry.Initialize();
 
         EnemyCounter = 0;
-
-        /*
-        PlayerController = Player.GetComponent<PlayerController>();
-        PlayerController.Initialize("Player 1");
-        PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
-        */
     }
 
     private void Update()

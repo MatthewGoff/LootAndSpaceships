@@ -33,6 +33,6 @@ public class RocketAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.TakeDamage(Attacker, Damage, DamageType.Explosion);
+        other.TakeDamage(this, Damage, DamageType.Explosion);
     }
 }

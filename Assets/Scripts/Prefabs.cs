@@ -13,6 +13,8 @@ public class Prefabs : MonoBehaviour
     public GameObject ExpMorsel;
     public GameObject FDN;
     public GameObject FDNText;
+    public GameObject Flamethrower;
+    public GameObject FlamethrowerParticle;
     public GameObject FuelRod;
     public GameObject Harpoon;
     public GameObject HarpoonHook;

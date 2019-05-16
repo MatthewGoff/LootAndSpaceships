@@ -17,6 +17,6 @@ public class EMPAttackManager : AttackManager
 
     public void ResolveCollision(Combatant other)
     {
-        other.TakeDamage(Attacker, Damage, DamageType.Electrical);
+        other.TakeDamage(this, Damage, DamageType.Electrical);
     }
 }

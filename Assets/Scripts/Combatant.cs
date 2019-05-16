@@ -9,7 +9,7 @@ public abstract class Combatant : MonoBehaviour
         Team = team;
     }
 
-    public abstract void TakeDamage(Combatant attacker, float damage, DamageType damageType);
+    public abstract void TakeDamage(AttackManager attackManager, float damage, DamageType damageType);
 
     public abstract void PickupExp(int quantity);
 

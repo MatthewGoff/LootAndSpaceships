@@ -1,0 +1,39 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FlamethrowerAttackManager : AttackManager
+{
+    private readonly float IMMUNITY_DURATION = 0.1f;
+    private float Damage;
+    private FlamethrowerController Flamethrower;
+
+    public FlamethrowerAttackManager(Combatant attacker, float damage)
+    {
+        Attacker = attacker;
+        Damage = damage;
+        ImmunityDuration = IMMUNITY_DURATION;
+
+        Quaternion quaternion = Quaternion.Euler(0, 0, attacker.GetComponent<Rigidbody2D>().rotation);
+        GameObject gameObject = GameObject.Instantiate(Prefabs.Instance.Flamethrower, attacker.GetComponent<Rigidbody2D>().position, quaternion);
+        gameObject.transform.SetParent(attacker.gameObject.transform);
+        Flamethrower = gameObject.GetComponent<FlamethrowerController>();
+        Flamethrower.AssignManager(this);
+    }
+
+    public void ResolveCollision(Combatant other)
+    {
+        float damage = Random.Range(Damage * 0.5f, Damage * 1.5f);
+        other.TakeDamage(this, damage, DamageType.Fire);
+    }
+
+    public void TurnOn()
+    {
+        Flamethrower.TurnOn();
+    }
+
+    public void TurnOff()
+    {
+        Flamethrower.TurnOff();
+    }
+}

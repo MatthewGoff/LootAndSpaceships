@@ -5083,6 +5083,8 @@ MonoBehaviour:
   FireBullet: 0
   FireRocket: 0
   FireEMP: 0
+  FireHarpoon: 0
+  FireFlamethrower: 0
   HasTarget: 0
   TargetUID: 0
   MaxShield: 0

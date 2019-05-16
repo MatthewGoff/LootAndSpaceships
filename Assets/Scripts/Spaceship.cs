@@ -13,6 +13,7 @@ public class Spaceship : Vehicle
     public bool FireRocket;
     public bool FireEMP;
     public bool FireHarpoon;
+    public bool FireFlamethrower;
     public bool HasTarget;
     public int TargetUID;
 
@@ -22,7 +23,6 @@ public class Spaceship : Vehicle
     private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
-    private Combatant BurnPerpetrator;
     public float MaxShield;
     public float CurrentShield;
     private float ShieldRegen;
@@ -45,6 +45,8 @@ public class Spaceship : Vehicle
     protected float LifeSupportDegen;
 
     private HarpoonAttackManager Harpoon;
+    private FlamethrowerAttackManager Flamethrower;
+    private List<AttackImmunityRecord> Immunities;
 
     protected void Initialize(int team,
         float thrustForce,
@@ -93,20 +95,24 @@ public class Spaceship : Vehicle
         LifeSupportDegen = lifeSupportDegen;
 
         AttackCooldown = new Cooldown(1f);
+        Flamethrower = new FlamethrowerAttackManager(this, 10);
+        Immunities = new List<AttackImmunityRecord>();
         UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
     }
 
-    public override void TakeDamage(Combatant attacker, float damage, DamageType damageType)
+    public override void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
     {
-        float shieldDamage = Mathf.Min(CurrentShield, damage);
-        CurrentShield -= shieldDamage;
-        float remainingDamage = damage - shieldDamage;
-        CurrentHealth -= remainingDamage;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
-        if (CurrentHealth == 0)
+        if (attackManager != null)
         {
-            Die();
+            if (ImmuneToDamage(attackManager))
+            {
+                return;
+            }
+            else if (attackManager.ImmunityDuration > 0)
+            {
+                Immunize(attackManager);
+            }
         }
 
         if (ShowFDN)
@@ -115,14 +121,23 @@ public class Spaceship : Vehicle
             fdn.GetComponent<FDNController>().Display(Mathf.RoundToInt(damage), damage / 100f);
         }
 
-        if (damageType == DamageType.Explosion)
+        if (damageType == DamageType.Explosion || damageType == DamageType.Fire)
         {
-            BurnPerpetrator = attacker;
             BurnEndTime = Time.time + BurnDuration;
             if (!Burning)
             {
                 StartCoroutine("Burn");
             }
+        }
+
+        float shieldDamage = Mathf.Min(CurrentShield, damage);
+        CurrentShield -= shieldDamage;
+        float remainingDamage = damage - shieldDamage;
+        CurrentHealth -= remainingDamage;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+        if (CurrentHealth == 0)
+        {
+            Die();
         }
     }
 
@@ -133,7 +148,7 @@ public class Spaceship : Vehicle
 
         while (Time.time < BurnEndTime)
         {
-            TakeDamage(BurnPerpetrator, Mathf.RoundToInt(Random.Range(0f, 10f)), DamageType.Fire);
+            TakeDamage(null, Mathf.RoundToInt(Random.Range(0f, 10f)), DamageType.Burning);
             yield return new WaitForSeconds(0.1f);
         }
 
@@ -141,8 +156,48 @@ public class Spaceship : Vehicle
         FireEffect.SetActive(false);
     }
 
+    private void UpdateImmunities()
+    {
+        List<AttackImmunityRecord> expiredImmunities = new List<AttackImmunityRecord>();
+        foreach (AttackImmunityRecord record in Immunities)
+        {
+            record.RemainingImmunityDuration -= Time.fixedDeltaTime;
+            if (record.RemainingImmunityDuration <= 0f)
+            {
+                expiredImmunities.Add(record);
+            }
+        }
+        foreach (AttackImmunityRecord record in expiredImmunities)
+        {
+            Immunities.Remove(record);
+        }
+    }
+
+    private bool ImmuneToDamage(AttackManager attackManager)
+    {
+        foreach (AttackImmunityRecord record in Immunities)
+        {
+            if (record.AttackManager == attackManager)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void Immunize(AttackManager attackManager)
+    {
+        AttackImmunityRecord record = new AttackImmunityRecord
+        {
+            AttackManager = attackManager,
+            RemainingImmunityDuration = attackManager.ImmunityDuration
+        };
+        Immunities.Add(record);
+    }
+
     private void FixedUpdate()
     {
+        UpdateImmunities();
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
         if (ThrustInput && CurrentEnergy >= energyCost)
         {
@@ -158,7 +213,6 @@ public class Spaceship : Vehicle
 
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            FireBullet = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(60, 100));
             new BulletAttackManager(this, Position, Heading, Velocity, damage);
@@ -166,7 +220,6 @@ public class Spaceship : Vehicle
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            FireRocket = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
             new RocketAttackManager(this, HasTarget, TargetUID, Position, Heading, Velocity, damage);
@@ -174,17 +227,24 @@ public class Spaceship : Vehicle
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            FireEMP = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
             new EMPAttackManager(this, Position, damage);
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
         {
-            FireHarpoon = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
             Harpoon = new HarpoonAttackManager(this, Position, Heading, Velocity, damage);
+        }
+        if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
+        {
+            CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
+            Flamethrower.TurnOn();
+        }
+        else
+        {
+            Flamethrower.TurnOff();
         }
 
         energyCost = LifeSupportEnergy * Time.deltaTime;
@@ -239,6 +299,7 @@ public class Spaceship : Vehicle
         FireRocket = false;
         FireEMP = false;
         FireHarpoon = false;
+        FireFlamethrower = false;
     }
 
     private void SubmitRadarProfile()
