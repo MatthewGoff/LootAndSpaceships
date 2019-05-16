@@ -48,6 +48,9 @@ TagManager:
   - name: Player
     uniqueID: 1008124709
     locked: 0
+  - name: Arms
+    uniqueID: 1072427263
+    locked: 0
   - name: Crosshairs
     uniqueID: 3841436463
     locked: 0

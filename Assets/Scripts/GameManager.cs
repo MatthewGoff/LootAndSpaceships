@@ -31,9 +31,11 @@ public class GameManager : MonoBehaviour
 
         EnemyCounter = 0;
 
+        /*
         PlayerController = Player.GetComponent<PlayerController>();
         PlayerController.Initialize("Player 1");
         PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        */
     }
 
     private void Update()

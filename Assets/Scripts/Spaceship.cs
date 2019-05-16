@@ -12,6 +12,7 @@ public class Spaceship : Vehicle
     public bool FireBullet;
     public bool FireRocket;
     public bool FireEMP;
+    public bool FireHarpoon;
     public bool HasTarget;
     public int TargetUID;
 
@@ -42,6 +43,8 @@ public class Spaceship : Vehicle
     protected float ThrustEnergy;
     protected float LifeSupportEnergy;
     protected float LifeSupportDegen;
+
+    private HarpoonAttackManager Harpoon;
 
     protected void Initialize(int team,
         float thrustForce,
@@ -153,7 +156,7 @@ public class Spaceship : Vehicle
         UpdateVehicle();
         SubmitRadarProfile();
 
-        if (FireBullet && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             FireBullet = false;
             CurrentEnergy -= AttackEnergy;
@@ -161,7 +164,7 @@ public class Spaceship : Vehicle
             new BulletAttackManager(this, Position, Heading, Velocity, damage);
             RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
         }
-        if (FireRocket && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             FireRocket = false;
             CurrentEnergy -= AttackEnergy;
@@ -169,12 +172,19 @@ public class Spaceship : Vehicle
             new RocketAttackManager(this, HasTarget, TargetUID, Position, Heading, Velocity, damage);
             RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
         }
-        if (FireEMP && AttackCooldown.Use() && CurrentEnergy >= AttackEnergy)
+        if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             FireEMP = false;
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
             new EMPAttackManager(this, Position, damage);
+        }
+        if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
+        {
+            FireHarpoon = false;
+            CurrentEnergy -= AttackEnergy;
+            int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
+            Harpoon = new HarpoonAttackManager(this, Position, Heading, Velocity, damage);
         }
 
         energyCost = LifeSupportEnergy * Time.deltaTime;
@@ -221,6 +231,14 @@ public class Spaceship : Vehicle
                 CurrentFuel = 0f;
             }
         }
+    }
+
+    protected void ZeroInput()
+    {
+        FireBullet = false;
+        FireRocket = false;
+        FireEMP = false;
+        FireHarpoon = false;
     }
 
     private void SubmitRadarProfile()
@@ -293,5 +311,17 @@ public class Spaceship : Vehicle
     public Dictionary<int, RadarProfile> GetRadarReading()
     {
         return RadarOmniscience.Instance.PingRadar(UID);
+    }
+
+    private bool HarpoonDeployed()
+    {
+        if (Harpoon == null)
+        {
+            return false;
+        }
+        else
+        {
+            return (Harpoon.State != HarpoonState.Expired);
+        }
     }
 }

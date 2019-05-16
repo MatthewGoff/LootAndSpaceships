@@ -1,4 +1,5 @@
 ﻿public enum AIType
 {
-    SimpleAI
+    SimpleAI,
+    PassiveAI
 }

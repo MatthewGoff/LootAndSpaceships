@@ -14,6 +14,11 @@ public abstract class Autopilot
         Vehicle = vehicle;
     }
 
+    public void Standby()
+    {
+        Behaviour = AutopilotBehaviour.Standby;
+    }
+
     public void SetTarget(Vector2 target, AutopilotBehaviour behaviour)
     {
         Target = target;
@@ -22,7 +27,11 @@ public abstract class Autopilot
 
     public bool Update()
     {
-        if (Behaviour == AutopilotBehaviour.Arrive)
+        if (Behaviour == AutopilotBehaviour.Standby)
+        {
+            return true;
+        }
+        else if (Behaviour == AutopilotBehaviour.Arrive)
         {
             if (AtTarget() && Vehicle.Velocity == Vector2.zero)
             {

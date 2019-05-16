@@ -48,6 +48,8 @@ public class PlayerController : Spaceship
 
     private void Update()
     {
+        ZeroInput();
+
         TurnInput = -Input.GetAxis("Horizontal");
         ThrustInput = Input.GetKey(KeyCode.W);
         BreakInput = Input.GetKey(KeyCode.S);
@@ -95,6 +97,10 @@ public class PlayerController : Spaceship
         {
             AttackType = 3;
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            AttackType = 4;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -109,6 +115,10 @@ public class PlayerController : Spaceship
             else if (AttackType == 3)
             {
                 FireEMP = true;
+            }
+            else if (AttackType == 4)
+            {
+                FireHarpoon = true;
             }
         }
 

@@ -33,7 +33,7 @@ public class EnemyController : Spaceship
             lifeSupportDegen: 10f);
 
         Autopilot = new FastAutopilot(this);
-        AI = new SimpleAI(this, Autopilot);
+        AI = new PassiveAI(this, Autopilot);
         ShowFDN = true;
         ExhaustEffect.SetActive(true);
     }

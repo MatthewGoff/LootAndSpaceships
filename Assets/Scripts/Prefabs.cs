@@ -14,6 +14,10 @@ public class Prefabs : MonoBehaviour
     public GameObject FDN;
     public GameObject FDNText;
     public GameObject FuelRod;
+    public GameObject Harpoon;
+    public GameObject HarpoonHook;
+    public GameObject HarpoonHorizontalLink;
+    public GameObject HarpoonVerticalLink;
     public GameObject LevelUpBlast;
     public GameObject ParallaxLayer;
     public GameObject Player;
