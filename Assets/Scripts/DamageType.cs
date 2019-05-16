@@ -4,5 +4,6 @@
     Explosion,
     Fire,
     Burning,
-    Electrical
+    Electrical,
+    Laser
 }

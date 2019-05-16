@@ -105,6 +105,10 @@ public class PlayerController : Spaceship
         {
             AttackType = 5;
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            AttackType = 6;
+        }
 
         if (Input.GetKey(KeyCode.Space))
         {
@@ -127,6 +131,10 @@ public class PlayerController : Spaceship
             else if (AttackType == 5)
             {
                 FireFlamethrower = true;
+            }
+            else if (AttackType == 6)
+            {
+                FireLaser = true;
             }
         }
 

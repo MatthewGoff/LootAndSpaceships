@@ -20,6 +20,8 @@ public class Prefabs : MonoBehaviour
     public GameObject HarpoonHook;
     public GameObject HarpoonHorizontalLink;
     public GameObject HarpoonVerticalLink;
+    public GameObject LaserBeam;
+    public GameObject LaserTip;
     public GameObject LevelUpBlast;
     public GameObject ParallaxLayer;
     public GameObject Player;

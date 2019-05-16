@@ -1055,6 +1055,10 @@ MonoBehaviour:
     type: 3}
   HarpoonVerticalLink: {fileID: 5841659652178548228, guid: e38127feb7dcbe44491a2b2032af3b88,
     type: 3}
+  LaserBeam: {fileID: 6487152509631004940, guid: bc2fa1e62d832c041884657712810118,
+    type: 3}
+  LaserTip: {fileID: 2382531287395040020, guid: 430e9aa2455c7834a888bd49db27812b,
+    type: 3}
   LevelUpBlast: {fileID: 3990313047330333731, guid: 8058c7c2fd53eb2408ba20aa01609b4a,
     type: 3}
   ParallaxLayer: {fileID: 1871693845550940, guid: 6bdfbd66fffd96d409531baf6715253b,

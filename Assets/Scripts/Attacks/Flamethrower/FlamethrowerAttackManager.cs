@@ -17,6 +17,8 @@ public class FlamethrowerAttackManager : AttackManager
         Quaternion quaternion = Quaternion.Euler(0, 0, attacker.GetComponent<Rigidbody2D>().rotation);
         GameObject gameObject = GameObject.Instantiate(Prefabs.Instance.Flamethrower, attacker.GetComponent<Rigidbody2D>().position, quaternion);
         gameObject.transform.SetParent(attacker.gameObject.transform);
+        gameObject.transform.localPosition = Vector2.zero;
+        gameObject.transform.localRotation = Quaternion.identity;
         Flamethrower = gameObject.GetComponent<FlamethrowerController>();
         Flamethrower.AssignManager(this);
     }

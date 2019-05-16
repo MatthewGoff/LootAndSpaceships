@@ -14,6 +14,8 @@ public class Spaceship : Vehicle
     public bool FireEMP;
     public bool FireHarpoon;
     public bool FireFlamethrower;
+    public bool FireLaser;
+
     public bool HasTarget;
     public int TargetUID;
 
@@ -46,6 +48,7 @@ public class Spaceship : Vehicle
 
     private HarpoonAttackManager Harpoon;
     private FlamethrowerAttackManager Flamethrower;
+    private LaserAttackManager Laser;
     private List<AttackImmunityRecord> Immunities;
 
     protected void Initialize(int team,
@@ -95,7 +98,8 @@ public class Spaceship : Vehicle
         LifeSupportDegen = lifeSupportDegen;
 
         AttackCooldown = new Cooldown(1f);
-        Flamethrower = new FlamethrowerAttackManager(this, 10);
+        Flamethrower = new FlamethrowerAttackManager(this, 10f);
+        Laser = new LaserAttackManager(this, 10f);
         Immunities = new List<AttackImmunityRecord>();
         UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
@@ -246,6 +250,15 @@ public class Spaceship : Vehicle
         {
             Flamethrower.TurnOff();
         }
+        if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
+        {
+            CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
+            Laser.TurnOn();
+        }
+        else
+        {
+            Laser.TurnOff();
+        }
 
         energyCost = LifeSupportEnergy * Time.deltaTime;
         if (CurrentEnergy >= energyCost)
@@ -300,6 +313,7 @@ public class Spaceship : Vehicle
         FireEMP = false;
         FireHarpoon = false;
         FireFlamethrower = false;
+        FireLaser = false;
     }
 
     private void SubmitRadarProfile()
