@@ -313,7 +313,7 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    protected void ZeroInput()
+    protected void ZeroAttackInput()
     {
         FireBullet = false;
         FireRocket = false;

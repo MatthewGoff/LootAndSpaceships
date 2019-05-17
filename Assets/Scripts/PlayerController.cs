@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerController : Spaceship
 {
     public GameObject AutopilotTargetEffect;
-    public GameObject ExhaustEffect;
     public int Experience;
     public int Level;
 
@@ -12,15 +11,8 @@ public class PlayerController : Spaceship
     private bool UsingAutopilot;
     private int AttackType;
 
-    public void Initialize(string name)
+    public void Initialize(string name, VehicleController vehicleController, Autopilot autopilot)
     {
-        VehicleController vehicleController = new DirectedVehicleController(
-            rb2d: GetComponent<Rigidbody2D>(),
-            thrustForce: 10f,
-            turnRate: 300f,
-            maximumSpeed: 30f,
-            mass: 1f
-            );
         base.Initialize(
             vehicleController: vehicleController,
             team: 0,
@@ -45,25 +37,12 @@ public class PlayerController : Spaceship
         Level = 0;
         AttackType = 1;
         UsingAutopilot = false;
-        Autopilot = new FastAutopilotDirected(VehicleController);
+        Autopilot = autopilot;
         ShowFDN = false;
-        ExhaustEffect.SetActive(true);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        ZeroInput();
-
-        GetVehicleController().TurnInput = -Input.GetAxis("Horizontal");
-        GetVehicleController().ThrustInput = Input.GetKey(KeyCode.W);
-        GetVehicleController().BreakInput = Input.GetKey(KeyCode.S);
-
-        if (GetVehicleController().TurnInput != 0f
-            || GetVehicleController().ThrustInput
-            || GetVehicleController().BreakInput)
-        {
-            DismissAutopilot();
-        }
 
         if (Input.GetMouseButton(1) && !GameManager.MouseOverUI())
         {
@@ -80,15 +59,6 @@ public class PlayerController : Spaceship
             {
                 DismissAutopilot();
             }
-        }
-
-        if (GetVehicleController().ThrustInput)
-        {
-            ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
-        }
-        else
-        {
-            ExhaustEffect.GetComponent<ExhaustEffectController>().Disable();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -116,6 +86,7 @@ public class PlayerController : Spaceship
             AttackType = 6;
         }
 
+        ZeroAttackInput();
         if (Input.GetKey(KeyCode.Space))
         {
             if (AttackType == 1)
@@ -186,7 +157,7 @@ public class PlayerController : Spaceship
         }
     }
 
-    private void DismissAutopilot()
+    protected void DismissAutopilot()
     {
         UsingAutopilot = false;
         AutopilotTargetEffect.SetActive(false);
@@ -218,10 +189,5 @@ public class PlayerController : Spaceship
         Level++;
         Experience = 0;
         GameManager.Instance.PlayerLevelUp(Level);
-    }
-
-    private DirectedVehicleController GetVehicleController()
-    {
-        return (DirectedVehicleController)VehicleController;
     }
 }

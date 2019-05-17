@@ -19,7 +19,7 @@ public class CrosshairsController : MonoBehaviour {
             return;
         }
 
-        PlayerController subject = GameManager.Instance.PlayerController;
+        DirectedPlayerController subject = GameManager.Instance.PlayerController;
         Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
         if (subject.HasTarget && radarProfiles.ContainsKey(subject.TargetUID))
         {

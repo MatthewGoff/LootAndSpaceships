@@ -39,7 +39,6 @@ public class EnemyController : Spaceship
         Autopilot = new FastAutopilotDirected(VehicleController);
         AI = new PassiveAI(this, Autopilot);
         ShowFDN = true;
-        ExhaustEffect.SetActive(true);
     }
 
     private void Update()

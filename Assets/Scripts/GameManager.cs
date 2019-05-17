@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public PlayerController PlayerController;
+    public DirectedPlayerController PlayerController;
     public GameObject LevelUpText;
 
     private int EnemyCounter;
@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     private void SpawnPlayer()
     {
         GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
-        PlayerController = player.GetComponent<PlayerController>();
+        PlayerController = player.GetComponent<DirectedPlayerController>();
         PlayerController.Initialize("Player 1");
         PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
     }
