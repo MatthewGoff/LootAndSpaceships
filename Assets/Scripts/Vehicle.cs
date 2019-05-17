@@ -34,8 +34,21 @@ public abstract class Vehicle : Combatant
             return Velocity.magnitude;
         }
     }
+    public Vector2 HeadingVector
+    {
+        get
+        {
+            return Quaternion.Euler(0, 0, RB2D.rotation) * Vector2.right;
+        }
+    }
+    public float HeadingAngle
+    {
+        get
+        {
+            return RB2D.rotation;
+        }
+    }
 
-    public Vector2 Heading { get; protected set; }
     public bool ThrustInput;
     public bool BreakInput;
     public float TurnInput;
@@ -47,17 +60,14 @@ public abstract class Vehicle : Combatant
         MaximumSpeed = maximumSpeed;
         RB2D = GetComponent<Rigidbody2D>();
         RB2D.mass = mass;
-        Heading = Quaternion.Euler(transform.eulerAngles) * Vector2.right;
         base.Initialize(team);
     }
 
     protected void UpdateVehicle()
     {
-        Heading = Quaternion.Euler(0, 0, transform.eulerAngles.z) * Vector2.right;
-
         if (ThrustInput)
         {
-            RB2D.AddForce(Heading.normalized * ThrustForce);
+            RB2D.AddForce(HeadingVector.normalized * ThrustForce);
         }
         if (BreakInput)
         {
@@ -72,8 +82,9 @@ public abstract class Vehicle : Combatant
         }
         if (TurnInput != 0)
         {
-            Heading = Quaternion.Euler(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate) * Heading;
-            transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
+            RB2D.rotation += TurnInput * Time.fixedDeltaTime * TurnRate;
+            //= Quaternion.Euler(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate) * Heading;
+            //Transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
         }
 
         if (RB2D.velocity.magnitude > MaximumSpeed)

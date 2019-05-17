@@ -7,6 +7,7 @@ public class LaserAttackManager : AttackManager
     public readonly float IMMUNITY_DURATION = 0.1f;
     public readonly float BEAM_LENGTH = 10f;
     public readonly float BEAM_WIDTH = 0.5f;
+    public readonly float ANGLE_LENIENCE = 10f;
 
     private float Damage;
     private LaserController Laser;
@@ -27,9 +28,18 @@ public class LaserAttackManager : AttackManager
         TurnOff();
     }
 
-    public void TurnOn()
+    public void TurnOn(bool hasTarget, int targetUID, Vector2 headingVector)
     {
+        float angle = 0f;
+        if (hasTarget)
+        {
+            Vector2 position = RadarOmniscience.Instance.PingRadar()[targetUID].Position;
+            Vector2 targetVector = position - (Vector2)Laser.gameObject.transform.position;
+            angle = Vector2.SignedAngle(headingVector, targetVector);
+            angle = Mathf.Clamp(angle, -ANGLE_LENIENCE, ANGLE_LENIENCE);
+        }
         Laser.gameObject.SetActive(true);
+        Laser.gameObject.transform.localRotation = Quaternion.Euler(0, 0, angle);
     }
 
     public void TurnOff()

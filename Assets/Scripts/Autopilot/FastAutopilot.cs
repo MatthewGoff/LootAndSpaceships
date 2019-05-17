@@ -14,9 +14,9 @@ public class FastAutopilot : Autopilot
         Vector2 perpendicularTargetVector = new Vector2(targetVector.y, -targetVector.x);
         Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, Vehicle.Velocity) / Mathf.Pow(targetVector.magnitude, 2f);
         Vector2 perpendicularVelocity = Vehicle.Velocity - parallelVelocity;
-        Vector2 nextVelocity = Vehicle.Velocity + (Vehicle.Heading.normalized * Vehicle.Acceleration * Time.fixedDeltaTime);
+        Vector2 nextVelocity = Vehicle.Velocity + (Vehicle.HeadingVector * Vehicle.Acceleration * Time.fixedDeltaTime);
         Vector2 perpendicularNextVelocity = perpendicularTargetVector * Vector2.Dot(perpendicularTargetVector, Vehicle.Velocity) / Mathf.Pow(perpendicularTargetVector.magnitude, 2f);
-        float headingAngle = Vector2.SignedAngle(targetVector, Vehicle.Heading);
+        float headingAngle = Vector2.SignedAngle(targetVector, Vehicle.HeadingVector);
         float perpendicularAngle = Vector2.SignedAngle(targetVector, perpendicularVelocity);
 
         if (Vector2.Angle(targetVector, Vehicle.Velocity) > 45f)
@@ -24,13 +24,13 @@ public class FastAutopilot : Autopilot
             Vehicle.BreakInput = true;
         }
         if (Mathf.Abs(headingAngle) < 45f
-            && Vector2.Dot(Vehicle.Heading, Vehicle.Velocity) < 0f
+            && Vector2.Dot(Vehicle.HeadingVector, Vehicle.Velocity) < 0f
             && Vector2.Dot(perpendicularNextVelocity, perpendicularVelocity) >= 0f)
         {
             Vehicle.ThrustInput = true;
         }
         if (Mathf.Abs(headingAngle) < 90f
-            && Vector2.Dot(perpendicularVelocity, Vehicle.Heading) < 0f
+            && Vector2.Dot(perpendicularVelocity, Vehicle.HeadingVector) < 0f
             && Vector2.Dot(perpendicularNextVelocity, perpendicularVelocity) >= 0f)
         {
             Vehicle.ThrustInput = true;
@@ -86,7 +86,7 @@ public class FastAutopilot : Autopilot
             if (remainingFlightDuration <= requiredBreakDuration)
             {
                 Vehicle.BreakInput = true;
-                float headingAngle = Vector2.SignedAngle(targetVector, Vehicle.Heading);
+                float headingAngle = Vector2.SignedAngle(targetVector, Vehicle.HeadingVector);
                 if (Mathf.Abs(headingAngle) > 179f)
                 {
                     Vehicle.ThrustInput = true;

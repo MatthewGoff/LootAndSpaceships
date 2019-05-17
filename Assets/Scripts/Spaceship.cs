@@ -219,15 +219,15 @@ public class Spaceship : Vehicle
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(60, 100));
-            new BulletAttackManager(this, Position, Heading, Velocity, damage);
-            RB2D.AddForce(-Heading * BulletAttackManager.Recoil, ForceMode2D.Impulse);
+            new BulletAttackManager(this, Position, HeadingVector, Velocity, damage);
+            RB2D.AddForce(-HeadingVector * BulletAttackManager.Recoil, ForceMode2D.Impulse);
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-            new RocketAttackManager(this, HasTarget, TargetUID, Position, Heading, Velocity, damage);
-            RB2D.AddForce(-Heading * RocketAttackManager.Recoil, ForceMode2D.Impulse);
+            new RocketAttackManager(this, HasTarget, TargetUID, Position, HeadingVector, Velocity, damage);
+            RB2D.AddForce(-HeadingVector * RocketAttackManager.Recoil, ForceMode2D.Impulse);
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
@@ -239,7 +239,7 @@ public class Spaceship : Vehicle
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-            Harpoon = new HarpoonAttackManager(this, Position, Heading, Velocity, damage);
+            Harpoon = new HarpoonAttackManager(this, Position, HeadingVector, Velocity, damage);
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
@@ -253,7 +253,7 @@ public class Spaceship : Vehicle
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
             CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Laser.TurnOn();
+            Laser.TurnOn(HasTarget, TargetUID, HeadingVector);
         }
         else
         {
