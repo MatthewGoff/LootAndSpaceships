@@ -24,6 +24,7 @@ public class HarpoonController : MonoBehaviour
     private bool ExtendInput;
     private bool RetrieveInput;
     private float LockCountdown;
+    private Rigidbody2D LockedRigidbody;
 
     public void Initialize(HarpoonAttackManager manager, Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity)
     {
@@ -84,10 +85,17 @@ public class HarpoonController : MonoBehaviour
         }
         else if (Manager.State == HarpoonState.Locked)
         {
+            if (LockedRigidbody == null)
+            {
+                Manager.Retrieve();
+                return;
+            }
+
             //LockCountdown -= Time.fixedDeltaTime;
             if (LockCountdown <= 0)
             {
                 Manager.Retrieve();
+                return;
             }
 
             if (ExtendInput)
@@ -217,8 +225,10 @@ public class HarpoonController : MonoBehaviour
 
     public void Lock(Spaceship target)
     {
+        LockedRigidbody = target.GetComponent<Rigidbody2D>();
+
         HookDistanceJoint = Hook.AddComponent<DistanceJoint2D>();
-        HookDistanceJoint.connectedBody = target.GetComponent<Rigidbody2D>();
+        HookDistanceJoint.connectedBody = LockedRigidbody;
         HookDistanceJoint.autoConfigureConnectedAnchor = false;
         HookDistanceJoint.anchor = Hook.GetComponent<HarpoonLinkData>().AnchorOffset;
         HookDistanceJoint.connectedAnchor = Vector2.zero;
@@ -226,7 +236,7 @@ public class HarpoonController : MonoBehaviour
         HookDistanceJoint.distance = MINIMUM_DISTANCE_JOINT_LENGTH;
         HookDistanceJoint.maxDistanceOnly = true;
         
-        TotalDistanceJoint.connectedBody = target.GetComponent<Rigidbody2D>();
+        TotalDistanceJoint.connectedBody = LockedRigidbody;
         TotalDistanceJoint.anchor = Vector2.zero;
         TotalDistanceJoint.connectedAnchor = Vector2.zero;
         TotalDistanceJoint.distance += (Hook.GetComponent<HarpoonLinkData>().AnchorOffset - Hook.GetComponent<HarpoonLinkData>().ConnectedAnchorOffset).magnitude;
