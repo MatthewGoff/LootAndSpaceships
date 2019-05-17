@@ -10,10 +10,12 @@ public class ExplosionController : MonoBehaviour
     );
     private RocketAttackManager Manager;
     private SpriteRenderer SpriteRenderer;
+    private int FixedUpdateCount;
 
     private void Awake ()
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
+        FixedUpdateCount = 0;
         StartCoroutine("Explode");
     }
 
@@ -21,16 +23,21 @@ public class ExplosionController : MonoBehaviour
     {
         for (float i = 0f; i < Duration; i += Time.deltaTime)
         {
-            if (i == 1)
-            {
-                Destroy(GetComponent<CircleCollider2D>());
-            }
             Color color = SpriteRenderer.color;
             color.a = AlphaCurve.Evaluate(i / Duration);
             SpriteRenderer.color = color;
             yield return null;
         }
         Destroy(gameObject);
+    }
+
+    private void FixedUpdate()
+    {
+        FixedUpdateCount++;
+        if (FixedUpdateCount == 2)
+        {
+            Destroy(GetComponent<CircleCollider2D>());
+        }
     }
 
     public void OnTriggerEnter2D(Collider2D collider)
