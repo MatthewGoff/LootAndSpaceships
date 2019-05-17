@@ -36,7 +36,7 @@ public class LaserController : MonoBehaviour
     {
         if (collider.tag == "Hitbox")
         {
-            Combatant other = collider.gameObject.GetComponent<Combatant>();
+            Spaceship other = collider.gameObject.GetComponent<Spaceship>();
             if (other.Team != Manager.Attacker.Team)
             {
                 Manager.ResolveCollision(other);

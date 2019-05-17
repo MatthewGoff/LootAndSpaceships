@@ -26,7 +26,7 @@ public class RocketController : MonoBehaviour
         Explode();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
         if (Manager.HasTarget && radarProfiles.ContainsKey(Manager.TargetUID))
@@ -39,7 +39,7 @@ public class RocketController : MonoBehaviour
             RB2D.velocity = Quaternion.Euler(0, 0, angle) * RB2D.velocity;
             transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
         }
-        RB2D.velocity += Heading.normalized * Acceleration * Time.deltaTime;
+        RB2D.velocity += Heading.normalized * Acceleration * Time.fixedDeltaTime;
         RB2D.velocity = RB2D.velocity.normalized * Mathf.Clamp(RB2D.velocity.magnitude, 0, MaxSpeed);
     }
 
@@ -47,7 +47,7 @@ public class RocketController : MonoBehaviour
     {
         if (collider.tag == "Hitbox")
         {
-            Combatant other = collider.gameObject.GetComponent<Combatant>();
+            Spaceship other = collider.gameObject.GetComponent<Spaceship>();
             if (other.Team != Manager.Attacker.Team)
             {
                 Explode();

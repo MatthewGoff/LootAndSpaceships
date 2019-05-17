@@ -2,7 +2,7 @@
 
 public class FastAutopilot : Autopilot
 {
-    public FastAutopilot(Vehicle vehicle) : base(vehicle) { }
+    public FastAutopilot(VehicleController vehicle) : base(vehicle) { }
 
     protected override void SeekUpdate()
     {

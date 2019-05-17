@@ -61,7 +61,7 @@ public class SimpleAI : AI
         }
     }
 
-    public override void AlertDamage(Combatant attacker)
+    public override void AlertDamage(Spaceship attacker)
     {
         Aggroed = true;
         AggroCountdown = DEAGRO_TIME;

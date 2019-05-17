@@ -32,7 +32,7 @@ public class EnemyController : Spaceship
             lifeSupportEnergy: 0.1f,
             lifeSupportDegen: 10f);
 
-        Autopilot = new FastAutopilot(this);
+        Autopilot = new FastAutopilot(VehicleController);
         AI = new PassiveAI(this, Autopilot);
         ShowFDN = true;
         ExhaustEffect.SetActive(true);
@@ -43,7 +43,7 @@ public class EnemyController : Spaceship
         AI.Update(RadarOmniscience.Instance.PingRadar(UID));
         Autopilot.Update();
 
-        if (ThrustInput)
+        if (VehicleController.ThrustInput)
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
         }
@@ -80,11 +80,11 @@ public class EnemyController : Spaceship
     {
         for (int i = 0; i < 5; i++)
         {
-            Instantiate(Prefabs.Instance.ExpMorsel, Position, Quaternion.identity);
-            Instantiate(Prefabs.Instance.Coin, Position, Quaternion.identity);
-            Instantiate(Prefabs.Instance.FuelRod, Position, Quaternion.identity);
-            Instantiate(Prefabs.Instance.Scrap, Position, Quaternion.identity);
-            Instantiate(Prefabs.Instance.Crate, Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
+            Instantiate(Prefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
         }
     }
 }

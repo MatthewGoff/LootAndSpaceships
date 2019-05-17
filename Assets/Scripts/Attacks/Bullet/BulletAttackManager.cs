@@ -7,7 +7,7 @@ public class BulletAttackManager : AttackManager
     private float Speed = 10f; // In units per second
     private int Damage;
 
-    public BulletAttackManager(Combatant attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public BulletAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
         Attacker = attacker;
         Damage = damage;
@@ -17,7 +17,7 @@ public class BulletAttackManager : AttackManager
         bullet.GetComponent<Rigidbody2D>().velocity = Speed * direction.normalized + initialVelocity;
     }
 
-    public void ResolveCollision(Combatant other)
+    public void ResolveCollision(Spaceship other)
     {
         other.TakeDamage(this, Damage, DamageType.Physical);
     }

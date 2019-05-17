@@ -41,7 +41,7 @@ public class PlayerController : Spaceship
         Level = 0;
         AttackType = 1;
         UsingAutopilot = false;
-        Autopilot = new FastAutopilot(this);
+        Autopilot = new FastAutopilot(VehicleController);
         ShowFDN = false;
         ExhaustEffect.SetActive(true);
     }
@@ -50,11 +50,11 @@ public class PlayerController : Spaceship
     {
         ZeroInput();
 
-        TurnInput = -Input.GetAxis("Horizontal");
-        ThrustInput = Input.GetKey(KeyCode.W);
-        BreakInput = Input.GetKey(KeyCode.S);
+        VehicleController.TurnInput = -Input.GetAxis("Horizontal");
+        VehicleController.ThrustInput = Input.GetKey(KeyCode.W);
+        VehicleController.BreakInput = Input.GetKey(KeyCode.S);
 
-        if (TurnInput != 0f || ThrustInput || BreakInput)
+        if (VehicleController.TurnInput != 0f || VehicleController.ThrustInput || VehicleController.BreakInput)
         {
             DismissAutopilot();
         }
@@ -76,7 +76,7 @@ public class PlayerController : Spaceship
             }
         }
 
-        if (ThrustInput)
+        if (VehicleController.ThrustInput)
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
         }

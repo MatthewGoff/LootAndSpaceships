@@ -5,7 +5,7 @@ public class EMPAttackManager : AttackManager
     private float AOE = 4f;
     private int Damage;
 
-    public EMPAttackManager(Combatant attacker, Vector2 position, int damage)
+    public EMPAttackManager(Spaceship attacker, Vector2 position, int damage)
     {
         Attacker = attacker;
         Damage = damage;
@@ -15,7 +15,7 @@ public class EMPAttackManager : AttackManager
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }
 
-    public void ResolveCollision(Combatant other)
+    public void ResolveCollision(Spaceship other)
     {
         other.TakeDamage(this, Damage, DamageType.Electrical);
     }

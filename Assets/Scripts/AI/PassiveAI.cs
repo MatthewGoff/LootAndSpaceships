@@ -12,7 +12,7 @@ public class PassiveAI : AI
     {
     }
 
-    public override void AlertDamage(Combatant attacker)
+    public override void AlertDamage(Spaceship attacker)
     {
     }
 }

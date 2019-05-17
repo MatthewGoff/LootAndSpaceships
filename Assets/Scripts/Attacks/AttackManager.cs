@@ -1,5 +1,5 @@
 ﻿public abstract class AttackManager
 {
-    public Combatant Attacker;
+    public Spaceship Attacker;
     public float ImmunityDuration;
 }

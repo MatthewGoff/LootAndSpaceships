@@ -22,7 +22,7 @@ public class BulletController : MonoBehaviour
     {
         if (collider.tag == "Hitbox")
         {
-            Combatant other = collider.gameObject.GetComponent<Combatant>();
+            Spaceship other = collider.GetComponent<Spaceship>();
             if (other.Team != Manager.Attacker.Team)
             {
                 Destroy(gameObject);

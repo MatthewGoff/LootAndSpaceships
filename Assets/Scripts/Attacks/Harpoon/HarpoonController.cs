@@ -16,7 +16,7 @@ public class HarpoonController : MonoBehaviour
     private GameObject RootLink;
     private GameObject Hook;
     private HarpoonAttackManager Manager;
-    private Combatant Attacker;
+    private Spaceship Attacker;
     private DistanceJoint2D TotalDistanceJoint;
     private DistanceJoint2D RootDistanceJoint;
     private DistanceJoint2D HookDistanceJoint;
@@ -25,7 +25,7 @@ public class HarpoonController : MonoBehaviour
     private bool RetrieveInput;
     private float LockCountdown;
 
-    public void Initialize(HarpoonAttackManager manager, Combatant attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity)
+    public void Initialize(HarpoonAttackManager manager, Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity)
     {
         Manager = manager;
         Attacker = attacker;
@@ -112,8 +112,8 @@ public class HarpoonController : MonoBehaviour
 
     private void Dispose()
     {
-        Destroy(Attacker.gameObject.GetComponent<DistanceJoint2D>());
-        Destroy(Attacker.gameObject.GetComponent<DistanceJoint2D>());
+        Destroy(Attacker.GetComponent<DistanceJoint2D>());
+        Destroy(Attacker.GetComponent<DistanceJoint2D>());
         Destroy(gameObject);
     }
 
@@ -164,7 +164,7 @@ public class HarpoonController : MonoBehaviour
 
     private void AddLink(GameObject prefab)
     {
-        Vector2 direction = (RootLink.GetComponent<Rigidbody2D>().position - Attacker.gameObject.GetComponent<Rigidbody2D>().position).normalized;
+        Vector2 direction = (RootLink.GetComponent<Rigidbody2D>().position - Attacker.Position).normalized;
         Quaternion quaternion = Quaternion.Euler(0, 0, RootLink.GetComponent<Rigidbody2D>().rotation);
         GameObject newLink = Instantiate(prefab, Vector2.zero, quaternion);
         float distance = RootLink.GetComponent<HarpoonLinkData>().ConnectedAnchorOffset.magnitude * RootLink.transform.localScale.x
@@ -215,10 +215,10 @@ public class HarpoonController : MonoBehaviour
         }
     }
 
-    public void Lock(Combatant target)
+    public void Lock(Spaceship target)
     {
         HookDistanceJoint = Hook.AddComponent<DistanceJoint2D>();
-        HookDistanceJoint.connectedBody = target.gameObject.GetComponent<Rigidbody2D>();
+        HookDistanceJoint.connectedBody = target.GetComponent<Rigidbody2D>();
         HookDistanceJoint.autoConfigureConnectedAnchor = false;
         HookDistanceJoint.anchor = Hook.GetComponent<HarpoonLinkData>().AnchorOffset;
         HookDistanceJoint.connectedAnchor = Vector2.zero;
@@ -226,7 +226,7 @@ public class HarpoonController : MonoBehaviour
         HookDistanceJoint.distance = MINIMUM_DISTANCE_JOINT_LENGTH;
         HookDistanceJoint.maxDistanceOnly = true;
         
-        TotalDistanceJoint.connectedBody = target.gameObject.GetComponent<Rigidbody2D>();
+        TotalDistanceJoint.connectedBody = target.GetComponent<Rigidbody2D>();
         TotalDistanceJoint.anchor = Vector2.zero;
         TotalDistanceJoint.connectedAnchor = Vector2.zero;
         TotalDistanceJoint.distance += (Hook.GetComponent<HarpoonLinkData>().AnchorOffset - Hook.GetComponent<HarpoonLinkData>().ConnectedAnchorOffset).magnitude;

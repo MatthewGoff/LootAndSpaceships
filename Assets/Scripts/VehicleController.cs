@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class Vehicle : Combatant
+public class VehicleController
 {
     public float ThrustForce { get; protected set; }
     public float TurnRate { get; protected set; } // Degrees per Second
@@ -53,17 +53,16 @@ public abstract class Vehicle : Combatant
     public bool BreakInput;
     public float TurnInput;
 
-    protected void Initialize(int team, float thrustForce, float turnRate, float maximumSpeed, float mass)
+    public VehicleController(Rigidbody2D rb2d, float thrustForce, float turnRate, float maximumSpeed, float mass)
     {
         ThrustForce = thrustForce;
         TurnRate = turnRate;
         MaximumSpeed = maximumSpeed;
-        RB2D = GetComponent<Rigidbody2D>();
+        RB2D = rb2d;
         RB2D.mass = mass;
-        base.Initialize(team);
     }
 
-    protected void UpdateVehicle()
+    public void UpdateVehicle()
     {
         if (ThrustInput)
         {
@@ -83,13 +82,16 @@ public abstract class Vehicle : Combatant
         if (TurnInput != 0)
         {
             RB2D.rotation += TurnInput * Time.fixedDeltaTime * TurnRate;
-            //= Quaternion.Euler(0, 0, TurnInput * Time.fixedDeltaTime * TurnRate) * Heading;
-            //Transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
         }
 
         if (RB2D.velocity.magnitude > MaximumSpeed)
         {
             RB2D.velocity = RB2D.velocity.normalized * MaximumSpeed;
         }
+    }
+
+    public void ApplyRecoil(Vector2 recoil)
+    {
+        RB2D.AddForce(recoil, ForceMode2D.Impulse);
     }
 }

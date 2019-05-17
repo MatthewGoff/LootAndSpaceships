@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spaceship : Vehicle
+public class Spaceship : MonoBehaviour
 {
     public GameObject PortraitCamera;
     public GameObject FireEffect;
@@ -18,6 +18,14 @@ public class Spaceship : Vehicle
 
     public bool HasTarget;
     public int TargetUID;
+
+    public Vector2 Position
+    {
+        get
+        {
+            return RB2D.position;
+        }
+    }
 
     protected bool ShowFDN;
 
@@ -46,12 +54,16 @@ public class Spaceship : Vehicle
     protected float LifeSupportEnergy;
     protected float LifeSupportDegen;
 
+    private Rigidbody2D RB2D;
     private HarpoonAttackManager Harpoon;
     private FlamethrowerAttackManager Flamethrower;
     private LaserAttackManager Laser;
     private List<AttackImmunityRecord> Immunities;
+    protected VehicleController VehicleController;
+    public int Team;
 
-    protected void Initialize(int team,
+    protected void Initialize(
+        int team,
         float thrustForce,
         float turnRate,
         float maximumSpeed,
@@ -74,7 +86,7 @@ public class Spaceship : Vehicle
         float lifeSupportDegen
         )
     {
-        base.Initialize(team, thrustForce, turnRate, maximumSpeed, mass);
+        Team = team;
         BurnDuration = burnDuration;
         MaxShield = maxShield;
         CurrentShield = MaxShield;
@@ -97,6 +109,8 @@ public class Spaceship : Vehicle
         LifeSupportEnergy = lifeSupportEnergy;
         LifeSupportDegen = lifeSupportDegen;
 
+        RB2D = GetComponent<Rigidbody2D>();
+        VehicleController = new VehicleController(RB2D, thrustForce, turnRate, maximumSpeed, mass);
         AttackCooldown = new Cooldown(1f);
         Flamethrower = new FlamethrowerAttackManager(this, 10f);
         Laser = new LaserAttackManager(this, 10f);
@@ -105,7 +119,7 @@ public class Spaceship : Vehicle
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
     }
 
-    public override void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
+    public virtual void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
     {
         if (attackManager != null)
         {
@@ -121,7 +135,7 @@ public class Spaceship : Vehicle
 
         if (ShowFDN)
         {
-            GameObject fdn = Instantiate(Prefabs.Instance.FDN, transform.position, Quaternion.identity);
+            GameObject fdn = GameObject.Instantiate(Prefabs.Instance.FDN, VehicleController.Position, Quaternion.identity);
             fdn.GetComponent<FDNController>().Display(Mathf.RoundToInt(damage), damage / 100f);
         }
 
@@ -203,43 +217,43 @@ public class Spaceship : Vehicle
     {
         UpdateImmunities();
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
-        if (ThrustInput && CurrentEnergy >= energyCost)
+        if (VehicleController.ThrustInput && CurrentEnergy >= energyCost)
         {
             CurrentEnergy -= energyCost;
         }
         else
         {
-            ThrustInput = false;
+            VehicleController.ThrustInput = false;
         }
 
-        UpdateVehicle();
+        VehicleController.UpdateVehicle();
         SubmitRadarProfile();
 
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(60, 100));
-            new BulletAttackManager(this, Position, HeadingVector, Velocity, damage);
-            RB2D.AddForce(-HeadingVector * BulletAttackManager.Recoil, ForceMode2D.Impulse);
+            new BulletAttackManager(this, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
+            VehicleController.ApplyRecoil(-VehicleController.HeadingVector * BulletAttackManager.Recoil);
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-            new RocketAttackManager(this, HasTarget, TargetUID, Position, HeadingVector, Velocity, damage);
-            RB2D.AddForce(-HeadingVector * RocketAttackManager.Recoil, ForceMode2D.Impulse);
+            new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
+            VehicleController.ApplyRecoil(-VehicleController.HeadingVector * RocketAttackManager.Recoil);
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
-            new EMPAttackManager(this, Position, damage);
+            new EMPAttackManager(this, VehicleController.Position, damage);
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-            Harpoon = new HarpoonAttackManager(this, Position, HeadingVector, Velocity, damage);
+            Harpoon = new HarpoonAttackManager(this, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
@@ -253,7 +267,7 @@ public class Spaceship : Vehicle
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
             CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Laser.TurnOn(HasTarget, TargetUID, HeadingVector);
+            Laser.TurnOn(HasTarget, TargetUID, VehicleController.HeadingVector);
         }
         else
         {
@@ -322,7 +336,7 @@ public class Spaceship : Vehicle
             UID,
             Name,
             Team,
-            Position,
+            VehicleController.Position,
             MaxShield,
             CurrentShield,
             MaxHealth,
@@ -346,28 +360,28 @@ public class Spaceship : Vehicle
         Destroy(gameObject);
     }
 
-    public override void PickupExp(int quantity)
+    public virtual void PickupExp(int quantity)
     {
 
     }
 
-    public override void PickupGold(int quantity)
+    public virtual void PickupGold(int quantity)
     {
 
     }
 
-    public override void PickupFuel(float quantity)
+    public virtual void PickupFuel(float quantity)
     {
         CurrentFuel += quantity;
         CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
     }
 
-    public override void PickupScrap(float quantity)
+    public virtual void PickupScrap(float quantity)
     {
 
     }
 
-    public override void PickupCrate(int quantity)
+    public virtual void PickupCrate(int quantity)
     {
 
     }

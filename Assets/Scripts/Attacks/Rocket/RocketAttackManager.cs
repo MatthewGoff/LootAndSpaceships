@@ -11,7 +11,7 @@ public class RocketAttackManager : AttackManager
     private readonly float InitialSpeed = 1f; // In units per second
     private readonly int Damage;
 
-    public RocketAttackManager(Combatant attacker, bool hasTarget, int targetUID, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public RocketAttackManager(Spaceship attacker, bool hasTarget, int targetUID, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
         Attacker = attacker;
         HasTarget = hasTarget;
@@ -31,7 +31,7 @@ public class RocketAttackManager : AttackManager
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }
 
-    public void ResolveCollision(Combatant other)
+    public void ResolveCollision(Spaceship other)
     {
         other.TakeDamage(this, Damage, DamageType.Explosion);
     }

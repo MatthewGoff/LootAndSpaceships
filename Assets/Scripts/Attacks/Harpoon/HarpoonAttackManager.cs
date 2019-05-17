@@ -9,7 +9,7 @@ public class HarpoonAttackManager : AttackManager
     private GameObject Harpoon;
     private readonly int Damage;
 
-    public HarpoonAttackManager(Combatant attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public HarpoonAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
     {
         Attacker = attacker;
         Damage = damage;
@@ -19,7 +19,7 @@ public class HarpoonAttackManager : AttackManager
         Harpoon.GetComponent<HarpoonController>().Initialize(this, attacker, position, direction, initialVelocity);
     }
 
-    public void LockHarpoon(Combatant other)
+    public void LockHarpoon(Spaceship other)
     {
         State = HarpoonState.Locked;
         other.TakeDamage(this, Damage, DamageType.Physical);

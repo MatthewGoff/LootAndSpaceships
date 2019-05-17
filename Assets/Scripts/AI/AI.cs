@@ -12,5 +12,5 @@ public abstract class AI
     }
 
     public abstract void Update(Dictionary<int, RadarProfile> radarProfiles);
-    public abstract void AlertDamage(Combatant attacker);
+    public abstract void AlertDamage(Spaceship attacker);
 }

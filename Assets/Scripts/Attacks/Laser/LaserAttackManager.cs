@@ -12,14 +12,14 @@ public class LaserAttackManager : AttackManager
     private float Damage;
     private LaserController Laser;
 
-    public LaserAttackManager(Combatant attacker, float damage)
+    public LaserAttackManager(Spaceship attacker, float damage)
     {
         Attacker = attacker;
         Damage = damage;
         ImmunityDuration = IMMUNITY_DURATION;
 
         GameObject gameObject = GameObject.Instantiate(Prefabs.Instance.LaserBeam, Vector2.zero, Quaternion.identity);
-        gameObject.transform.SetParent(attacker.gameObject.transform);
+        gameObject.transform.SetParent(attacker.transform);
         gameObject.transform.localPosition = Vector2.zero;
         gameObject.transform.localRotation = Quaternion.identity;
         gameObject.transform.localScale = new Vector2(BEAM_LENGTH, BEAM_WIDTH);
@@ -34,12 +34,12 @@ public class LaserAttackManager : AttackManager
         if (hasTarget)
         {
             Vector2 position = RadarOmniscience.Instance.PingRadar()[targetUID].Position;
-            Vector2 targetVector = position - (Vector2)Laser.gameObject.transform.position;
+            Vector2 targetVector = position - (Vector2)Laser.transform.position;
             angle = Vector2.SignedAngle(headingVector, targetVector);
             angle = Mathf.Clamp(angle, -ANGLE_LENIENCE, ANGLE_LENIENCE);
         }
         Laser.gameObject.SetActive(true);
-        Laser.gameObject.transform.localRotation = Quaternion.Euler(0, 0, angle);
+        Laser.transform.localRotation = Quaternion.Euler(0, 0, angle);
     }
 
     public void TurnOff()
@@ -47,7 +47,7 @@ public class LaserAttackManager : AttackManager
         Laser.gameObject.SetActive(false);
     }
 
-    public void ResolveCollision(Combatant other)
+    public void ResolveCollision(Spaceship other)
     {
         float damage = Random.Range(Damage * 0.5f, Damage * 1.5f);
         other.TakeDamage(this, damage, DamageType.Laser);

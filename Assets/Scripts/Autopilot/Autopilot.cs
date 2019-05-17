@@ -4,12 +4,12 @@ public abstract class Autopilot
 {
     private static readonly float TARGET_RADIUS = 0.5f;
 
-    protected Vehicle Vehicle;
+    protected VehicleController Vehicle;
 
     protected AutopilotBehaviour Behaviour;
     protected Vector2 Target;
 
-    protected Autopilot(Vehicle vehicle)
+    protected Autopilot(VehicleController vehicle)
     {
         Vehicle = vehicle;
     }
