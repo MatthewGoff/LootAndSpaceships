@@ -24,7 +24,8 @@ public class Prefabs : MonoBehaviour
     public GameObject LaserTip;
     public GameObject LevelUpBlast;
     public GameObject ParallaxLayer;
-    public GameObject Player;
+    public GameObject PlayerDirected;
+    public GameObject PlayerOmnidirectional;
     public GameObject RadarArrow;
     public GameObject RadarPip;
     public GameObject Rocket;

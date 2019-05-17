@@ -29,9 +29,9 @@ public class FlamethrowerAttackManager : AttackManager
         other.TakeDamage(this, damage, DamageType.Fire);
     }
 
-    public void TurnOn()
+    public void TurnOn(Vector2 attackVector)
     {
-        Flamethrower.TurnOn();
+        Flamethrower.TurnOn(attackVector);
     }
 
     public void TurnOff()

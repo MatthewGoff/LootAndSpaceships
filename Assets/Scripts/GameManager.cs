@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public DirectedPlayerController PlayerController;
+    public PlayerController PlayerController;
     public GameObject LevelUpText;
 
     private int EnemyCounter;
@@ -33,13 +33,17 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Q) && !PlayerAlive)
+        {
+            SpawnPlayer(VehicleType.Directed);
+        }
+        if (Input.GetKeyDown(KeyCode.E) && !PlayerAlive)
+        {
+            SpawnPlayer(VehicleType.Omnidirectional);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
         {
             SpawnNewEnemy();
-        }
-        if (Input.GetKeyDown(KeyCode.R) && !PlayerAlive)
-        {
-            SpawnPlayer();
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -57,12 +61,22 @@ public class GameManager : MonoBehaviour
         LevelUpText.GetComponent<LevelUpTextController>().Display(level);
     }
 
-    private void SpawnPlayer()
+    private void SpawnPlayer(VehicleType vehicleType)
     {
-        GameObject player = Instantiate(Prefabs.Instance.Player, new Vector2(0f, 0f), Quaternion.identity);
-        PlayerController = player.GetComponent<DirectedPlayerController>();
-        PlayerController.Initialize("Player 1");
-        PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        if (vehicleType == VehicleType.Directed)
+        {
+            GameObject player = Instantiate(Prefabs.Instance.PlayerDirected, new Vector2(0f, 0f), Quaternion.identity);
+            PlayerController = player.GetComponent<PlayerController>();
+            ((DirectedPlayerController)PlayerController).Initialize("Player 1");
+            PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        }
+        else if (vehicleType == VehicleType.Omnidirectional)
+        {
+            GameObject player = Instantiate(Prefabs.Instance.PlayerOmnidirectional, new Vector2(0f, 0f), Quaternion.identity);
+            PlayerController = player.GetComponent<PlayerController>();
+            ((OmnidirectionalPlayerController)PlayerController).Initialize("Player 1");
+            PlayerController.AutopilotTargetEffect = AutopilotTargetEffect;
+        }
     }
 
     private void SpawnNewEnemy()

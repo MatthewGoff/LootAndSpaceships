@@ -24,7 +24,7 @@ public class TargetPlateController : MonoBehaviour
             return;
         }
 
-        DirectedPlayerController subject = GameManager.Instance.PlayerController;
+        PlayerController subject = GameManager.Instance.PlayerController;
         Dictionary<int, Spaceship> spaceships = SpaceshipRegistry.Instance.Spaceships;
         if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
         {

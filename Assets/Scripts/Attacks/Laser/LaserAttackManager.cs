@@ -28,18 +28,19 @@ public class LaserAttackManager : AttackManager
         TurnOff();
     }
 
-    public void TurnOn(bool hasTarget, int targetUID, Vector2 headingVector)
+    public void TurnOn(Vector2 attackVector, bool hasTarget, int targetUID)
     {
         float angle = 0f;
         if (hasTarget)
         {
             Vector2 position = RadarOmniscience.Instance.PingRadar()[targetUID].Position;
             Vector2 targetVector = position - (Vector2)Laser.transform.position;
-            angle = Vector2.SignedAngle(headingVector, targetVector);
+            angle = Vector2.SignedAngle(attackVector, targetVector);
             angle = Mathf.Clamp(angle, -ANGLE_LENIENCE, ANGLE_LENIENCE);
         }
         Laser.gameObject.SetActive(true);
-        Laser.transform.localRotation = Quaternion.Euler(0, 0, angle);
+        float attackAngle = Vector2.SignedAngle(Vector2.right, attackVector);
+        Laser.transform.rotation = Quaternion.Euler(0, 0, angle + attackAngle);
     }
 
     public void TurnOff()

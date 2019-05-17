@@ -2,5 +2,5 @@
 public enum VehicleType
 {
     Directed,
-    OmniDirectional
+    Omnidirectional
 }

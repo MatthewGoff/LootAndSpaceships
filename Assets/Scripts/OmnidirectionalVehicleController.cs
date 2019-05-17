@@ -9,7 +9,7 @@ public class OmnidirectionalVehicleController : VehicleController
     public bool BreakInput;
 
     public OmnidirectionalVehicleController(Rigidbody2D rb2d, float thrustForce, float maximumSpeed, float mass)
-        : base(VehicleType.Directed, rb2d, thrustForce, maximumSpeed, mass)
+        : base(VehicleType.Omnidirectional, rb2d, thrustForce, maximumSpeed, mass)
     {
 
     }

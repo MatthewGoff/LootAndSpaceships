@@ -251,7 +251,7 @@ public class Spaceship : MonoBehaviour
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
             CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Flamethrower.TurnOn();
+            Flamethrower.TurnOn(AttackVector());
         }
         else
         {
@@ -260,7 +260,7 @@ public class Spaceship : MonoBehaviour
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
             CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Laser.TurnOn(HasTarget, TargetUID, AttackVector());
+            Laser.TurnOn(AttackVector(), HasTarget, TargetUID);
         }
         else
         {
@@ -413,9 +413,9 @@ public class Spaceship : MonoBehaviour
         {
             return ((DirectedVehicleController)VehicleController).HeadingVector;
         }
-        else if (VehicleController.VehicleType == VehicleType.OmniDirectional)
+        else if (VehicleController.VehicleType == VehicleType.Omnidirectional)
         {
-            return MasterCameraController.GetMousePosition().normalized;
+            return (MasterCameraController.GetMousePosition() - Position).normalized;
         }
         else
         {

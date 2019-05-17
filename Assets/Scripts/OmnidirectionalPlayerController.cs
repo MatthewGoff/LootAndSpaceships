@@ -5,6 +5,7 @@ using UnityEngine;
 public class OmnidirectionalPlayerController : PlayerController
 {
     public GameObject ExhaustEffect;
+    public GameObject Turret;
 
     public void Initialize(string name)
     {
@@ -14,7 +15,7 @@ public class OmnidirectionalPlayerController : PlayerController
             maximumSpeed: 30f,
             mass: 1f
             );
-        Autopilot autopilot = new FastAutopilotDirected(vehicleController); ;
+        Autopilot autopilot = new FastAutopilotOmnidirectional(vehicleController); ;
         base.Initialize(
             name,
             vehicleController,
@@ -46,7 +47,7 @@ public class OmnidirectionalPlayerController : PlayerController
         bool breakInput = Input.GetKey(KeyCode.F);
 
         if (thrustInput != Vector2.zero
-            || GetVehicleController().BreakInput)
+            || breakInput)
         {
             DismissAutopilot();
         }
@@ -60,12 +61,17 @@ public class OmnidirectionalPlayerController : PlayerController
         if (GetVehicleController().ThrustInput != Vector2.zero)
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
+            float headingAngle = Vector2.SignedAngle(Vector2.right, GetVehicleController().ThrustInput);
+            transform.rotation = Quaternion.Euler(0, 0, headingAngle);
         }
         else
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Disable();
         }
 
+        Vector2 turretTarget = MasterCameraController.GetMousePosition() - Position;
+        float turretAngle = Vector2.SignedAngle(Vector2.right, turretTarget);
+        Turret.transform.rotation = Quaternion.Euler(0, 0, turretAngle);
     }
 
     private OmnidirectionalVehicleController GetVehicleController()

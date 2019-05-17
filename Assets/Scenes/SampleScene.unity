@@ -1063,7 +1063,10 @@ MonoBehaviour:
     type: 3}
   ParallaxLayer: {fileID: 1871693845550940, guid: 6bdfbd66fffd96d409531baf6715253b,
     type: 3}
-  Player: {fileID: 1192119201972540, guid: 9953b1c3bd9f5e747974c1bd9ece7fc5, type: 3}
+  PlayerDirected: {fileID: 1192119201972540, guid: 9953b1c3bd9f5e747974c1bd9ece7fc5,
+    type: 3}
+  PlayerOmnidirectional: {fileID: 2826654509631055480, guid: 94eaeb3ec9e666b4498590e74fa01b95,
+    type: 3}
   RadarArrow: {fileID: 1543760682489922, guid: d3c9c51359356144e8b6e858661536c1, type: 3}
   RadarPip: {fileID: 1888882468408966, guid: 9b96004f4193c7b4a96d67bcdf1a5892, type: 3}
   Rocket: {fileID: 1231362017037178, guid: 3f753c2305393ad43b966a158d44032e, type: 3}

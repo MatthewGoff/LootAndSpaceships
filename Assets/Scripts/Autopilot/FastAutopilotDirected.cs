@@ -10,21 +10,20 @@ public class FastAutopilotDirected : Autopilot
         GetVehicleController().ThrustInput = false;
         GetVehicleController().BreakInput = false;
 
-        Vector2 targetVector = Target - VehicleController.Position;
+        Vector2 targetVector = Target - GetVehicleController().Position;
         Vector2 perpendicularTargetVector = new Vector2(targetVector.y, -targetVector.x);
-        Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, VehicleController.Velocity) / Mathf.Pow(targetVector.magnitude, 2f);
-        Vector2 perpendicularVelocity = VehicleController.Velocity - parallelVelocity;
-        Vector2 nextVelocity = VehicleController.Velocity + (GetVehicleController().HeadingVector * VehicleController.Acceleration * Time.fixedDeltaTime);
-        Vector2 perpendicularNextVelocity = perpendicularTargetVector * Vector2.Dot(perpendicularTargetVector, VehicleController.Velocity) / Mathf.Pow(perpendicularTargetVector.magnitude, 2f);
+        Vector2 parallelVelocity = targetVector * Vector2.Dot(targetVector, GetVehicleController().Velocity) / Mathf.Pow(targetVector.magnitude, 2f);
+        Vector2 perpendicularVelocity = GetVehicleController().Velocity - parallelVelocity;
+        Vector2 perpendicularNextVelocity = perpendicularTargetVector * Vector2.Dot(perpendicularTargetVector, GetVehicleController().Velocity) / Mathf.Pow(perpendicularTargetVector.magnitude, 2f);
         float headingAngle = Vector2.SignedAngle(targetVector, GetVehicleController().HeadingVector);
         float perpendicularAngle = Vector2.SignedAngle(targetVector, perpendicularVelocity);
 
-        if (Vector2.Angle(targetVector, VehicleController.Velocity) > 45f)
+        if (Vector2.Angle(targetVector, GetVehicleController().Velocity) > 45f)
         {
             GetVehicleController().BreakInput = true;
         }
         if (Mathf.Abs(headingAngle) < 45f
-            && Vector2.Dot(GetVehicleController().HeadingVector, VehicleController.Velocity) < 0f
+            && Vector2.Dot(GetVehicleController().HeadingVector, GetVehicleController().Velocity) < 0f
             && Vector2.Dot(perpendicularNextVelocity, perpendicularVelocity) >= 0f)
         {
             GetVehicleController().ThrustInput = true;
@@ -38,7 +37,7 @@ public class FastAutopilotDirected : Autopilot
 
         if (Mathf.Abs(headingAngle) < 1f)
         {
-            if (VehicleController.Speed < VehicleController.MaximumSpeed)
+            if (GetVehicleController().Speed < GetVehicleController().MaximumSpeed)
             {
                 GetVehicleController().ThrustInput = true;
             }
@@ -49,7 +48,7 @@ public class FastAutopilotDirected : Autopilot
         }
 
         float turnRate = GetVehicleController().TurnRate * (2f * Mathf.PI / 360f);
-        float thrustDuration = perpendicularVelocity.magnitude / VehicleController.Acceleration;
+        float thrustDuration = perpendicularVelocity.magnitude / GetVehicleController().Acceleration;
         float desiredHeadingAngle;
         if (turnRate * thrustDuration > 1f)
         {
@@ -77,12 +76,12 @@ public class FastAutopilotDirected : Autopilot
     {
         SeekUpdate();
 
-        Vector2 targetVector = Target - VehicleController.Position;
-        float velocityAngle = Vector2.SignedAngle(targetVector, VehicleController.Velocity);
-        if (VehicleController.Velocity != Vector2.zero && Mathf.Abs(velocityAngle) < 1f)
+        Vector2 targetVector = Target - GetVehicleController().Position;
+        float velocityAngle = Vector2.SignedAngle(targetVector, GetVehicleController().Velocity);
+        if (GetVehicleController().Velocity != Vector2.zero && Mathf.Abs(velocityAngle) < 1f)
         {
-            float remainingFlightDuration = targetVector.magnitude / VehicleController.Velocity.magnitude;
-            float requiredBreakDuration = VehicleController.Velocity.magnitude / (2 * VehicleController.Acceleration);
+            float remainingFlightDuration = targetVector.magnitude / GetVehicleController().Velocity.magnitude;
+            float requiredBreakDuration = GetVehicleController().Velocity.magnitude / (2 * GetVehicleController().Acceleration);
             if (remainingFlightDuration <= requiredBreakDuration)
             {
                 GetVehicleController().BreakInput = true;
