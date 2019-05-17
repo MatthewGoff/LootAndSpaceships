@@ -7,22 +7,34 @@ public abstract class Autopilot
     protected VehicleController VehicleController;
 
     protected AutopilotBehaviour Behaviour;
-    protected Vector2 Target;
+    public Vector2 Target;
+
+    public bool OnStandby;
 
     protected Autopilot(VehicleController vehicleController)
     {
         VehicleController = vehicleController;
+        Standby();
     }
 
     public void Standby()
     {
         Behaviour = AutopilotBehaviour.Standby;
+        OnStandby = true;
     }
 
     public void SetTarget(Vector2 target, AutopilotBehaviour behaviour)
     {
-        Target = target;
-        Behaviour = behaviour;
+        if (behaviour == AutopilotBehaviour.Standby)
+        {
+            Standby();
+        }
+        else
+        {
+            Target = target;
+            Behaviour = behaviour;
+            OnStandby = false;
+        }
     }
 
     public bool Update()

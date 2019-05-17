@@ -53,6 +53,8 @@ public class Spaceship : MonoBehaviour
     protected float ThrustEnergy;
     protected float LifeSupportEnergy;
     protected float LifeSupportDegen;
+    public int Experience;
+    public int Level;
 
     private Rigidbody2D RB2D;
     private HarpoonAttackManager Harpoon;
@@ -61,8 +63,17 @@ public class Spaceship : MonoBehaviour
     private List<AttackImmunityRecord> Immunities;
     protected VehicleController VehicleController;
     public int Team;
+    public Autopilot Autopilot;
+    private AI AI;
+    private ControlType ControlType;
+    private int AttackType;
+    protected bool Thrusting;
 
     protected void Initialize(
+        ControlType controlType,
+        Autopilot autopilot,
+        AI ai,
+        bool showFDN,
         VehicleController vehicleController,
         int team,
         float burnDuration,
@@ -83,6 +94,10 @@ public class Spaceship : MonoBehaviour
         float lifeSupportDegen
         )
     {
+        ControlType = controlType;
+        Autopilot = autopilot;
+        AI = ai;
+        ShowFDN = showFDN;
         VehicleController = vehicleController;
         Team = team;
         BurnDuration = burnDuration;
@@ -107,6 +122,9 @@ public class Spaceship : MonoBehaviour
         LifeSupportEnergy = lifeSupportEnergy;
         LifeSupportDegen = lifeSupportDegen;
 
+        AttackType = 1;
+        Experience = 0;
+        Level = 0;
         RB2D = GetComponent<Rigidbody2D>();
         AttackCooldown = new Cooldown(1f);
         Flamethrower = new FlamethrowerAttackManager(this, 10f);
@@ -127,6 +145,10 @@ public class Spaceship : MonoBehaviour
             else if (attackManager.ImmunityDuration > 0)
             {
                 Immunize(attackManager);
+            }
+            if (ControlType == ControlType.NPC)
+            {
+                AI.AlertDamage(attackManager.Attacker);
             }
         }
 
@@ -209,13 +231,221 @@ public class Spaceship : MonoBehaviour
         };
         Immunities.Add(record);
     }
+    private void OnMouseDown()
+    {
+        if (!GameManager.MouseOverUI())
+        {
+            GameManager.Instance.SelectPlayerTarget(UID);
+        }
+    }
+
+    private void Update()
+    {
+        if (ControlType == ControlType.Player)
+        {
+            PlayerUpdate();
+        }
+        else if (ControlType == ControlType.NPC)
+        {
+            AI.Update(RadarOmniscience.Instance.PingRadar(UID));
+        }
+
+        bool destinationReached = Autopilot.Update();
+        if (destinationReached && ControlType == ControlType.Player)
+        {
+            Autopilot.Standby();
+        }
+
+        ModelSpecificUpdate();
+    }
+
+    protected virtual void ModelSpecificUpdate()
+    {
+
+    }
+
+    private void PlayerUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Die();
+        }
+
+        PlayerUpdateVehicleInputs();
+
+        if (Input.GetMouseButton(1) && !GameManager.MouseOverUI())
+        {
+            Vector2 target = MasterCameraController.GetMousePosition();
+            Autopilot.SetTarget(target, AutopilotBehaviour.Seek);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            AttackType = 1;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            AttackType = 2;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            AttackType = 3;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            AttackType = 4;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            AttackType = 5;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            AttackType = 6;
+        }
+
+        ZeroAttackInput();
+        if (Input.GetKey(KeyCode.Space))
+        {
+            if (AttackType == 1)
+            {
+                FireBullet = true;
+            }
+            else if (AttackType == 2)
+            {
+                FireRocket = true;
+            }
+            else if (AttackType == 3)
+            {
+                FireEMP = true;
+            }
+            else if (AttackType == 4)
+            {
+                FireHarpoon = true;
+            }
+            else if (AttackType == 5)
+            {
+                FireFlamethrower = true;
+            }
+            else if (AttackType == 6)
+            {
+                FireLaser = true;
+            }
+        }
+
+        UpdateTarget();
+    }
+
+    private void PlayerUpdateVehicleInputs()
+    {
+        if (VehicleController.VehicleType == VehicleType.Directed)
+        {
+            PlayerUpdateVehicleInputsDirected();
+        }
+        else if (VehicleController.VehicleType == VehicleType.Omnidirectional)
+        {
+            PlayerUpdateVehicleInputsOmnidirectional();
+        }
+    }
+
+    private void PlayerUpdateVehicleInputsDirected()
+    {
+        float turnInput = -Input.GetAxis("Horizontal");
+        bool thrustInput = Input.GetKey(KeyCode.W);
+        bool breakInput = Input.GetKey(KeyCode.S);
+
+        if (turnInput != 0f
+            || thrustInput
+            || breakInput)
+        {
+            Autopilot.Standby();
+        }
+
+        if (Autopilot.OnStandby)
+        {
+            DirectedVehicleController controller = (DirectedVehicleController)VehicleController;
+            controller.TurnInput = turnInput;
+            controller.ThrustInput = thrustInput;
+            controller.BreakInput = breakInput;
+        }
+    }
+
+    private void PlayerUpdateVehicleInputsOmnidirectional()
+    {
+        Vector2 thrustInput = Vector2.zero;
+        if (Input.GetKey(KeyCode.W))
+        {
+            thrustInput += Vector2.up;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            thrustInput += Vector2.left;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            thrustInput += Vector2.down;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            thrustInput += Vector2.right;
+        }
+
+        bool breakInput = Input.GetKey(KeyCode.F);
+
+        if (thrustInput != Vector2.zero
+            || breakInput)
+        {
+            Autopilot.Standby();
+        }
+
+        if (Autopilot.OnStandby)
+        {
+            OmnidirectionalVehicleController controller = (OmnidirectionalVehicleController)VehicleController;
+            controller.ThrustInput = thrustInput;
+            controller.BreakInput = breakInput;
+        }
+    }
+
+    private void UpdateTarget()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            CycleTarget();
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            DropTarget();
+        }
+        if (!RadarOmniscience.Instance.PingRadar().ContainsKey(TargetUID))
+        {
+            DropTarget();
+        }
+    }
+
+    public void CycleTarget()
+    {
+        List<int> uids = new List<int>(GetRadarReading().Keys);
+        if (uids.Count > 0)
+        {
+            uids.Sort();
+            foreach (int uid in uids)
+            {
+                if (uid > TargetUID)
+                {
+                    SelectTarget(uid);
+                    return;
+                }
+            }
+            SelectTarget(uids[0]);
+        }
+    }
 
     private void FixedUpdate()
     {
         UpdateImmunities();
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
-        bool energyConsumed = VehicleController.UpdateVehicle(CurrentEnergy >= energyCost);
-        if (energyConsumed)
+        Thrusting = VehicleController.UpdateVehicle(CurrentEnergy >= energyCost);
+        if (Thrusting)
         {
             CurrentEnergy -= energyCost;
         }
@@ -351,11 +581,42 @@ public class Spaceship : MonoBehaviour
         RadarOmniscience.Instance.UnregisterRadarEntity(UID);
         SpaceshipRegistry.Instance.UnregisterSpaceship(UID);
         Destroy(gameObject);
+        DropLoot();
+        if (ControlType == ControlType.Player)
+        {
+            GameManager.Instance.PlayerDeath();
+        }
+    }
+
+    private void DropLoot()
+    {
+        if (Team == 1)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Instantiate(Prefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
+                Instantiate(Prefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
+                Instantiate(Prefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
+                Instantiate(Prefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
+                Instantiate(Prefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
+            }
+        }
     }
 
     public virtual void PickupExp(int quantity)
     {
+        Experience += quantity;
+        if (Experience >= Configuration.ExpForLevel(Level + 1))
+        {
+            LevelUp();
+        }
+    }
 
+    private void LevelUp()
+    {
+        Level++;
+        Experience = 0;
+        GameManager.Instance.PlayerLevelUp(Level);
     }
 
     public virtual void PickupGold(int quantity)

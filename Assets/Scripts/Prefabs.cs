@@ -4,11 +4,12 @@ public class Prefabs : MonoBehaviour
 {
     public static Prefabs Instance;
 
+    public GameObject Alpha1;
+    public GameObject Alpha1Omni;
     public GameObject Bullet;
     public GameObject Coin;
     public GameObject Crate;
     public GameObject EMP;
-    public GameObject Enemy;
     public GameObject Explosion;
     public GameObject ExpMorsel;
     public GameObject FDN;
@@ -24,8 +25,6 @@ public class Prefabs : MonoBehaviour
     public GameObject LaserTip;
     public GameObject LevelUpBlast;
     public GameObject ParallaxLayer;
-    public GameObject PlayerDirected;
-    public GameObject PlayerOmnidirectional;
     public GameObject RadarArrow;
     public GameObject RadarPip;
     public GameObject Rocket;

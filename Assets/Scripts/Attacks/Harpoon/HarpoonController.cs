@@ -84,7 +84,7 @@ public class HarpoonController : MonoBehaviour
         }
         else if (Manager.State == HarpoonState.Locked)
         {
-            LockCountdown -= Time.fixedDeltaTime;
+            //LockCountdown -= Time.fixedDeltaTime;
             if (LockCountdown <= 0)
             {
                 Manager.Retrieve();
