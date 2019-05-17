@@ -63,11 +63,8 @@ public class Spaceship : MonoBehaviour
     public int Team;
 
     protected void Initialize(
+        VehicleController vehicleController,
         int team,
-        float thrustForce,
-        float turnRate,
-        float maximumSpeed,
-        float mass,
         float burnDuration,
         float maxShield,
         float shieldRegen,
@@ -86,6 +83,7 @@ public class Spaceship : MonoBehaviour
         float lifeSupportDegen
         )
     {
+        VehicleController = vehicleController;
         Team = team;
         BurnDuration = burnDuration;
         MaxShield = maxShield;
@@ -110,7 +108,6 @@ public class Spaceship : MonoBehaviour
         LifeSupportDegen = lifeSupportDegen;
 
         RB2D = GetComponent<Rigidbody2D>();
-        VehicleController = new VehicleController(RB2D, thrustForce, turnRate, maximumSpeed, mass);
         AttackCooldown = new Cooldown(1f);
         Flamethrower = new FlamethrowerAttackManager(this, 10f);
         Laser = new LaserAttackManager(this, 10f);
@@ -217,31 +214,27 @@ public class Spaceship : MonoBehaviour
     {
         UpdateImmunities();
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
-        if (VehicleController.ThrustInput && CurrentEnergy >= energyCost)
+        bool energyConsumed = VehicleController.UpdateVehicle(CurrentEnergy >= energyCost);
+        if (energyConsumed)
         {
             CurrentEnergy -= energyCost;
         }
-        else
-        {
-            VehicleController.ThrustInput = false;
-        }
 
-        VehicleController.UpdateVehicle();
         SubmitRadarProfile();
 
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(60, 100));
-            new BulletAttackManager(this, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
-            VehicleController.ApplyRecoil(-VehicleController.HeadingVector * BulletAttackManager.Recoil);
+            new BulletAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+            VehicleController.ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-            new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
-            VehicleController.ApplyRecoil(-VehicleController.HeadingVector * RocketAttackManager.Recoil);
+            new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+            VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
@@ -253,7 +246,7 @@ public class Spaceship : MonoBehaviour
         {
             CurrentEnergy -= AttackEnergy;
             int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-            Harpoon = new HarpoonAttackManager(this, VehicleController.Position, VehicleController.HeadingVector, VehicleController.Velocity, damage);
+            Harpoon = new HarpoonAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
@@ -267,7 +260,7 @@ public class Spaceship : MonoBehaviour
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
             CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Laser.TurnOn(HasTarget, TargetUID, VehicleController.HeadingVector);
+            Laser.TurnOn(HasTarget, TargetUID, AttackVector());
         }
         else
         {
@@ -411,6 +404,22 @@ public class Spaceship : MonoBehaviour
         else
         {
             return (Harpoon.State != HarpoonState.Expired);
+        }
+    }
+
+    private Vector2 AttackVector()
+    {
+        if (VehicleController.VehicleType == VehicleType.Directed)
+        {
+            return ((DirectedVehicleController)VehicleController).HeadingVector;
+        }
+        else if (VehicleController.VehicleType == VehicleType.OmniDirectional)
+        {
+            return MasterCameraController.GetMousePosition().normalized;
+        }
+        else
+        {
+            return Vector2.zero;
         }
     }
 }

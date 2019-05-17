@@ -14,12 +14,16 @@ public class PlayerController : Spaceship
 
     public void Initialize(string name)
     {
-        base.Initialize(
-            team: 0,
+        VehicleController vehicleController = new DirectedVehicleController(
+            rb2d: GetComponent<Rigidbody2D>(),
             thrustForce: 10f,
             turnRate: 300f,
             maximumSpeed: 30f,
-            mass: 1f,
+            mass: 1f
+            );
+        base.Initialize(
+            vehicleController: vehicleController,
+            team: 0,
             burnDuration: 3f,
             maxShield: 250f,
             shieldRegen: 20f,
@@ -41,7 +45,7 @@ public class PlayerController : Spaceship
         Level = 0;
         AttackType = 1;
         UsingAutopilot = false;
-        Autopilot = new FastAutopilot(VehicleController);
+        Autopilot = new FastAutopilotDirected(VehicleController);
         ShowFDN = false;
         ExhaustEffect.SetActive(true);
     }
@@ -50,11 +54,13 @@ public class PlayerController : Spaceship
     {
         ZeroInput();
 
-        VehicleController.TurnInput = -Input.GetAxis("Horizontal");
-        VehicleController.ThrustInput = Input.GetKey(KeyCode.W);
-        VehicleController.BreakInput = Input.GetKey(KeyCode.S);
+        GetVehicleController().TurnInput = -Input.GetAxis("Horizontal");
+        GetVehicleController().ThrustInput = Input.GetKey(KeyCode.W);
+        GetVehicleController().BreakInput = Input.GetKey(KeyCode.S);
 
-        if (VehicleController.TurnInput != 0f || VehicleController.ThrustInput || VehicleController.BreakInput)
+        if (GetVehicleController().TurnInput != 0f
+            || GetVehicleController().ThrustInput
+            || GetVehicleController().BreakInput)
         {
             DismissAutopilot();
         }
@@ -76,7 +82,7 @@ public class PlayerController : Spaceship
             }
         }
 
-        if (VehicleController.ThrustInput)
+        if (GetVehicleController().ThrustInput)
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
         }
@@ -212,5 +218,10 @@ public class PlayerController : Spaceship
         Level++;
         Experience = 0;
         GameManager.Instance.PlayerLevelUp(Level);
+    }
+
+    private DirectedVehicleController GetVehicleController()
+    {
+        return (DirectedVehicleController)VehicleController;
     }
 }

@@ -9,12 +9,16 @@ public class EnemyController : Spaceship
 
     public void Initialize(string name)
     {
-        base.Initialize(
-            team: 1,
-            thrustForce: 8f,
+        VehicleController vehicleController = new DirectedVehicleController(
+            rb2d: GetComponent<Rigidbody2D>(),
+            thrustForce: 10f,
             turnRate: 300f,
-            maximumSpeed: 25f,
-            mass: 1f,
+            maximumSpeed: 30f,
+            mass: 1f
+            );
+        base.Initialize(
+            vehicleController: vehicleController,
+            team: 1,
             burnDuration: 3f,
             maxShield: 250f,
             shieldRegen: 4f,
@@ -32,7 +36,7 @@ public class EnemyController : Spaceship
             lifeSupportEnergy: 0.1f,
             lifeSupportDegen: 10f);
 
-        Autopilot = new FastAutopilot(VehicleController);
+        Autopilot = new FastAutopilotDirected(VehicleController);
         AI = new PassiveAI(this, Autopilot);
         ShowFDN = true;
         ExhaustEffect.SetActive(true);
@@ -43,7 +47,7 @@ public class EnemyController : Spaceship
         AI.Update(RadarOmniscience.Instance.PingRadar(UID));
         Autopilot.Update();
 
-        if (VehicleController.ThrustInput)
+        if (((DirectedVehicleController)VehicleController).ThrustInput)
         {
             ExhaustEffect.GetComponent<ExhaustEffectController>().Enable();
         }
