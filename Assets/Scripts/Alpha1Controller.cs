@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Alpha1Controller : Spaceship
 {
+    public GameObject Color1Sprite;
+    public GameObject Color2Sprite;
     public GameObject ExhaustEffect;
 
     public void Initialize(ControlType controlType, string name, bool showFDN, int team)
@@ -45,6 +47,10 @@ public class Alpha1Controller : Spaceship
             thrustEnergy: 1.5f,
             lifeSupportEnergy: 0.1f,
             lifeSupportDegen: 10f);
+
+        ColorPalett colorPalett = ConfigurationColorPaletts.Instance.GetColorPalett("Team " + team);
+        Color1Sprite.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(1);
+        Color2Sprite.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(2);
     }
 
     protected override void ModelSpecificUpdate()

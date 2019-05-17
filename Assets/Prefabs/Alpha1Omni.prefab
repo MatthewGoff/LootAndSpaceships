@@ -10142,6 +10142,8 @@ MonoBehaviour:
   Experience: 0
   Level: 0
   Team: 0
+  Color1Sprite: {fileID: 28065190442440642}
+  Color2Sprite: {fileID: 6898594163696765135}
   ExhaustEffect: {fileID: 165352505378505350}
   Turret: {fileID: 9036117391922745296}
 --- !u!1 &9036117391922745296
