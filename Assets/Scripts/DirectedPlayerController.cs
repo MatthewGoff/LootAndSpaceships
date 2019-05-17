@@ -14,7 +14,7 @@ public class DirectedPlayerController : PlayerController
             maximumSpeed: 30f,
             mass: 1f
             );
-        Autopilot autopilot = new FastAutopilotDirected(VehicleController); ;
+        Autopilot autopilot = new FastAutopilotDirected(vehicleController); ;
         base.Initialize(
             name,
             vehicleController,
@@ -25,15 +25,22 @@ public class DirectedPlayerController : PlayerController
     {
         base.Update();
 
-        GetVehicleController().TurnInput = -Input.GetAxis("Horizontal");
-        GetVehicleController().ThrustInput = Input.GetKey(KeyCode.W);
-        GetVehicleController().BreakInput = Input.GetKey(KeyCode.S);
+        float turnInput = -Input.GetAxis("Horizontal");
+        bool thrustInput = Input.GetKey(KeyCode.W);
+        bool breakInput = Input.GetKey(KeyCode.S);
 
-        if (GetVehicleController().TurnInput != 0f
-            || GetVehicleController().ThrustInput
-            || GetVehicleController().BreakInput)
+        if (turnInput != 0f
+            || thrustInput
+            || breakInput)
         {
             DismissAutopilot();
+        }
+
+        if (!UsingAutopilot)
+        {
+            GetVehicleController().TurnInput = turnInput;
+            GetVehicleController().ThrustInput = thrustInput;
+            GetVehicleController().BreakInput = breakInput;
         }
 
         if (GetVehicleController().ThrustInput)

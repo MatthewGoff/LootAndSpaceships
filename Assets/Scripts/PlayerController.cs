@@ -8,7 +8,7 @@ public class PlayerController : Spaceship
     public int Level;
 
     private Autopilot Autopilot;
-    private bool UsingAutopilot;
+    protected bool UsingAutopilot;
     private int AttackType;
 
     public void Initialize(string name, VehicleController vehicleController, Autopilot autopilot)
