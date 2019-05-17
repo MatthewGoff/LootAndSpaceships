@@ -11,11 +11,15 @@ public class LaserController : MonoBehaviour
     private float StopWatch;
     private LaserAttackManager Manager;
     private GameObject LaserTip;
+    private List<Spaceship> Spaceships;
+    private bool Active;
 
     public void Initialize(LaserAttackManager manager)
     {
         Manager = manager;
         StopWatch = 0f;
+        Spaceships = new List<Spaceship>();
+        Active = false;
 
         LaserTip = Instantiate(Prefabs.Instance.LaserTip, Vector2.zero, Quaternion.identity);
         LaserTip.transform.SetParent(transform);
@@ -26,21 +30,80 @@ public class LaserController : MonoBehaviour
 
     private void Update()
     {
-        StopWatch = (StopWatch + Time.deltaTime) % PULSE_PERIOD;
-        Color color = Gradient.Evaluate(StopWatch / PULSE_PERIOD);
-        GetComponent<SpriteRenderer>().color = color;
-        LaserTip.GetComponent<SpriteRenderer>().color = color;
+        if (Active)
+        {
+            StopWatch = (StopWatch + Time.deltaTime) % PULSE_PERIOD;
+            Color color = Gradient.Evaluate(StopWatch / PULSE_PERIOD);
+            GetComponent<SpriteRenderer>().color = color;
+            LaserTip.GetComponent<SpriteRenderer>().color = color;
+        }
     }
 
-    public void OnTriggerStay2D(Collider2D collider)
+    private void FixedUpdate()
+    {
+        if (Active)
+        {
+            // Copy the list in case it is modified during enumeration
+            List<Spaceship> spaceships = new List<Spaceship>(Spaceships);
+            foreach (Spaceship spaceship in spaceships)
+            {
+                Manager.ResolveCollision(spaceship);
+            }
+        }
+    }
+
+    public void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.tag == "Hitbox")
         {
             Spaceship other = collider.gameObject.GetComponent<Spaceship>();
             if (other.Team != Manager.Attacker.Team)
             {
-                Manager.ResolveCollision(other);
+                if (!Spaceships.Contains(other))
+                {
+                    Spaceships.Add(other);
+                }
             }
         }
+    }
+
+    public void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.tag == "Hitbox")
+        {
+            Spaceship other = collider.gameObject.GetComponent<Spaceship>();
+            if (other.Team != Manager.Attacker.Team)
+            {
+                if (Spaceships.Contains(other))
+                {
+                    Spaceships.Remove(other);
+                }
+            }
+        }
+    }
+
+    public void TurnOn(Vector2 attackVector, bool hasTarget, int targetUID)
+    {
+        float angle = 0f;
+        if (hasTarget)
+        {
+            Vector2 position = RadarOmniscience.Instance.PingRadar()[targetUID].Position;
+            Vector2 targetVector = position - (Vector2)transform.position;
+            angle = Vector2.SignedAngle(attackVector, targetVector);
+            angle = Mathf.Clamp(angle, -Manager.ANGLE_LENIENCE, Manager.ANGLE_LENIENCE);
+        }
+        float attackAngle = Vector2.SignedAngle(Vector2.right, attackVector);
+        transform.rotation = Quaternion.Euler(0, 0, angle + attackAngle);
+
+        GetComponent<SpriteRenderer>().enabled = true;
+        LaserTip.GetComponent<SpriteRenderer>().enabled = true;
+        Active = true;
+    }
+
+    public void TurnOff()
+    {
+        GetComponent<SpriteRenderer>().enabled = false;
+        LaserTip.GetComponent<SpriteRenderer>().enabled = false;
+        Active = false;
     }
 }
