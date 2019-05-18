@@ -11,16 +11,17 @@ public class SimpleAI : AI
 
     private bool Aggroed;
     private float AggroCountdown;
+    private AttackType AttackType;
 
-    public SimpleAI(Spaceship spaceship, Autopilot autopilot) : base(spaceship, autopilot)
+    public SimpleAI(Spaceship spaceship, Autopilot autopilot, AttackType attackType) : base(spaceship, autopilot)
     { 
         Home = spaceship.Position;
+        AttackType = attackType;
     }
 	
 	public override void Update (Dictionary<int, RadarProfile> radarProfiles)
     {
-        bool haveTarget = false;
-        Vector2 closestEnemyPosition = Vector2.zero;
+        int closestEnemyUID = SpaceshipRegistry.NULL_UID;
         float closestEnemyDistance = float.MaxValue;
         foreach (RadarProfile radarProfile in radarProfiles.Values)
         {
@@ -29,8 +30,7 @@ public class SimpleAI : AI
                 float distance = (Spaceship.Position - radarProfile.Position).magnitude;
                 if (distance < closestEnemyDistance)
                 {
-                    haveTarget = true;
-                    closestEnemyPosition = radarProfile.Position;
+                    closestEnemyUID = radarProfile.UID;
                     closestEnemyDistance = distance;
                 }
             }
@@ -50,14 +50,16 @@ public class SimpleAI : AI
             }
         }
 
-        if (Aggroed & haveTarget)
+        if (Aggroed & closestEnemyUID != SpaceshipRegistry.NULL_UID)
         {
-            Autopilot.SetTarget(closestEnemyPosition, AutopilotBehaviour.Seek);
-            Spaceship.FireBullet = true;
+            Autopilot.SetTarget(radarProfiles[closestEnemyUID].Position, AutopilotBehaviour.Seek);
+            Spaceship.SelectTarget(closestEnemyUID);
+            Spaceship.QueueAttacks(AttackType);
         }
         else
         {
             Autopilot.SetTarget(Home, AutopilotBehaviour.Arrive);
+            Spaceship.DropTarget();
         }
     }
 

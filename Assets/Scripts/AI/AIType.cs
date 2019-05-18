@@ -1,5 +1,6 @@
 ﻿public enum AIType
 {
-    SimpleAI,
-    PassiveAI
+    Player,
+    PassiveAI,
+    SimpleAI
 }

@@ -62,14 +62,14 @@ public class GameManager : MonoBehaviour
         {
             GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-            controller.Initialize(ControlType.Player, "Player 1", false, 0);
+            controller.Initialize("Player 1", AIType.Player, 0, false, 0);
             PlayerController = controller;
         }
         else if (vehicleType == VehicleType.Omnidirectional)
         {
             GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1Omni, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1OmniController controller = spaceship.GetComponent<Alpha1OmniController>();
-            controller.Initialize(ControlType.Player, "Player 1", false, 0);
+            controller.Initialize("Player 1", AIType.Player, 0, false, 0);
             PlayerController = controller;
         }
     }
@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
 
         GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize(ControlType.NPC, "Enemy " + EnemyCounter.ToString(), true, 1);
+        controller.Initialize("Enemy " + EnemyCounter.ToString(), AIType.PassiveAI, AttackType.Bullet, true, 1);
     }
 
     public static bool MouseOverUI()

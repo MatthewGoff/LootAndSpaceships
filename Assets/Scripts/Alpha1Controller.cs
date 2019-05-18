@@ -8,7 +8,7 @@ public class Alpha1Controller : Spaceship
     public GameObject Color2Sprite;
     public GameObject ExhaustEffect;
 
-    public void Initialize(ControlType controlType, string name, bool showFDN, int team)
+    public void Initialize(string name, AIType aiType, AttackType attackTypes, bool showFDN, int team)
     {
         VehicleController vehicleController = new DirectedVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
@@ -18,16 +18,11 @@ public class Alpha1Controller : Spaceship
             mass: 1f
             );
         Autopilot autopilot = new FastAutopilotDirected(vehicleController);
-        AI ai = null;
-        if (controlType == ControlType.NPC)
-        {
-            ai = new PassiveAI(this, autopilot);
-        }
+        AI ai = AI.CreateAI(aiType, this, autopilot, attackTypes);
 
         base.Initialize(
-            controlType: controlType,
-            autopilot : autopilot,
-            ai : ai,
+            autopilot: autopilot,
+            ai: ai,
             showFDN: showFDN,
             vehicleController: vehicleController,
             team: team,

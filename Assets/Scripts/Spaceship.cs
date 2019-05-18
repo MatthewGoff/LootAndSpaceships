@@ -23,7 +23,7 @@ public class Spaceship : MonoBehaviour
     {
         get
         {
-            return RB2D.position;
+            return transform.position;
         }
     }
 
@@ -65,12 +65,19 @@ public class Spaceship : MonoBehaviour
     public int Team;
     public Autopilot Autopilot;
     private AI AI;
-    private ControlType ControlType;
-    private int AttackType;
+    private AttackType AttackType;
+    private int AttackMode;
     protected bool Thrusting;
 
+    private bool PlayerControlled
+    {
+        get
+        {
+            return AI == null;
+        }
+    }
+
     protected void Initialize(
-        ControlType controlType,
         Autopilot autopilot,
         AI ai,
         bool showFDN,
@@ -94,7 +101,6 @@ public class Spaceship : MonoBehaviour
         float lifeSupportDegen
         )
     {
-        ControlType = controlType;
         Autopilot = autopilot;
         AI = ai;
         ShowFDN = showFDN;
@@ -122,7 +128,8 @@ public class Spaceship : MonoBehaviour
         LifeSupportEnergy = lifeSupportEnergy;
         LifeSupportDegen = lifeSupportDegen;
 
-        AttackType = 1;
+        AttackType = AttackType.Bullet;
+        AttackMode = 0;
         Experience = 0;
         Level = 0;
         RB2D = GetComponent<Rigidbody2D>();
@@ -146,7 +153,7 @@ public class Spaceship : MonoBehaviour
             {
                 Immunize(attackManager);
             }
-            if (ControlType == ControlType.NPC)
+            if (!PlayerControlled)
             {
                 AI.AlertDamage(attackManager.Attacker);
             }
@@ -241,17 +248,19 @@ public class Spaceship : MonoBehaviour
 
     private void Update()
     {
-        if (ControlType == ControlType.Player)
+        ZeroAttackInputs();
+
+        if (PlayerControlled)
         {
             PlayerUpdate();
         }
-        else if (ControlType == ControlType.NPC)
+        else
         {
             AI.Update(RadarOmniscience.Instance.PingRadar(UID));
         }
 
         bool destinationReached = Autopilot.Update();
-        if (destinationReached && ControlType == ControlType.Player)
+        if (destinationReached && PlayerControlled)
         {
             Autopilot.Standby();
         }
@@ -281,59 +290,76 @@ public class Spaceship : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            AttackType = 1;
+            AttackType = AttackType.Bullet;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            AttackType = 2;
+            AttackType = AttackType.Rocket;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            AttackType = 3;
+            AttackType = AttackType.EMP;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            AttackType = 4;
+            AttackType = AttackType.Harpoon;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            AttackType = 5;
+            AttackType = AttackType.Flamethrower;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha6))
         {
-            AttackType = 6;
+            AttackType = AttackType.Laser;
         }
 
-        ZeroAttackInput();
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            AttackMode = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.B))
+        {
+            AttackMode = 1;
+        }
+        else if (Input.GetKeyDown(KeyCode.N))
+        {
+            AttackMode = 2;
+        }
+
         if (Input.GetKey(KeyCode.Space))
         {
-            if (AttackType == 1)
-            {
-                FireBullet = true;
-            }
-            else if (AttackType == 2)
-            {
-                FireRocket = true;
-            }
-            else if (AttackType == 3)
-            {
-                FireEMP = true;
-            }
-            else if (AttackType == 4)
-            {
-                FireHarpoon = true;
-            }
-            else if (AttackType == 5)
-            {
-                FireFlamethrower = true;
-            }
-            else if (AttackType == 6)
-            {
-                FireLaser = true;
-            }
+            QueueAttacks(AttackType);
         }
 
         UpdateTarget();
+    }
+
+    public void QueueAttacks(AttackType attackType)
+    {
+        if ((attackType & AttackType.Bullet) > 0)
+        {
+            FireBullet = true;
+        }
+        if ((attackType & AttackType.Rocket) > 0)
+        {
+            FireRocket = true;
+        }
+        if ((attackType & AttackType.EMP) > 0)
+        {
+            FireEMP = true;
+        }
+        if ((attackType & AttackType.Harpoon) > 0)
+        {
+            FireHarpoon = true;
+        }
+        if ((attackType & AttackType.Flamethrower) > 0)
+        {
+            FireFlamethrower = true;
+        }
+        if ((attackType & AttackType.Laser) > 0)
+        {
+            FireLaser = true;
+        }
     }
 
     private void PlayerUpdateVehicleInputs()
@@ -455,33 +481,68 @@ public class Spaceship : MonoBehaviour
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            int damage = Mathf.RoundToInt(Random.Range(60, 100));
-            new BulletAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
-            VehicleController.ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
+            if (AttackMode == 0)
+            {
+                int damage = Mathf.RoundToInt(Random.Range(60, 100));
+                new BulletAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+                VehicleController.ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.Bullet);
+            }
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-            new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
-            VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
+            if (AttackMode == 0)
+            {
+                int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
+                new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+                VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.Rocket);
+            }
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            CurrentEnergy -= AttackEnergy;
-            int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
-            new EMPAttackManager(this, VehicleController.Position, damage);
+            if (AttackMode == 0)
+            {
+                CurrentEnergy -= AttackEnergy;
+                int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
+                new EMPAttackManager(this, VehicleController.Position, damage);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.EMP);
+            }
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
         {
-            CurrentEnergy -= AttackEnergy;
-            int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-            Harpoon = new HarpoonAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+            if (AttackMode == 0)
+            {
+                CurrentEnergy -= AttackEnergy;
+                int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
+                Harpoon = new HarpoonAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.Harpoon);
+            }
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
-            CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Flamethrower.TurnOn(AttackVector());
+            if (AttackMode == 0)
+            {
+                CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
+                Flamethrower.TurnOn(AttackVector());
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.Flamethrower);
+            }
         }
         else
         {
@@ -489,8 +550,15 @@ public class Spaceship : MonoBehaviour
         }
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
-            CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-            Laser.TurnOn(AttackVector(), HasTarget, TargetUID);
+            if (AttackMode == 0)
+            {
+                CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
+                Laser.TurnOn(AttackVector(), HasTarget, TargetUID);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnMinion(AttackType.Laser);
+            }
         }
         else
         {
@@ -543,7 +611,15 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    protected void ZeroAttackInput()
+    private void SpawnMinion(AttackType attackType)
+    {
+        GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
+        spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
+        controller.Initialize(Name + "'s minion", AIType.SimpleAI, attackType, true, Team);
+    }
+
+    protected void ZeroAttackInputs()
     {
         FireBullet = false;
         FireRocket = false;
@@ -582,7 +658,7 @@ public class Spaceship : MonoBehaviour
         SpaceshipRegistry.Instance.UnregisterSpaceship(UID);
         Destroy(gameObject);
         DropLoot();
-        if (ControlType == ControlType.Player)
+        if (PlayerControlled)
         {
             GameManager.Instance.PlayerDeath();
         }
@@ -682,5 +758,10 @@ public class Spaceship : MonoBehaviour
         {
             return Vector2.zero;
         }
+    }
+
+    private float AttackAngle()
+    {
+        return Vector2.SignedAngle(Vector2.right, AttackVector());
     }
 }

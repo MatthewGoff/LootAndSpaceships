@@ -5,6 +5,7 @@
 /// </summary>
 public class SpaceshipRegistry
 {
+    public static readonly int NULL_UID = -1;
     public static SpaceshipRegistry Instance;
     public bool[] UIDInUse;
     public Dictionary<int, Spaceship> Spaceships;
