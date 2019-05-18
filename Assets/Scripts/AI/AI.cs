@@ -14,7 +14,7 @@ public abstract class AI
     public abstract void Update(Dictionary<int, RadarProfile> radarProfiles);
     public abstract void AlertDamage(Spaceship attacker);
 
-    public static AI CreateAI(AIType aiType, Spaceship spaceship, Autopilot autopilot, AttackType attackTypes)
+    public static AI CreateAI(AIType aiType, Spaceship spaceship, Autopilot autopilot, AttackType attackTypes, Spaceship mother)
     {
         if (aiType == AIType.Player)
         {
@@ -27,6 +27,10 @@ public abstract class AI
         else if (aiType == AIType.SimpleAI)
         {
             return new SimpleAI(spaceship, autopilot, attackTypes);
+        }
+        else if (aiType == AIType.DroneAI)
+        {
+            return new DroneAI(spaceship, autopilot, attackTypes, mother);
         }
         else
         {

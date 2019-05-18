@@ -2,5 +2,6 @@
 {
     Player,
     PassiveAI,
-    SimpleAI
+    SimpleAI,
+    DroneAI
 }

@@ -104,6 +104,13 @@ public class FastAutopilotDirected : Autopilot
         }
     }
 
+    protected override void HaltUpdate()
+    {
+        GetVehicleController().TurnInput = 0;
+        GetVehicleController().ThrustInput = false;
+        GetVehicleController().BreakInput = true;
+    }
+
     private float CalculateTurnInput(float desiredHeadingChange)
     {
         if (desiredHeadingChange < -180f)

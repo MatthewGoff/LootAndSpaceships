@@ -42,6 +42,12 @@ public class FastAutopilotOmnidirectional : Autopilot
         }
     }
 
+    protected override void HaltUpdate()
+    {
+        GetVehicleController().ThrustInput = Vector2.zero;
+        GetVehicleController().BreakInput = true;
+    }
+
     private OmnidirectionalVehicleController GetVehicleController()
     {
         return (OmnidirectionalVehicleController)VehicleController;

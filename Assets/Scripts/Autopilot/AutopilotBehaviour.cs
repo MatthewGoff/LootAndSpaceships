@@ -2,5 +2,6 @@
 {
     Seek,
     Arrive,
-    Standby
+    Standby,
+    Halt
 }

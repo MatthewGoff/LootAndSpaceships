@@ -68,6 +68,7 @@ public class Spaceship : MonoBehaviour
     private AttackType AttackType;
     private int AttackMode;
     protected bool Thrusting;
+    private int NumberOfDrones;
 
     private bool PlayerControlled
     {
@@ -128,6 +129,7 @@ public class Spaceship : MonoBehaviour
         LifeSupportEnergy = lifeSupportEnergy;
         LifeSupportDegen = lifeSupportDegen;
 
+        NumberOfDrones = 0;
         AttackType = AttackType.Bullet;
         AttackMode = 0;
         Experience = 0;
@@ -489,7 +491,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.Bullet);
+                SpawnDrone(AttackType.Bullet);
             }
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
@@ -503,7 +505,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.Rocket);
+                SpawnDrone(AttackType.Rocket);
             }
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
@@ -516,7 +518,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.EMP);
+                SpawnDrone(AttackType.EMP);
             }
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
@@ -529,7 +531,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.Harpoon);
+                SpawnDrone(AttackType.Harpoon);
             }
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
@@ -541,7 +543,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.Flamethrower);
+                SpawnDrone(AttackType.Flamethrower);
             }
         }
         else
@@ -557,7 +559,7 @@ public class Spaceship : MonoBehaviour
             }
             else if (AttackMode == 1)
             {
-                SpawnMinion(AttackType.Laser);
+                SpawnDrone(AttackType.Laser);
             }
         }
         else
@@ -611,12 +613,12 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    private void SpawnMinion(AttackType attackType)
+    private void SpawnDrone(AttackType attackType)
     {
         GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize(Name + "'s minion", AIType.SimpleAI, attackType, true, Team);
+        controller.Initialize("("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team);
     }
 
     protected void ZeroAttackInputs()
@@ -692,7 +694,10 @@ public class Spaceship : MonoBehaviour
     {
         Level++;
         Experience = 0;
-        GameManager.Instance.PlayerLevelUp(Level);
+        if (PlayerControlled)
+        {
+            GameManager.Instance.PlayerLevelUp(Level);
+        }
     }
 
     public virtual void PickupGold(int quantity)

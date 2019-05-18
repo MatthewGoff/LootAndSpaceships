@@ -9,7 +9,7 @@ public class Alpha1OmniController : Spaceship
     public GameObject ExhaustEffect;
     public GameObject Turret;
 
-    public void Initialize(string name, AIType aiType, AttackType attackTypes, bool showFDN, int team)
+    public void Initialize(string name, AIType aiType, AttackType attackTypes, Spaceship mother, bool showFDN, int team)
     {
         VehicleController vehicleController = new OmnidirectionalVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
@@ -18,7 +18,7 @@ public class Alpha1OmniController : Spaceship
             mass: 1f
             );
         Autopilot autopilot = new FastAutopilotOmnidirectional(vehicleController);
-        AI ai = AI.CreateAI(aiType, this, autopilot, attackTypes);
+        AI ai = AI.CreateAI(aiType, this, autopilot, attackTypes, mother);
 
         base.Initialize(
             autopilot: autopilot,

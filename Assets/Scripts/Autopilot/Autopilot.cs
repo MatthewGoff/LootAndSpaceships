@@ -23,6 +23,12 @@ public abstract class Autopilot
         OnStandby = true;
     }
 
+    public void Halt()
+    {
+        Behaviour = AutopilotBehaviour.Halt;
+        OnStandby = true;
+    }
+
     public void SetTarget(Vector2 target, AutopilotBehaviour behaviour)
     {
         if (behaviour == AutopilotBehaviour.Standby)
@@ -60,6 +66,19 @@ public abstract class Autopilot
             SeekUpdate();
             return AtTarget();
         }
+        else if (Behaviour == AutopilotBehaviour.Halt)
+        {
+            if (VehicleController.Velocity.magnitude != 0)
+            {
+                HaltUpdate();
+                return false;
+            }
+            else
+            {
+                Standby();
+                return true;
+            }
+        }
         else
         {
             Debug.LogWarning("Unknown autopilot behaviour");
@@ -70,6 +89,8 @@ public abstract class Autopilot
     protected abstract void SeekUpdate();
 
     protected abstract void ArriveUpdate();
+
+    protected abstract void HaltUpdate();
 
     protected bool AtTarget()
     {
