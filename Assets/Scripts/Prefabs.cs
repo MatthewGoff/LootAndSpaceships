@@ -29,6 +29,7 @@ public class Prefabs : MonoBehaviour
     public GameObject RadarPip;
     public GameObject Rocket;
     public GameObject Scrap;
+    public GameObject Turret;
 
     private void Awake()
     {

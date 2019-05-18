@@ -3,5 +3,6 @@
     Player,
     PassiveAI,
     SimpleAI,
-    DroneAI
+    DroneAI,
+    TurretAI
 }

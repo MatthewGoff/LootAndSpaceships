@@ -34,7 +34,7 @@ public class FlotsamController : MonoBehaviour
         Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
         foreach (RadarProfile radarProfile in radarProfiles.Values)
         {
-            if (radarProfile.Team == 0)
+            if (radarProfile.PlayerControlled)
             {
                 Vector2 direction = radarProfile.Position - (Vector2)transform.position;
                 if (direction.magnitude <= PLAYER_ATTRACTION_RADIUS)

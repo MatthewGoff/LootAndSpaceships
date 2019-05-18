@@ -26,7 +26,7 @@ public abstract class Autopilot
     public void Halt()
     {
         Behaviour = AutopilotBehaviour.Halt;
-        OnStandby = true;
+        OnStandby = false;
     }
 
     public void SetTarget(Vector2 target, AutopilotBehaviour behaviour)

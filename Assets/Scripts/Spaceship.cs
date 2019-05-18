@@ -41,6 +41,13 @@ public class Spaceship : MonoBehaviour
             }
         }
     }
+    public Vector2 Velocity
+    {
+        get
+        {
+            return VehicleController.Velocity;
+        }
+    }
 
     protected bool ShowFDN;
 
@@ -85,6 +92,7 @@ public class Spaceship : MonoBehaviour
     private TargetingType TargetingType;
     protected bool Thrusting;
     private int NumberOfDrones;
+    private int NumberOfTurrets;
 
     public bool PlayerControlled
     {
@@ -148,6 +156,7 @@ public class Spaceship : MonoBehaviour
         LifeSupportDegen = lifeSupportDegen;
 
         NumberOfDrones = 0;
+        NumberOfTurrets = 0;
         AttackType = AttackType.Bullet;
         AttackMode = 0;
         Experience = 0;
@@ -515,6 +524,10 @@ public class Spaceship : MonoBehaviour
             {
                 SpawnDrone(AttackType.Bullet);
             }
+            else if (AttackMode == 2)
+            {
+                SpawnTurret(AttackType.Bullet);
+            }
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
@@ -529,6 +542,10 @@ public class Spaceship : MonoBehaviour
             {
                 SpawnDrone(AttackType.Rocket);
             }
+            else if (AttackMode == 2)
+            {
+                SpawnTurret(AttackType.Rocket);
+            }
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
@@ -541,6 +558,10 @@ public class Spaceship : MonoBehaviour
             else if (AttackMode == 1)
             {
                 SpawnDrone(AttackType.EMP);
+            }
+            else if (AttackMode == 2)
+            {
+                SpawnTurret(AttackType.EMP);
             }
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
@@ -555,6 +576,10 @@ public class Spaceship : MonoBehaviour
             {
                 SpawnDrone(AttackType.Harpoon);
             }
+            else if (AttackMode == 2)
+            {
+                SpawnTurret(AttackType.Harpoon);
+            }
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
@@ -563,9 +588,13 @@ public class Spaceship : MonoBehaviour
                 CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
                 Flamethrower.TurnOn(AttackVector());
             }
-            else if (AttackMode == 1)
+            else if (AttackMode == 1 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnDrone(AttackType.Flamethrower);
+            }
+            else if (AttackMode == 2 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            {
+                SpawnTurret(AttackType.Flamethrower);
             }
         }
         else
@@ -579,9 +608,13 @@ public class Spaceship : MonoBehaviour
                 CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
                 Laser.TurnOn(AttackVector(), HasValidTarget, TargetUID);
             }
-            else if (AttackMode == 1)
+            else if (AttackMode == 1 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnDrone(AttackType.Laser);
+            }
+            else if (AttackMode == 2 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            {
+                SpawnTurret(AttackType.Laser);
             }
         }
         else
@@ -643,6 +676,13 @@ public class Spaceship : MonoBehaviour
         controller.Initialize("("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
     }
 
+    private void SpawnTurret(AttackType attackType)
+    {
+        GameObject spaceship = Instantiate(Prefabs.Instance.Turret, Position, Quaternion.identity);
+        TurretController controller = spaceship.GetComponent<TurretController>();
+        controller.Initialize("(" + Name + ")'s Turret #" + ++NumberOfTurrets, AIType.TurretAI, attackType, this, true, Team, TargetingType.Unbound);
+    }
+
     protected void ZeroAttackInputs()
     {
         FireBullet = false;
@@ -659,7 +699,8 @@ public class Spaceship : MonoBehaviour
             UID,
             Name,
             Team,
-            VehicleController.Position,
+            PlayerControlled,
+            Position,
             MaxShield,
             CurrentShield,
             MaxHealth,

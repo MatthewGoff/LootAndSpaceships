@@ -2,10 +2,9 @@
 
 public abstract class VehicleController
 {
-    public float ThrustForce { get; protected set; }
-    public bool Thrusting { get; protected set; }
     public float MaximumSpeed { get; protected set; }
     protected Rigidbody2D RB2D;
+    public float ThrustForce { get; protected set; }
     public float Acceleration
     {
         get

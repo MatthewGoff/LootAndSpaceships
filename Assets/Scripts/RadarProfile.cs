@@ -5,6 +5,7 @@ public class RadarProfile
     public int UID;
     public string Name;
     public int Team;
+    public bool PlayerControlled;
     public Vector2 Position;
     public float MaxShield;
     public float CurrentShield;
@@ -19,6 +20,7 @@ public class RadarProfile
         int uid,
         string name,
         int team,
+        bool playerControlled,
         Vector2 position,
         float maxShield,
         float currentShield,
@@ -32,6 +34,7 @@ public class RadarProfile
         UID = uid;
         Name = name;
         Team = team;
+        PlayerControlled = playerControlled;
         Position = position;
         MaxShield = maxShield;
         CurrentShield = currentShield;

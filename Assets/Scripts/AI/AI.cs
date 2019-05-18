@@ -32,6 +32,10 @@ public abstract class AI
         {
             return new DroneAI(spaceship, autopilot, attackTypes, mother);
         }
+        else if (aiType == AIType.TurretAI)
+        {
+            return new TurretAI(spaceship, autopilot, attackTypes);
+        }
         else
         {
             return null;

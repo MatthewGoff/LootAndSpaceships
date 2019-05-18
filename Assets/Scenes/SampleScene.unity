@@ -1115,6 +1115,7 @@ MonoBehaviour:
   RadarPip: {fileID: 1888882468408966, guid: 9b96004f4193c7b4a96d67bcdf1a5892, type: 3}
   Rocket: {fileID: 1231362017037178, guid: 3f753c2305393ad43b966a158d44032e, type: 3}
   Scrap: {fileID: 8849401288196987288, guid: 1e6d65b1fe982f146938933bb6fd2569, type: 3}
+  Turret: {fileID: 7949491879374553302, guid: 79a3d271485925e4cbaa8c4643c07b20, type: 3}
 --- !u!1 &306915505
 GameObject:
   m_ObjectHideFlags: 0
