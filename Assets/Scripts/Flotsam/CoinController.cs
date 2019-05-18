@@ -47,10 +47,10 @@ public class CoinController : FlotsamController
     {
         if (collider.tag == "Hitbox")
         {
-            Spaceship combatant = collider.gameObject.GetComponent<Spaceship>();
-            if (combatant.Team == 0)
+            Spaceship spaceships = collider.gameObject.GetComponent<Spaceship>();
+            if (spaceships.PlayerControlled)
             {
-                combatant.PickupGold(1);
+                spaceships.PickupGold(1);
                 Destroy(gameObject);
             }
         }

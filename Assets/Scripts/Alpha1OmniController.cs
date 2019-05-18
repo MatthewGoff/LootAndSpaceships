@@ -9,7 +9,7 @@ public class Alpha1OmniController : Spaceship
     public GameObject ExhaustEffect;
     public GameObject Turret;
 
-    public void Initialize(string name, AIType aiType, AttackType attackTypes, Spaceship mother, bool showFDN, int team)
+    public void Initialize(string name, AIType aiType, AttackType attackTypes, Spaceship mother, bool showFDN, int team, TargetingType targetingType)
     {
         VehicleController vehicleController = new OmnidirectionalVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
@@ -25,6 +25,7 @@ public class Alpha1OmniController : Spaceship
             ai: ai,
             showFDN: showFDN,
             vehicleController: vehicleController,
+            targetingType: targetingType,
             team: team,
             burnDuration: 3f,
             maxShield: 250f,

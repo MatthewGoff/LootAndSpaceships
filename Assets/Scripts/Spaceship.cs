@@ -18,12 +18,27 @@ public class Spaceship : MonoBehaviour
 
     public bool HasTarget;
     public int TargetUID;
+    private bool HasValidTarget
+    {
+        get
+        {
+            ValidateTarget();
+            return HasTarget;
+        }
+    }
 
     public Vector2 Position
     {
         get
         {
-            return transform.position;
+            if (RB2D == null)
+            {
+                return transform.position;
+            }
+            else
+            {
+                return RB2D.position;
+            }
         }
     }
 
@@ -67,10 +82,11 @@ public class Spaceship : MonoBehaviour
     private AI AI;
     private AttackType AttackType;
     private int AttackMode;
+    private TargetingType TargetingType;
     protected bool Thrusting;
     private int NumberOfDrones;
 
-    private bool PlayerControlled
+    public bool PlayerControlled
     {
         get
         {
@@ -83,6 +99,7 @@ public class Spaceship : MonoBehaviour
         AI ai,
         bool showFDN,
         VehicleController vehicleController,
+        TargetingType targetingType,
         int team,
         float burnDuration,
         float maxShield,
@@ -106,6 +123,7 @@ public class Spaceship : MonoBehaviour
         AI = ai;
         ShowFDN = showFDN;
         VehicleController = vehicleController;
+        TargetingType = targetingType;
         Team = team;
         BurnDuration = burnDuration;
         MaxShield = maxShield;
@@ -333,7 +351,7 @@ public class Spaceship : MonoBehaviour
             QueueAttacks(AttackType);
         }
 
-        UpdateTarget();
+        CollectTargetingInput();
     }
 
     public void QueueAttacks(AttackType attackType)
@@ -434,7 +452,7 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    private void UpdateTarget()
+    private void CollectTargetingInput()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -444,6 +462,10 @@ public class Spaceship : MonoBehaviour
         {
             DropTarget();
         }
+    }
+
+    private void ValidateTarget()
+    {
         if (!RadarOmniscience.Instance.PingRadar().ContainsKey(TargetUID))
         {
             DropTarget();
@@ -500,7 +522,7 @@ public class Spaceship : MonoBehaviour
             if (AttackMode == 0)
             {
                 int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-                new RocketAttackManager(this, HasTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
+                new RocketAttackManager(this, HasValidTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
                 VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
             }
             else if (AttackMode == 1)
@@ -555,7 +577,7 @@ public class Spaceship : MonoBehaviour
             if (AttackMode == 0)
             {
                 CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-                Laser.TurnOn(AttackVector(), HasTarget, TargetUID);
+                Laser.TurnOn(AttackVector(), HasValidTarget, TargetUID);
             }
             else if (AttackMode == 1)
             {
@@ -618,7 +640,7 @@ public class Spaceship : MonoBehaviour
         GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize("("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team);
+        controller.Initialize("("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
     }
 
     protected void ZeroAttackInputs()
@@ -751,13 +773,24 @@ public class Spaceship : MonoBehaviour
 
     private Vector2 AttackVector()
     {
-        if (VehicleController.VehicleType == VehicleType.Directed)
+        if (TargetingType == TargetingType.Bound)
         {
             return ((DirectedVehicleController)VehicleController).HeadingVector;
         }
-        else if (VehicleController.VehicleType == VehicleType.Omnidirectional)
+        else if (TargetingType == TargetingType.Unbound)
         {
-            return (MasterCameraController.GetMousePosition() - Position).normalized;
+            if (PlayerControlled)
+            {
+                return (MasterCameraController.GetMousePosition() - Position).normalized;
+            }
+            else if (HasValidTarget)
+            {
+                return (GetRadarReading()[TargetUID].Position - Position).normalized;
+            }
+            else
+            {
+                return Vector2.zero;
+            }
         }
         else
         {

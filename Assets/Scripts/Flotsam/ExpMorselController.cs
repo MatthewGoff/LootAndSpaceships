@@ -37,10 +37,10 @@ public class ExpMorselController : FlotsamController
     {
         if (collider.tag == "Hitbox")
         {
-            Spaceship combatant = collider.gameObject.GetComponent<Spaceship>();
-            if (combatant.Team == 0)
+            Spaceship spaceship = collider.gameObject.GetComponent<Spaceship>();
+            if (spaceship.PlayerControlled)
             {
-                combatant.PickupExp(1);
+                spaceship.PickupExp(1);
                 Destroy(gameObject);
             }
         }

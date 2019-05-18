@@ -25,10 +25,10 @@ public class ScrapController : FlotsamController
     {
         if (collider.tag == "Hitbox")
         {
-            Spaceship combatant = collider.gameObject.GetComponent<Spaceship>();
-            if (combatant.Team == 0)
+            Spaceship spaceship = collider.gameObject.GetComponent<Spaceship>();
+            if (spaceship.PlayerControlled)
             {
-                combatant.PickupScrap(1f);
+                spaceship.PickupScrap(1f);
                 Destroy(gameObject);
             }
         }

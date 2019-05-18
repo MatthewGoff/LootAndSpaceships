@@ -32,13 +32,17 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && !PlayerAlive)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !PlayerAlive)
         {
-            SpawnPlayer(VehicleType.Directed);
+            SpawnPlayer(1);
         }
-        if (Input.GetKeyDown(KeyCode.E) && !PlayerAlive)
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !PlayerAlive)
         {
-            SpawnPlayer(VehicleType.Omnidirectional);
+            SpawnPlayer(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3) && !PlayerAlive)
+        {
+            SpawnPlayer(3);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -56,20 +60,27 @@ public class GameManager : MonoBehaviour
         LevelUpText.GetComponent<LevelUpTextController>().Display(level);
     }
 
-    private void SpawnPlayer(VehicleType vehicleType)
+    private void SpawnPlayer(int selection)
     {
-        if (vehicleType == VehicleType.Directed)
+        if (selection == 1)
         {
             GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-            controller.Initialize("Player 1", AIType.Player, 0, null, false, 0);
+            controller.Initialize("Player 1", AIType.Player, 0, null, false, 0, TargetingType.Bound);
             PlayerController = controller;
         }
-        else if (vehicleType == VehicleType.Omnidirectional)
+        else if (selection == 2)
+        {
+            GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
+            Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
+            controller.Initialize("Player 1", AIType.Player, 0, null, false, 0, TargetingType.Unbound);
+            PlayerController = controller;
+        }
+        else if (selection == 3)
         {
             GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1Omni, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1OmniController controller = spaceship.GetComponent<Alpha1OmniController>();
-            controller.Initialize("Player 1", AIType.Player, 0, null, false, 0);
+            controller.Initialize("Player 1", AIType.Player, 0, null, false, 0, TargetingType.Unbound);
             PlayerController = controller;
         }
     }
@@ -80,7 +91,7 @@ public class GameManager : MonoBehaviour
 
         GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize("Enemy " + EnemyCounter.ToString(), AIType.PassiveAI, AttackType.Bullet, null, true, 1);
+        controller.Initialize("Enemy " + EnemyCounter.ToString(), AIType.PassiveAI, AttackType.Bullet, null, true, 1, TargetingType.Bound);
     }
 
     public static bool MouseOverUI()

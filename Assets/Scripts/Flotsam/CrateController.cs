@@ -26,10 +26,10 @@ public class CrateController : FlotsamController
     {
         if (collider.tag == "Hitbox")
         {
-            Spaceship combatant = collider.gameObject.GetComponent<Spaceship>();
-            if (combatant.Team == 0)
+            Spaceship spaceship = collider.gameObject.GetComponent<Spaceship>();
+            if (spaceship.PlayerControlled)
             {
-                combatant.PickupCrate(1);
+                spaceship.PickupCrate(1);
                 Destroy(gameObject);
             }
         }
