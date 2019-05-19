@@ -76,8 +76,6 @@ public class Spaceship : MonoBehaviour
     protected float ThrustEnergy;
     protected float LifeSupportEnergy;
     protected float LifeSupportDegen;
-    public int Experience;
-    public int Level;
 
     private Rigidbody2D RB2D;
     private HarpoonAttackManager Harpoon;
@@ -94,6 +92,7 @@ public class Spaceship : MonoBehaviour
     protected bool Thrusting;
     private int NumberOfDrones;
     private int NumberOfTurrets;
+    public Player Player;
 
     public bool PlayerControlled
     {
@@ -104,6 +103,7 @@ public class Spaceship : MonoBehaviour
     }
 
     protected void Initialize(
+        Player player,
         Autopilot autopilot,
         AI ai,
         bool showFDN,
@@ -128,6 +128,7 @@ public class Spaceship : MonoBehaviour
         float lifeSupportDegen
         )
     {
+        Player = player;
         Autopilot = autopilot;
         AI = ai;
         ShowFDN = showFDN;
@@ -160,8 +161,6 @@ public class Spaceship : MonoBehaviour
         NumberOfTurrets = 0;
         AttackType = AttackType.Bullet;
         AttackMode = 0;
-        Experience = 0;
-        Level = 0;
         RB2D = GetComponent<Rigidbody2D>();
         AttackCooldown = new Cooldown(1f);
         Flamethrower = new FlamethrowerAttackManager(this, 10f);
@@ -191,7 +190,7 @@ public class Spaceship : MonoBehaviour
 
         if (ShowFDN)
         {
-            GameObject fdn = GameObject.Instantiate(Prefabs.Instance.FDN, VehicleController.Position, Quaternion.identity);
+            GameObject fdn = GameManager.Instance.Instantiate(Prefabs.Instance.FDN, VehicleController.Position, Quaternion.identity);
             fdn.GetComponent<FDNController>().Display(Mathf.RoundToInt(damage), damage / 100f);
         }
 
@@ -710,15 +709,15 @@ public class Spaceship : MonoBehaviour
 
     private void SpawnDrone(AttackType attackType)
     {
-        GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
+        GameObject spaceship = GameManager.Instance.Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize("("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
+        controller.Initialize(null, "("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
     }
 
     private void SpawnTurret(AttackType attackType)
     {
-        GameObject spaceship = Instantiate(Prefabs.Instance.Turret, Position, Quaternion.identity);
+        GameObject spaceship = GameManager.Instance.Instantiate(Prefabs.Instance.Turret, Position, Quaternion.identity);
         TurretController controller = spaceship.GetComponent<TurretController>();
         controller.Initialize("(" + Name + ")'s Turret #" + ++NumberOfTurrets, AIType.TurretAI, attackType, this, true, Team, TargetingType.Unbound);
     }
@@ -776,31 +775,20 @@ public class Spaceship : MonoBehaviour
         {
             for (int i = 0; i < 5; i++)
             {
-                Instantiate(Prefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
-                Instantiate(Prefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
-                Instantiate(Prefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
-                Instantiate(Prefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
-                Instantiate(Prefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(Prefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(Prefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(Prefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(Prefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(Prefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
             }
         }
     }
 
     public virtual void PickupExp(int quantity)
     {
-        Experience += quantity;
-        if (Experience >= Configuration.ExpForLevel(Level + 1))
-        {
-            LevelUp();
-        }
-    }
-
-    private void LevelUp()
-    {
-        Level++;
-        Experience = 0;
         if (PlayerControlled)
         {
-            GameManager.Instance.PlayerLevelUp(Level);
+            Player.EarnExperience(quantity);
         }
     }
 

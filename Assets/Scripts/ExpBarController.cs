@@ -8,8 +8,8 @@ public class ExpBarController : MonoBehaviour
         Vector3 scale = transform.localScale;
         if (GameManager.Instance.PlayerAlive)
         {
-            int currentExp = GameManager.Instance.PlayerController.Experience;
-            int nextLevelExp = Configuration.ExpForLevel(GameManager.Instance.PlayerController.Level + 1);
+            int currentExp = GameManager.Instance.Player.Experience;
+            int nextLevelExp = Configuration.ExpForLevel(GameManager.Instance.Player.Level + 1);
             scale.x = (float)currentExp / (float)nextLevelExp;
         }
         else

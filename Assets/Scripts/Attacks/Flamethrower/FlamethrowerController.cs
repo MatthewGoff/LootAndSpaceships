@@ -27,7 +27,7 @@ public class FlamethrowerController : MonoBehaviour
             }
             for (int i = 0; i < particlesToEmit; i++)
             {
-                GameObject particle = Instantiate(Prefabs.Instance.FlamethrowerParticle, transform.position, Quaternion.identity);
+                GameObject particle = GameManager.Instance.Instantiate(Prefabs.Instance.FlamethrowerParticle, transform.position, Quaternion.identity);
                 float angle = Random.Range(-EmissionArc / 2f, EmissionArc / 2f) + transform.eulerAngles.z;
                 Vector2 velocity = ParticleSpeed * (Quaternion.Euler(0, 0, angle) * Vector2.right);
                 velocity += Manager.Attacker.GetComponent<Rigidbody2D>().velocity;

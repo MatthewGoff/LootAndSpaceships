@@ -10,13 +10,13 @@ public class MineAttackManager : CollisionTypeAttackManager
         Attacker = attacker;
         Damage = damage;
 
-        GameObject mine = GameObject.Instantiate(Prefabs.Instance.Mine, position, Quaternion.identity);
+        GameObject mine = GameManager.Instance.Instantiate(Prefabs.Instance.Mine, position, Quaternion.identity);
         mine.GetComponent<MineController>().Initialize(this);
     }
 
     public void Explode(Vector2 position)
     {
-        GameObject explosion = GameObject.Instantiate(Prefabs.Instance.Explosion, position, Quaternion.identity);
+        GameObject explosion = GameManager.Instance.Instantiate(Prefabs.Instance.Explosion, position, Quaternion.identity);
         explosion.GetComponent<ExplosionController>().AssignManager(this);
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }

@@ -62,4 +62,17 @@ public class SpaceshipRegistry
         }
         UIDInUse = newUIDINUse;
     }
+
+    public int CountTeamMembers(int team)
+    {
+        int count = 0;
+        foreach(int key in Spaceships.Keys)
+        {
+            if (Spaceships[key].Team == team)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 }

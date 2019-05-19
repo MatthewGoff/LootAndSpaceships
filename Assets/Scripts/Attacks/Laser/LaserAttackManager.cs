@@ -18,7 +18,7 @@ public class LaserAttackManager : AttackManager
         Damage = damage;
         ImmunityDuration = IMMUNITY_DURATION;
 
-        GameObject gameObject = GameObject.Instantiate(Prefabs.Instance.LaserBeam, Vector2.zero, Quaternion.identity);
+        GameObject gameObject = GameManager.Instance.Instantiate(Prefabs.Instance.LaserBeam, Vector2.zero, Quaternion.identity);
         gameObject.transform.SetParent(attacker.transform);
         gameObject.transform.localPosition = Vector2.zero;
         gameObject.transform.localRotation = Quaternion.identity;

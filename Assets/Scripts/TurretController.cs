@@ -19,6 +19,7 @@ public class TurretController : Spaceship
         AI ai = AI.CreateAI(aiType, this, autopilot, attackTypes, mother);
 
         base.Initialize(
+            null,
             autopilot: autopilot,
             ai: ai,
             showFDN: showFDN,
