@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RocketAttackManager : AttackManager
+public class RocketAttackManager : CollisionTypeAttackManager
 {
     public static readonly float Recoil = 1f;
 
@@ -31,7 +31,7 @@ public class RocketAttackManager : AttackManager
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }
 
-    public void ResolveCollision(Spaceship other)
+    public override void ResolveCollision(Spaceship other)
     {
         other.TakeDamage(this, Damage, DamageType.Explosion);
     }

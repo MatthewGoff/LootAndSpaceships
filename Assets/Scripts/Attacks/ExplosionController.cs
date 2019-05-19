@@ -8,7 +8,7 @@ public class ExplosionController : MonoBehaviour
         new Keyframe(0f, 1f),
         new Keyframe(1f, 0f)
     );
-    private RocketAttackManager Manager;
+    private CollisionTypeAttackManager Manager;
     private SpriteRenderer SpriteRenderer;
     private int FixedUpdateCount;
 
@@ -52,7 +52,7 @@ public class ExplosionController : MonoBehaviour
         }
     }
 
-    public void AssignManager(RocketAttackManager manager)
+    public void AssignManager(CollisionTypeAttackManager manager)
     {
         Manager = manager;
     }

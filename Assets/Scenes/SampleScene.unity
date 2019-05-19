@@ -1109,6 +1109,7 @@ MonoBehaviour:
     type: 3}
   LevelUpBlast: {fileID: 3990313047330333731, guid: 8058c7c2fd53eb2408ba20aa01609b4a,
     type: 3}
+  Mine: {fileID: 2896363194605447914, guid: 3095bbd6f96992f4ba9c84b2a165c646, type: 3}
   ParallaxLayer: {fileID: 1871693845550940, guid: 6bdfbd66fffd96d409531baf6715253b,
     type: 3}
   RadarArrow: {fileID: 1543760682489922, guid: d3c9c51359356144e8b6e858661536c1, type: 3}

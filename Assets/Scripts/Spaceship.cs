@@ -15,6 +15,7 @@ public class Spaceship : MonoBehaviour
     public bool FireHarpoon;
     public bool FireFlamethrower;
     public bool FireLaser;
+    public bool FireMine;
 
     public bool HasTarget;
     public int TargetUID;
@@ -341,6 +342,10 @@ public class Spaceship : MonoBehaviour
         {
             AttackType = AttackType.Laser;
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            AttackType = AttackType.Mine;
+        }
 
         if (Input.GetKeyDown(KeyCode.V))
         {
@@ -388,6 +393,10 @@ public class Spaceship : MonoBehaviour
         if ((attackType & AttackType.Laser) > 0)
         {
             FireLaser = true;
+        }
+        if ((attackType & AttackType.Mine) > 0)
+        {
+            FireMine = true;
         }
     }
 
@@ -636,11 +645,29 @@ public class Spaceship : MonoBehaviour
         {
             Laser.TurnOff();
         }
+        if (FireMine && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+        {
+            if (AttackMode == 0)
+            {
+                CurrentEnergy -= AttackEnergy;
+                int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
+                new MineAttackManager(this, VehicleController.Position, damage);
+            }
+            else if (AttackMode == 1)
+            {
+                SpawnDrone(AttackType.Mine);
+            }
+            else if (AttackMode == 2)
+            {
+                SpawnTurret(AttackType.Mine);
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         UpdateImmunities();
+        UpdateEnergyRegen();
         UpdateLifeSupport();
         UpdateShieldDrain();
         UpdateEngineDrain();
@@ -656,6 +683,7 @@ public class Spaceship : MonoBehaviour
             if (CurrentFuel >= fuelCost)
             {
                 CurrentFuel -= fuelCost;
+                CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
                 CurrentEnergy += EnergyRegen * Time.fixedDeltaTime;
                 CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, MaxEnergy);
             }
@@ -703,6 +731,7 @@ public class Spaceship : MonoBehaviour
         FireHarpoon = false;
         FireFlamethrower = false;
         FireLaser = false;
+        FireMine = false;
     }
 
     private void SubmitRadarProfile()
