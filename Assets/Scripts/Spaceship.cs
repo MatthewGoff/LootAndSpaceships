@@ -498,19 +498,34 @@ public class Spaceship : MonoBehaviour
             SelectTarget(uids[0]);
         }
     }
-
-    private void FixedUpdate()
+    
+    private void UpdateLifeSupport()
     {
-        UpdateImmunities();
+        float energyCost = LifeSupportEnergy * Time.deltaTime;
+        if (CurrentEnergy >= energyCost)
+        {
+            CurrentEnergy -= energyCost;
+            CurrentHealth += HealthRegen * Time.fixedDeltaTime;
+        }
+        else
+        {
+            TakeDamage(null, LifeSupportDegen, DamageType.Physical);
+            CurrentEnergy = 0;
+        }
+    }
+
+    private void UpdateEngineDrain()
+    {
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
         Thrusting = VehicleController.UpdateVehicle(CurrentEnergy >= energyCost);
         if (Thrusting)
         {
             CurrentEnergy -= energyCost;
         }
+    }
 
-        SubmitRadarProfile();
-
+    private void ExecuteAttacks()
+    {
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
@@ -621,37 +636,20 @@ public class Spaceship : MonoBehaviour
         {
             Laser.TurnOff();
         }
+    }
 
-        energyCost = LifeSupportEnergy * Time.deltaTime;
-        if (CurrentEnergy >= energyCost)
-        {
-            CurrentEnergy -= energyCost;
-            CurrentHealth += HealthRegen * Time.fixedDeltaTime;
-        }
-        else
-        {
-            CurrentHealth -= LifeSupportDegen;
-            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
-            if (CurrentHealth == 0)
-            {
-                Die();
-            }
-            CurrentEnergy = 0;
-        }
-            
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+    private void FixedUpdate()
+    {
+        UpdateImmunities();
+        UpdateLifeSupport();
+        UpdateShieldDrain();
+        UpdateEngineDrain();
+        SubmitRadarProfile();
+        ExecuteAttacks();  
+    }
 
-        if (CurrentShield < MaxShield)
-        {
-            energyCost = ShieldEnergy * Time.fixedDeltaTime;
-            if (CurrentEnergy >= energyCost)
-            {
-                CurrentEnergy -= energyCost;
-                CurrentShield += ShieldRegen * Time.fixedDeltaTime;
-                CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
-            }
-        }
-
+    private void UpdateEnergyRegen()
+    {
         if (CurrentEnergy < MaxEnergy)
         {
             float fuelCost = FuelUsage * Time.fixedDeltaTime;
@@ -664,6 +662,20 @@ public class Spaceship : MonoBehaviour
             else
             {
                 CurrentFuel = 0f;
+            }
+        }
+    }
+
+    private void UpdateShieldDrain()
+    {
+        if (CurrentShield < MaxShield)
+        {
+            float energyCost = ShieldEnergy * Time.fixedDeltaTime;
+            if (CurrentEnergy >= energyCost)
+            {
+                CurrentEnergy -= energyCost;
+                CurrentShield += ShieldRegen * Time.fixedDeltaTime;
+                CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
             }
         }
     }
