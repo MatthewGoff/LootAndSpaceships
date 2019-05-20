@@ -15,7 +15,7 @@ public class HarpoonAttackManager : AttackManager
         Damage = damage;
         State = HarpoonState.Fireing;
 
-        Harpoon = GameManager.Instance.Instantiate(Prefabs.Instance.Harpoon, Vector2.zero, Quaternion.identity);
+        Harpoon = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Harpoon, Vector2.zero, Quaternion.identity);
         Harpoon.GetComponent<HarpoonController>().Initialize(this, attacker, position, direction, initialVelocity);
     }
 

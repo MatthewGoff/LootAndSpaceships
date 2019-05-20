@@ -15,7 +15,7 @@ public class FlamethrowerAttackManager : AttackManager
         ImmunityDuration = IMMUNITY_DURATION;
 
 
-        GameObject gameObject = GameManager.Instance.Instantiate(Prefabs.Instance.Flamethrower, Vector2.zero, Quaternion.identity, attacker.transform);
+        GameObject gameObject = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Flamethrower, Vector2.zero, Quaternion.identity, attacker.transform);
         gameObject.transform.localPosition = Vector2.zero;
         gameObject.transform.localRotation = Quaternion.identity;
         Flamethrower = gameObject.GetComponent<FlamethrowerController>();

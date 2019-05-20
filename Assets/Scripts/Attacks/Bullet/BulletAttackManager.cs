@@ -12,7 +12,7 @@ public class BulletAttackManager : AttackManager
         Attacker = attacker;
         Damage = damage;
 
-        GameObject bullet = GameManager.Instance.Instantiate(Prefabs.Instance.Bullet, position, Quaternion.identity);
+        GameObject bullet = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Bullet, position, Quaternion.identity);
         bullet.GetComponent<BulletController>().AssignManager(this);
         bullet.GetComponent<Rigidbody2D>().velocity = Speed * direction.normalized + initialVelocity;
     }

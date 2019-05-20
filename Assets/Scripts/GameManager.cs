@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayerLevelUp(int level)
     {
-        Instantiate(Prefabs.Instance.LevelUpBlast, Vector2.zero, Quaternion.identity);
+        Instantiate(GeneralPrefabs.Instance.LevelUpBlast, Vector2.zero, Quaternion.identity);
         LevelUpText.GetComponent<LevelUpTextController>().Display(level);
     }
 
@@ -97,21 +97,21 @@ public class GameManager : MonoBehaviour
     {
         if (PlayerParadigm == 1)
         {
-            GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
-            Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
+            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha3, new Vector2(0f, 0f), Quaternion.identity);
+            Alpha3Controller controller = spaceship.GetComponent<Alpha3Controller>();
             controller.Initialize(Player, "Player 1", AIType.Player, 0, null, false, 0, TargetingType.Bound);
             PlayerController = controller;
         }
         else if (PlayerParadigm == 2)
         {
-            GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
+            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
             controller.Initialize(Player, "Player 1", AIType.Player, 0, null, false, 0, TargetingType.Unbound);
             PlayerController = controller;
         }
         else if (PlayerParadigm == 3)
         {
-            GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1Omni, new Vector2(0f, 0f), Quaternion.identity);
+            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1Omni, new Vector2(0f, 0f), Quaternion.identity);
             Alpha1OmniController controller = spaceship.GetComponent<Alpha1OmniController>();
             controller.Initialize(Player, "Player 1", AIType.Player, 0, null, false, 0, TargetingType.Unbound);
             PlayerController = controller;
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
     {
         Enemies = new List<Spaceship>();
 
-        GameObject spaceship = Instantiate(Prefabs.Instance.Alpha1, new Vector2(10f, 0f), Quaternion.Euler(0f, 0f, 180f));
+        GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1, new Vector2(10f, 0f), Quaternion.Euler(0f, 0f, 180f));
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
         controller.Initialize(null, "Enemy 1", AIType.PassiveAI, AttackType.Bullet, null, true, 1, TargetingType.Bound);
         Enemies.Add(controller);

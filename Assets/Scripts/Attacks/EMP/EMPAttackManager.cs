@@ -10,7 +10,7 @@ public class EMPAttackManager : AttackManager
         Attacker = attacker;
         Damage = damage;
 
-        GameObject explosion = GameManager.Instance.Instantiate(Prefabs.Instance.EMP, position, Quaternion.identity);
+        GameObject explosion = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.EMP, position, Quaternion.identity);
         explosion.GetComponent<EMPController>().AssignManager(this);
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }

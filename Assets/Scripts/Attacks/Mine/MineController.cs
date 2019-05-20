@@ -8,8 +8,8 @@ public class MineController : MonoBehaviour
     private readonly float BLINK_DURATION = 0.2f;
 
     public GameObject SpriteColor1;
-    public GameObject SpriteColor2;
-    public GameObject SpriteColor3;
+    public GameObject SpriteColor5;
+    public GameObject Blinker;
 
     private MineAttackManager Manager;
 
@@ -18,8 +18,8 @@ public class MineController : MonoBehaviour
         Manager = manager;
 
         ColorPalett colorPalett = ConfigurationColorPaletts.Instance.GetColorPalett("Team " + Manager.Attacker.Team);
-        SpriteColor1.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(2);
-        SpriteColor2.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(1);
+        SpriteColor1.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(1);
+        SpriteColor5.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(5);
 
         StartCoroutine("Blink");
     }
@@ -39,7 +39,7 @@ public class MineController : MonoBehaviour
                 color.a = 0f;
             }
 
-            SpriteColor3.GetComponent<SpriteRenderer>().color = color;
+            Blinker.GetComponent<SpriteRenderer>().color = color;
             yield return null;
         }
     }

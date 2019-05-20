@@ -9,10 +9,10 @@ public class RadarPip
     public RadarPip(RadarController radarController)
     {
         RadarController = radarController;
-        Pip = GameObject.Instantiate(Prefabs.Instance.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Pip = GameObject.Instantiate(GeneralPrefabs.Instance.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Pip.transform.SetParent(RadarController.ContentsTransform.transform);
         Pip.SetActive(false);
-        Arrow = GameObject.Instantiate(Prefabs.Instance.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Arrow = GameObject.Instantiate(GeneralPrefabs.Instance.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Arrow.transform.SetParent(RadarController.ContentsTransform.transform);
         Arrow.SetActive(false);
     }

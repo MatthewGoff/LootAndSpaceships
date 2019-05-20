@@ -30,7 +30,7 @@ public class FDNController : MonoBehaviour
         transform.position = transform.position + new Vector3(0, VERTICAL_FDN_OFFSET, 0);
 
         // Highlight
-        TextHighlight = GameManager.Instance.Instantiate(Prefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
+        TextHighlight = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
         TextHighlight.transform.localPosition = HIGHLIGHT_OFFSET;
         Text text = TextHighlight.GetComponent<Text>();
         text.text = damage.ToString();
@@ -38,7 +38,7 @@ public class FDNController : MonoBehaviour
         text.fontSize = Mathf.RoundToInt(TextSize.Evaluate(intensity));
 
         // Shadow
-        TextShadow = GameManager.Instance.Instantiate(Prefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
+        TextShadow = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
         TextShadow.transform.localPosition = -HIGHLIGHT_OFFSET;
         text = TextShadow.GetComponent<Text>();
         text.text = damage.ToString();
@@ -46,7 +46,7 @@ public class FDNController : MonoBehaviour
         text.fontSize = Mathf.RoundToInt(TextSize.Evaluate(intensity));
 
         // Text
-        Text = GameManager.Instance.Instantiate(Prefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
+        Text = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FDNText, Vector2.zero, Quaternion.identity, transform);
         Text.transform.localPosition = Vector2.zero;
         text = Text.GetComponent<Text>();
         text.text = damage.ToString();

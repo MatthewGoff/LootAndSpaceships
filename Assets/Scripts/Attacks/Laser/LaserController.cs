@@ -21,7 +21,7 @@ public class LaserController : MonoBehaviour
         Spaceships = new List<Spaceship>();
         Active = false;
 
-        LaserTip = Instantiate(Prefabs.Instance.LaserTip, Vector2.zero, Quaternion.identity);
+        LaserTip = Instantiate(GeneralPrefabs.Instance.LaserTip, Vector2.zero, Quaternion.identity);
         LaserTip.transform.SetParent(transform);
         LaserTip.transform.localPosition = new Vector2(1, 0);
         LaserTip.transform.localRotation = Quaternion.identity;

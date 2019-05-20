@@ -190,7 +190,7 @@ public class Spaceship : MonoBehaviour
 
         if (ShowFDN)
         {
-            GameObject fdn = GameManager.Instance.Instantiate(Prefabs.Instance.FDN, VehicleController.Position, Quaternion.identity);
+            GameObject fdn = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FDN, VehicleController.Position, Quaternion.identity);
             fdn.GetComponent<FDNController>().Display(Mathf.RoundToInt(damage), damage / 100f);
         }
 
@@ -709,7 +709,7 @@ public class Spaceship : MonoBehaviour
 
     private void SpawnDrone(AttackType attackType)
     {
-        GameObject spaceship = GameManager.Instance.Instantiate(Prefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
+        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
         controller.Initialize(null, "("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
@@ -717,7 +717,7 @@ public class Spaceship : MonoBehaviour
 
     private void SpawnTurret(AttackType attackType)
     {
-        GameObject spaceship = GameManager.Instance.Instantiate(Prefabs.Instance.Turret, Position, Quaternion.identity);
+        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Turret, Position, Quaternion.identity);
         TurretController controller = spaceship.GetComponent<TurretController>();
         controller.Initialize("(" + Name + ")'s Turret #" + ++NumberOfTurrets, AIType.TurretAI, attackType, this, true, Team, TargetingType.Unbound);
     }
@@ -775,11 +775,11 @@ public class Spaceship : MonoBehaviour
         {
             for (int i = 0; i < 5; i++)
             {
-                GameManager.Instance.Instantiate(Prefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
-                GameManager.Instance.Instantiate(Prefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
-                GameManager.Instance.Instantiate(Prefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
-                GameManager.Instance.Instantiate(Prefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
-                GameManager.Instance.Instantiate(Prefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(GeneralPrefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
+                GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
             }
         }
     }

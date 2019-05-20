@@ -32,7 +32,7 @@ public class HarpoonController : MonoBehaviour
         Attacker = attacker;
 
         float angle = Vector2.SignedAngle(Vector2.right, direction);
-        Hook = GameManager.Instance.Instantiate(Prefabs.Instance.HarpoonHook, position + (MINIMUM_DISTANCE_JOINT_LENGTH * direction.normalized), Quaternion.Euler(0, 0, angle));
+        Hook = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.HarpoonHook, position + (MINIMUM_DISTANCE_JOINT_LENGTH * direction.normalized), Quaternion.Euler(0, 0, angle));
         Hook.transform.SetParent(transform);
         HookVelocity = FIRE_SPEED * direction.normalized + initialVelocity;
         Hook.GetComponent<Rigidbody2D>().velocity = HookVelocity;
@@ -145,7 +145,7 @@ public class HarpoonController : MonoBehaviour
         {
             if (RootDistanceJoint.distance > HORIZONTAL_LINK_LENGTH + MINIMUM_DISTANCE_JOINT_LENGTH)
             {
-                AddLink(Prefabs.Instance.HarpoonHorizontalLink);
+                AddLink(GeneralPrefabs.Instance.HarpoonHorizontalLink);
                 ExtendChain();
             }
         }
@@ -153,7 +153,7 @@ public class HarpoonController : MonoBehaviour
         {
             if (RootDistanceJoint.distance > VERTICAL_LINK_LENGTH + MINIMUM_DISTANCE_JOINT_LENGTH)
             {
-                AddLink(Prefabs.Instance.HarpoonVerticalLink);
+                AddLink(GeneralPrefabs.Instance.HarpoonVerticalLink);
                 ExtendChain();
             }
         }
