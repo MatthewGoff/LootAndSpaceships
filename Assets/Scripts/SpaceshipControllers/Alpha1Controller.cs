@@ -36,7 +36,7 @@ public class Alpha1Controller : Spaceship
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
-            maxHullSpace: 523.6f,
+            maxHullSpace: 10f * Mathf.Pow(transform.localScale.x, 3),
             name: name,
             attackEnergy: 0.5f,
             thrustEnergy: 1.5f,

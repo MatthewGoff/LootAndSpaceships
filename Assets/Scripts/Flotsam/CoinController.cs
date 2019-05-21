@@ -50,7 +50,7 @@ public class CoinController : FlotsamController
             Spaceship spaceships = collider.gameObject.GetComponent<Spaceship>();
             if (spaceships.PlayerControlled)
             {
-                spaceships.PickupGold(1);
+                spaceships.PickupCredits(1);
                 Destroy(gameObject);
             }
         }

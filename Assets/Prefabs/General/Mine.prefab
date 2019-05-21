@@ -68,12 +68,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2027867d7fa4e3a45a193e9cdade267d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cec484bf0cfee2446b6d2ad98dabb05d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.76, y: 1.76}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -144,8 +144,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpriteColor1: {fileID: 8326275939119845850}
-  SpriteColor2: {fileID: 2660917076499608727}
-  SpriteColor3: {fileID: 2915549958995792760}
+  SpriteColor5: {fileID: 2660917076499608727}
+  Blinker: {fileID: 2915549958995792760}
 --- !u!210 &129479005156963177
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 814050371312706228}
   - component: {fileID: 8311697776746416791}
   m_Layer: 0
-  m_Name: Button
+  m_Name: Blinker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,12 +225,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: aa26d2d4ac01fdc408338a4330d970ad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3ec2940fe5b187b4b832853d2ed42235, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.76, y: 1.76}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -304,12 +304,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 17cb96bc35087004ba8b7e9652a390d0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 098c250eef90db24791a40c9c82b47b5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.76, y: 1.76}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

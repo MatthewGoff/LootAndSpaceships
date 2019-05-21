@@ -17,6 +17,14 @@ public class Spaceship : MonoBehaviour
     public bool FireLaser;
     public bool FireMine;
 
+    public float Credits;
+    public float Scrap;
+    public int Bullets;
+    public int Rockets;
+    public int Mines;
+    public int Drones;
+    public int Turrets;
+
     public bool HasTarget;
     public int TargetUID;
     private bool HasValidTarget
@@ -87,7 +95,7 @@ public class Spaceship : MonoBehaviour
     public Autopilot Autopilot;
     private AI AI;
     private AttackType AttackType;
-    private int AttackMode;
+    public AttackMode AttackMode;
     private TargetingType TargetingType;
     protected bool Thrusting;
     private int NumberOfDrones;
@@ -160,7 +168,7 @@ public class Spaceship : MonoBehaviour
         NumberOfDrones = 0;
         NumberOfTurrets = 0;
         AttackType = AttackType.Bullet;
-        AttackMode = 0;
+        AttackMode = AttackMode.Self;
         RB2D = GetComponent<Rigidbody2D>();
         AttackCooldown = new Cooldown(1f);
         Flamethrower = new FlamethrowerAttackManager(this, 10f);
@@ -168,6 +176,14 @@ public class Spaceship : MonoBehaviour
         Immunities = new List<AttackImmunityRecord>();
         UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
+
+        Credits = 0f;
+        Scrap = 100f;
+        Bullets = 10;
+        Rockets = 10;
+        Mines = 10;
+        Drones = 10;
+        Turrets = 10;
     }
 
     public virtual void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
@@ -348,15 +364,15 @@ public class Spaceship : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            AttackMode = 0;
+            AttackMode = AttackMode.Self;
         }
         else if (Input.GetKeyDown(KeyCode.B))
         {
-            AttackMode = 1;
+            AttackMode = AttackMode.Drone;
         }
         else if (Input.GetKeyDown(KeyCode.N))
         {
-            AttackMode = 2;
+            AttackMode = AttackMode.Turret;
         }
 
         if (Input.GetKey(KeyCode.Space))
@@ -537,17 +553,17 @@ public class Spaceship : MonoBehaviour
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 int damage = Mathf.RoundToInt(Random.Range(60, 100));
                 new BulletAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
                 VehicleController.ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
             }
-            else if (AttackMode == 1)
+            else if ((AttackMode & AttackMode.Drone) > 0)
             {
                 SpawnDrone(AttackType.Bullet);
             }
-            else if (AttackMode == 2)
+            else if ((AttackMode & AttackMode.Turret) > 0 )
             {
                 SpawnTurret(AttackType.Bullet);
             }
@@ -555,67 +571,67 @@ public class Spaceship : MonoBehaviour
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
                 new RocketAttackManager(this, HasValidTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
                 VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
             }
-            else if (AttackMode == 1)
+            else if ((AttackMode & AttackMode.Drone) > 0)
             {
                 SpawnDrone(AttackType.Rocket);
             }
-            else if (AttackMode == 2)
+            else if ((AttackMode & AttackMode.Turret) > 0)
             {
                 SpawnTurret(AttackType.Rocket);
             }
         }
         if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 CurrentEnergy -= AttackEnergy;
                 int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
                 new EMPAttackManager(this, VehicleController.Position, damage);
             }
-            else if (AttackMode == 1)
+            else if ((AttackMode & AttackMode.Drone) > 0)
             {
                 SpawnDrone(AttackType.EMP);
             }
-            else if (AttackMode == 2)
+            else if ((AttackMode & AttackMode.Turret) > 0)
             {
                 SpawnTurret(AttackType.EMP);
             }
         }
         if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
         {
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 CurrentEnergy -= AttackEnergy;
                 int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
                 Harpoon = new HarpoonAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
             }
-            else if (AttackMode == 1)
+            else if ((AttackMode & AttackMode.Drone) > 0)
             {
                 SpawnDrone(AttackType.Harpoon);
             }
-            else if (AttackMode == 2)
+            else if ((AttackMode & AttackMode.Turret) > 0)
             {
                 SpawnTurret(AttackType.Harpoon);
             }
         }
         if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
                 Flamethrower.TurnOn(AttackVector());
             }
-            else if (AttackMode == 1 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            else if ((AttackMode & AttackMode.Drone) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnDrone(AttackType.Flamethrower);
             }
-            else if (AttackMode == 2 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            else if ((AttackMode & AttackMode.Turret) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnTurret(AttackType.Flamethrower);
             }
@@ -626,16 +642,16 @@ public class Spaceship : MonoBehaviour
         }
         if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
         {
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
                 Laser.TurnOn(AttackVector(), HasValidTarget, TargetUID);
             }
-            else if (AttackMode == 1 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            else if ((AttackMode & AttackMode.Drone) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnDrone(AttackType.Laser);
             }
-            else if (AttackMode == 2 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+            else if ((AttackMode & AttackMode.Turret) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
             {
                 SpawnTurret(AttackType.Laser);
             }
@@ -646,17 +662,17 @@ public class Spaceship : MonoBehaviour
         }
         if (FireMine && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            if (AttackMode == 0)
+            if ((AttackMode & AttackMode.Self) > 0)
             {
                 CurrentEnergy -= AttackEnergy;
                 int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
                 new MineAttackManager(this, VehicleController.Position, damage);
             }
-            else if (AttackMode == 1)
+            else if ((AttackMode & AttackMode.Drone) > 0)
             {
                 SpawnDrone(AttackType.Mine);
             }
-            else if (AttackMode == 2)
+            else if ((AttackMode & AttackMode.Turret) > 0)
             {
                 SpawnTurret(AttackType.Mine);
             }
@@ -792,9 +808,9 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    public virtual void PickupGold(int quantity)
+    public virtual void PickupCredits(float quantity)
     {
-
+        Credits += quantity;
     }
 
     public virtual void PickupFuel(float quantity)

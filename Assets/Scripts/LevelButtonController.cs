@@ -6,7 +6,7 @@ public class LevelButtonController : MonoBehaviour
     public GameObject Button;
     public GameObject Lock;
 
-    private void Start()
+    private void Awake()
     {
         Button.GetComponent<Button>().interactable = false;
         Lock.SetActive(true);

@@ -71,7 +71,11 @@ public class HarpoonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Manager.State == HarpoonState.Fireing)
+        if (Attacker == null)
+        {
+            Dispose();
+        }
+        else if (Manager.State == HarpoonState.Fireing)
         {
             if (TotalDistanceJoint.distance > MAXIMUM_DISTANCE)
             {
@@ -120,8 +124,11 @@ public class HarpoonController : MonoBehaviour
 
     private void Dispose()
     {
-        Destroy(Attacker.GetComponent<DistanceJoint2D>());
-        Destroy(Attacker.GetComponent<DistanceJoint2D>());
+        if (Attacker != null)
+        {
+            Destroy(Attacker.GetComponent<DistanceJoint2D>());
+            Destroy(Attacker.GetComponent<DistanceJoint2D>());
+        }
         Destroy(gameObject);
     }
 

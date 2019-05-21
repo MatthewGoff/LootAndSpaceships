@@ -11,8 +11,8 @@ public class Omikron1Controller : Spaceship
     {
         VehicleController vehicleController = new DirectedVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
-            thrustForce: 20f,
-            turnRate: 200f,
+            thrustForce: 40f,
+            turnRate: 400f,
             maximumSpeed: 20f,
             mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 2)
             );
@@ -28,16 +28,16 @@ public class Omikron1Controller : Spaceship
             targetingType: targetingType,
             team: team,
             burnDuration: 3f,
-            maxShield: 250f,
-            shieldRegen: 4f,
+            maxShield: 750f,
+            shieldRegen: 10f,
             shieldEnergy: 0.1f,
-            maxHP: 500f,
-            hpRegen: 1f,
+            maxHP: 1000f,
+            hpRegen: 3f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
-            maxHullSpace: 523.6f,
+            maxHullSpace: 10f * Mathf.Pow(transform.localScale.x, 3),
             name: name,
             attackEnergy: 0.5f,
             thrustEnergy: 1.5f,

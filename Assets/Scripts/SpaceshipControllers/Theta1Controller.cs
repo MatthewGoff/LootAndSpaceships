@@ -10,9 +10,9 @@ public class Theta1Controller : Spaceship
     {
         VehicleController vehicleController = new DirectedVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
-            thrustForce: 20f,
-            turnRate: 200f,
-            maximumSpeed: 20f,
+            thrustForce: 40f,
+            turnRate: 400f,
+            maximumSpeed: 40f,
             mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 2)
             );
         Autopilot autopilot = new FastAutopilotDirected(vehicleController);
@@ -27,16 +27,16 @@ public class Theta1Controller : Spaceship
             targetingType: targetingType,
             team: team,
             burnDuration: 3f,
-            maxShield: 250f,
+            maxShield: 500f,
             shieldRegen: 4f,
             shieldEnergy: 0.1f,
-            maxHP: 500f,
+            maxHP: 1000f,
             hpRegen: 1f,
             maxEnergy: 10f,
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
-            maxHullSpace: 523.6f,
+            maxHullSpace: 10f * Mathf.Pow(transform.localScale.x, 3),
             name: name,
             attackEnergy: 0.5f,
             thrustEnergy: 1.5f,

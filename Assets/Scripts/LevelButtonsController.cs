@@ -26,6 +26,10 @@ public class LevelButtonsController : MonoBehaviour
 
     public IEnumerator FadeIn()
     {
+        for (float t = 0; t < 1f; t += Time.deltaTime)
+        {
+            yield return null;
+        }
         for (float t = 0; t < FADE_IN_DURATION; t += Time.deltaTime)
         {
             if (!Hidden)

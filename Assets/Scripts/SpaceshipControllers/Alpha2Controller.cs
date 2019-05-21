@@ -9,8 +9,8 @@ public class Alpha2Controller : Spaceship
     {
         VehicleController vehicleController = new DirectedVehicleController(
             rb2d: GetComponent<Rigidbody2D>(),
-            thrustForce: 20f,
-            turnRate: 200f,
+            thrustForce: 40f,
+            turnRate: 100f,
             maximumSpeed: 20f,
             mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 2)
             );
@@ -35,7 +35,7 @@ public class Alpha2Controller : Spaceship
             energyRegen: 1f,
             maxFuel: 510,
             fuelUsage: 0.85f,
-            maxHullSpace: 523.6f,
+            maxHullSpace: 10f * Mathf.Pow(transform.localScale.x, 3),
             name: name,
             attackEnergy: 0.5f,
             thrustEnergy: 1.5f,
