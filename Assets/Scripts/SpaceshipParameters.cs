@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class SpaceshipParameters
 {
+    public SpaceshipModel Model;
     public string Name;
     public int Team;
 
     public VehicleType VehicleType;
     public TargetingType TargetingType;
+    public float Size;
+    public float MassMultiplier;
     public float ThrustForce;
     public float TurnRate;
     public float MaximumSpeed;
@@ -30,4 +33,11 @@ public class SpaceshipParameters
     public float ThrustEnergy;
     public float LifeSupportEnergy;
     public float LifeSupportDegen;
+    public float AttackCooldown;
+
+    public int LootExperience;
+    public int LootCredits;
+    public int LootFuel;
+    public int LootScrap;
+    public int LootItems;
 }

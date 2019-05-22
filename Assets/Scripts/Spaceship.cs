@@ -94,13 +94,18 @@ public class Spaceship : MonoBehaviour
     public int Team;
     public Autopilot Autopilot;
     private AI AI;
-    private AttackType AttackType;
+    public AttackType AttackType;
     public AttackMode AttackMode;
     private TargetingType TargetingType;
     protected bool Thrusting;
     private int NumberOfDrones;
     private int NumberOfTurrets;
     public Player Player;
+    private int LootExperience;
+    private int LootCredits;
+    private int LootFuel;
+    private int LootScrap;
+    private int LootItems;
 
     public bool PlayerControlled
     {
@@ -112,6 +117,26 @@ public class Spaceship : MonoBehaviour
 
     public void Initialize(Player player, SpaceshipParameters parameters)
     {
+        ShowFDN = (Team != 0);
+        NumberOfDrones = 0;
+        NumberOfTurrets = 0;
+        AttackType = AttackType.Bullet;
+        AttackMode = AttackMode.Self;
+        RB2D = GetComponent<Rigidbody2D>();
+        Flamethrower = new FlamethrowerAttackManager(this, 10f);
+        Laser = new LaserAttackManager(this, 10f);
+        Immunities = new List<AttackImmunityRecord>();
+        UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
+        RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
+
+        Credits = 0f;
+        Scrap = 100f;
+        Bullets = 10;
+        Rockets = 10;
+        Mines = 10;
+        Drones = 10;
+        Turrets = 10;
+
         if (parameters.VehicleType == VehicleType.Directed)
         {
             VehicleController = new DirectedVehicleController
@@ -120,7 +145,7 @@ public class Spaceship : MonoBehaviour
                 thrustForce: parameters.ThrustForce,
                 turnRate: parameters.TurnRate,
                 maximumSpeed: parameters.MaximumSpeed,
-                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
         else if (parameters.VehicleType == VehicleType.Omnidirectional)
@@ -128,9 +153,9 @@ public class Spaceship : MonoBehaviour
             VehicleController = new OmnidirectionalVehicleController
             (
                 rb2d: GetComponent<Rigidbody2D>(),
-                thrustForce: 10f,
-                maximumSpeed: 30f,
-                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                thrustForce: parameters.ThrustForce,
+                maximumSpeed: parameters.MaximumSpeed,
+                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
         else if (parameters.VehicleType == VehicleType.Stationary)
@@ -138,13 +163,24 @@ public class Spaceship : MonoBehaviour
             VehicleController = new StationaryVehicleController
             (
                 rb2d: GetComponent<Rigidbody2D>(),
-                thrustForce: 10f,
-                maximumSpeed: 30f,
-                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                thrustForce: parameters.ThrustForce,
+                maximumSpeed: parameters.MaximumSpeed,
+                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
 
-        Autopilot = new FastAutopilotDirected(VehicleController);
+        if (VehicleController.VehicleType == VehicleType.Directed)
+        {
+            Autopilot = new FastAutopilotDirected(VehicleController);
+        }
+        else if (VehicleController.VehicleType == VehicleType.Omnidirectional)
+        {
+            Autopilot = new FastAutopilotOmnidirectional(VehicleController);
+        }
+        else if (VehicleController.VehicleType == VehicleType.Stationary)
+        {
+            Autopilot = new StationaryAutopilot(VehicleController);
+        }
         AI = AI.CreateAI(parameters.AIType, this, Autopilot, null, parameters.AIParameters);
 
         Player = player;
@@ -171,27 +207,12 @@ public class Spaceship : MonoBehaviour
         ThrustEnergy = parameters.ThrustEnergy;
         LifeSupportEnergy = parameters.LifeSupportEnergy;
         LifeSupportDegen = parameters.LifeSupportDegen;
-
-        ShowFDN = (Team != 0);
-        NumberOfDrones = 0;
-        NumberOfTurrets = 0;
-        AttackType = AttackType.Bullet;
-        AttackMode = AttackMode.Self;
-        RB2D = GetComponent<Rigidbody2D>();
-        AttackCooldown = new Cooldown(1f);
-        Flamethrower = new FlamethrowerAttackManager(this, 10f);
-        Laser = new LaserAttackManager(this, 10f);
-        Immunities = new List<AttackImmunityRecord>();
-        UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
-        RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
-
-        Credits = 0f;
-        Scrap = 100f;
-        Bullets = 10;
-        Rockets = 10;
-        Mines = 10;
-        Drones = 10;
-        Turrets = 10;
+        AttackCooldown = new Cooldown(parameters.AttackCooldown);
+        LootExperience = parameters.LootExperience;
+        LootCredits = parameters.LootCredits;
+        LootFuel = parameters.LootFuel;
+        LootScrap = parameters.LootScrap;
+        LootItems = parameters.LootItems;
 
         ModelSpecificInitialization();
     }
@@ -392,39 +413,39 @@ public class Spaceship : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space))
         {
-            QueueAttacks(AttackType);
+            QueueAttack();
         }
 
         CollectTargetingInput();
     }
 
-    public void QueueAttacks(AttackType attackType)
+    public void QueueAttack()
     {
-        if ((attackType & AttackType.Bullet) > 0)
+        if ((AttackType & AttackType.Bullet) > 0)
         {
             FireBullet = true;
         }
-        if ((attackType & AttackType.Rocket) > 0)
+        if ((AttackType & AttackType.Rocket) > 0)
         {
             FireRocket = true;
         }
-        if ((attackType & AttackType.EMP) > 0)
+        if ((AttackType & AttackType.EMP) > 0)
         {
             FireEMP = true;
         }
-        if ((attackType & AttackType.Harpoon) > 0)
+        if ((AttackType & AttackType.Harpoon) > 0)
         {
             FireHarpoon = true;
         }
-        if ((attackType & AttackType.Flamethrower) > 0)
+        if ((AttackType & AttackType.Flamethrower) > 0)
         {
             FireFlamethrower = true;
         }
-        if ((attackType & AttackType.Laser) > 0)
+        if ((AttackType & AttackType.Laser) > 0)
         {
             FireLaser = true;
         }
-        if ((attackType & AttackType.Mine) > 0)
+        if ((AttackType & AttackType.Mine) > 0)
         {
             FireMine = true;
         }
@@ -740,20 +761,18 @@ public class Spaceship : MonoBehaviour
 
     private void SpawnDrone(AttackType attackType)
     {
-        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
+        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "(" + Name + ")'s drone #" + (++NumberOfDrones), Team);
+        parameters.AIParameters[0] = attackType.ToString();
+        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Alpha1], Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1");
-        parameters.AIParameters[0] = AttackType.ToString();
-        parameters.Name = "(" + Name + ")'s drone #" + (++NumberOfDrones);
         spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
     }
 
     private void SpawnTurret(AttackType attackType)
     {
-        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Turret, Position, Quaternion.Euler(0, 0, AttackAngle()));
-        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Turret");
-        parameters.AIParameters[0] = AttackType.ToString();
-        parameters.Name = "(" + Name + ")'s turret #" + (++NumberOfTurrets);
+        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Turret, "(" + Name + ")'s turret #" + (++NumberOfTurrets), Team);
+        parameters.AIParameters[0] = attackType.ToString();
+        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Turret], Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
     }
 
@@ -808,12 +827,24 @@ public class Spaceship : MonoBehaviour
     {
         if (Team == 1)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < LootExperience; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.ExpMorsel, VehicleController.Position, Quaternion.identity);
+            }
+            for (int i = 0; i < LootCredits; i++)
+            {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Coin, VehicleController.Position, Quaternion.identity);
+            }
+            for (int i = 0; i < LootFuel; i++)
+            {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FuelRod, VehicleController.Position, Quaternion.identity);
+            }
+            for (int i = 0; i < LootScrap; i++)
+            {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Scrap, VehicleController.Position, Quaternion.identity);
+            }
+            for (int i = 0; i < LootItems; i++)
+            {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Crate, VehicleController.Position, Quaternion.identity);
             }
         }

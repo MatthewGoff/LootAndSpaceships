@@ -10130,6 +10130,13 @@ MonoBehaviour:
   FireFlamethrower: 0
   FireLaser: 0
   FireMine: 0
+  Credits: 0
+  Scrap: 0
+  Bullets: 0
+  Rockets: 0
+  Mines: 0
+  Drones: 0
+  Turrets: 0
   HasTarget: 0
   TargetUID: 0
   MaxShield: 0
@@ -10141,6 +10148,8 @@ MonoBehaviour:
   MaxFuel: 0
   CurrentFuel: 0
   Team: 0
+  AttackType: 0
+  AttackMode: 0
   SpriteColor1: {fileID: 28065190442440642}
   SpriteColor5: {fileID: 6898594163696765135}
   ExhaustEffect: {fileID: 165352505378505350}

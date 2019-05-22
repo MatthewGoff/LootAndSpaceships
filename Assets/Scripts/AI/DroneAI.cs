@@ -4,22 +4,26 @@ using UnityEngine;
 
 public class DroneAI : AI
 {
-    private static readonly float AGRO_DISTANCE = 10f;
-    private static readonly float DEAGRO_DISTANCE = 20f;
-    private static readonly float DEAGRO_TIME = 3f;
     private static readonly float ORBIT_DISTANCE = 5f;
     private static readonly float ORBIT_ANGULAR_SPEED = 60f;
 
     private float OrbitAngle;
     private bool Aggroed;
     private float AggroCountdown;
-    private AttackType AttackType;
     private Spaceship Mother;
+    private float AgroDistance;
+    private float DeagroDistance;
+    private float DeagroTime;
 
     public DroneAI(Spaceship spaceship, Autopilot autopilot, Spaceship mother, string[] parameters) : base(spaceship, autopilot)
     {
         Mother = mother;
-        AttackType = (AttackType)Enum.Parse(typeof(AttackType), parameters[0]);
+        spaceship.AttackType = Helpers.ParseAttackType(parameters[0]);
+        spaceship.AttackMode = Helpers.ParseAttackMode(parameters[1]);
+        AgroDistance = Helpers.ParseFloat(parameters[2]);
+        DeagroDistance = Helpers.ParseFloat(parameters[3]);
+        DeagroTime = Helpers.ParseFloat(parameters[4]);
+
         OrbitAngle = 0f;
     }
 
@@ -40,12 +44,12 @@ public class DroneAI : AI
             }
         }
 
-        if (closestEnemyDistance < AGRO_DISTANCE)
+        if (closestEnemyDistance < AgroDistance)
         {
             Aggroed = true;
-            AggroCountdown = DEAGRO_TIME;
+            AggroCountdown = DeagroTime;
         }
-        else if (Aggroed == true && closestEnemyDistance > DEAGRO_DISTANCE)
+        else if (Aggroed == true && closestEnemyDistance > DeagroDistance)
         {
             AggroCountdown -= Time.deltaTime;
             if (AggroCountdown <= 0f)
@@ -58,7 +62,7 @@ public class DroneAI : AI
         {
             Autopilot.SetTarget(radarProfiles[closestEnemyUID].Position, AutopilotBehaviour.Seek);
             Spaceship.SelectTarget(closestEnemyUID);
-            Spaceship.QueueAttacks(AttackType);
+            Spaceship.QueueAttack();
         }
         else
         {
@@ -79,6 +83,6 @@ public class DroneAI : AI
     public override void AlertDamage(Spaceship attacker)
     {
         Aggroed = true;
-        AggroCountdown = DEAGRO_TIME;
+        AggroCountdown = DeagroTime;
     }
 }

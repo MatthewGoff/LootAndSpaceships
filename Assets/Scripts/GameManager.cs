@@ -102,266 +102,49 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
+        SpaceshipParameters parameters = null;
         if (PlayerParadigm == 1)
         {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1");
-            parameters.Name = "Player 1";
-            parameters.Team = 0;
+            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "Player 1", 0);
             parameters.AIType = AIType.Player;
-            PlayerController = spaceship.GetComponent<Spaceship>();
-            PlayerController.Initialize(null, parameters);
         }
         else if (PlayerParadigm == 2)
         {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1, new Vector2(0f, 0f), Quaternion.identity);
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1");
-            parameters.Name = "Player 1";
-            parameters.Team = 0;
+            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "Player 1", 0);
             parameters.AIType = AIType.Player;
             parameters.TargetingType = TargetingType.Unbound;
-            PlayerController = spaceship.GetComponent<Spaceship>();
-            PlayerController.Initialize(null, parameters);
         }
         else if (PlayerParadigm == 3)
         {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1Omni, new Vector2(0f, 0f), Quaternion.identity);
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1Omni");
-            parameters.Name = "Player 1";
-            parameters.Team = 0;
+            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1Omni, "Player 1", 0);
             parameters.AIType = AIType.Player;
-            parameters.TargetingType = TargetingType.Unbound;
-            PlayerController = spaceship.GetComponent<Spaceship>();
-            PlayerController.Initialize(null, parameters);
         }
+        GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[parameters.Model], new Vector2(0f, 0f), Quaternion.identity);
+        PlayerController = spaceship.GetComponent<Spaceship>();
+        PlayerController.Initialize(Player, parameters);
     }
 
     private void SpawnEnemies(int level)
     {
-        if (level == 1)
+        Dictionary<SpaceshipModel, int> spawnNumbers = SpaceshipTable.GetSpawnNumbers(level);
+
+        int enemyCount = 0;
+        foreach (SpaceshipModel model in spawnNumbers.Keys)
         {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1");
-            parameters.Name = "Enemy 1 [Alpha 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
+            for (int i = 0; i < spawnNumbers[model]; i++)
+            {
+                SpawnEnemy(model, ++enemyCount);
+            }
         }
-        else if (level == 2)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha2, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha2");
-            parameters.Name = "Enemy 1 [Alpha 2]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
+    }
 
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha3, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Alpha3");
-            parameters.Name = "Enemy 2 [Alpha 3]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha3, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Alpha3");
-            parameters.Name = "Enemy 3 [Alpha 3]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 3)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Beta1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Beta1");
-            parameters.Name = "Enemy 1 [Beta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha4, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Alpha4");
-            parameters.Name = "Enemy 2 [Alpha 4]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Alpha4, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Alpha4");
-            parameters.Name = "Enemy 3 [Alpha 4]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 4)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Eta1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Eta1");
-            parameters.Name = "Enemy 1 [Eta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Delta1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Delta1");
-            parameters.Name = "Enemy 2 [Delta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Delta1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Delta1");
-            parameters.Name = "Enemy 3 [Delta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 5)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Gamma1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Gamma1");
-            parameters.Name = "Enemy 1 [Gamma 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Iota1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Iota1");
-            parameters.Name = "Enemy 2 [Iota 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Iota1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Iota1");
-            parameters.Name = "Enemy 3 [Iota 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 6)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Omicron1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Omicron1");
-            parameters.Name = "Enemy 1 [Omicron 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Nu1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Nu1");
-            parameters.Name = "Enemy 2 [Nu 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Nu1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Nu1");
-            parameters.Name = "Enemy 3 [Nu 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 7)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Phi1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Phi1");
-            parameters.Name = "Enemy 1 [Phi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Pi1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Pi1");
-            parameters.Name = "Enemy 2 [Pi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Pi1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Pi1");
-            parameters.Name = "Enemy 3 [Pi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 8)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Pi2, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Pi2");
-            parameters.Name = "Enemy 1 [Pi 2]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Sigma1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Sigma1");
-            parameters.Name = "Enemy 2 [Sigma 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Sigma1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Sigma1");
-            parameters.Name = "Enemy 3 [Sigma 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 9)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Theta1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Theta1");
-            parameters.Name = "Enemy 1 [Theta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Tau1, new Vector2(30f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Tau1");
-            parameters.Name = "Enemy 2 [Tau 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Tau1, new Vector2(30f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Tau1");
-            parameters.Name = "Enemy 3 [Tau 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
-        else if (level == 10)
-        {
-            GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Upsilon1, new Vector2(50f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Upsilon1");
-            parameters.Name = "Enemy 1 [Upsilon 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Xi1, new Vector2(40f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Xi1");
-            parameters.Name = "Enemy 2 [Xi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Xi1, new Vector2(50f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Xi1");
-            parameters.Name = "Enemy 3 [Xi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Xi1, new Vector2(50f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Xi1");
-            parameters.Name = "Enemy 4 [Xi 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Zeta1, new Vector2(30f, 0f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Zeta1");
-            parameters.Name = "Enemy 5 [Zeta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Zeta1, new Vector2(40f, -5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Zeta1");
-            parameters.Name = "Enemy 6 [Zeta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Zeta1, new Vector2(40f, 5f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Zeta1");
-            parameters.Name = "Enemy 7 [Zeta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Zeta1, new Vector2(50f, -10f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Zeta1");
-            parameters.Name = "Enemy 8 [Zeta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-
-            spaceship = Instantiate(SpaceshipPrefabs.Instance.Zeta1, new Vector2(50f, 10f), Quaternion.Euler(0f, 0f, 180f));
-            parameters = SpaceshipTable.GetModelParameters("Zeta1");
-            parameters.Name = "Enemy 9 [Zeta 1]";
-            parameters.Team = 1;
-            spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
-        }
+    private void SpawnEnemy(SpaceshipModel model, int enemyCount)
+    {
+        Vector2 spawnLocation = new Vector2(40, 0) + 10 * Random.insideUnitCircle;
+        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(model, "Enemy " + enemyCount, 1);
+        GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[model], spawnLocation, Quaternion.Euler(0f, 0f, 180f));
+        spaceship.transform.localScale = new Vector2(parameters.Size, parameters.Size);
+        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
     }
 
     public GameObject Instantiate(GameObject prefab, Vector2 position, Quaternion rotation, Transform transform = null)

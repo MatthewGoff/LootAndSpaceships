@@ -5034,7 +5034,7 @@ Transform:
   m_GameObject: {fileID: 4044976962607047673}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7555256957974508246}
   - {fileID: 8639102067174244396}
@@ -5129,6 +5129,13 @@ MonoBehaviour:
   FireFlamethrower: 0
   FireLaser: 0
   FireMine: 0
+  Credits: 0
+  Scrap: 0
+  Bullets: 0
+  Rockets: 0
+  Mines: 0
+  Drones: 0
+  Turrets: 0
   HasTarget: 0
   TargetUID: 0
   MaxShield: 0
@@ -5140,6 +5147,8 @@ MonoBehaviour:
   MaxFuel: 0
   CurrentFuel: 0
   Team: 0
+  AttackType: 0
+  AttackMode: 0
   SpriteColor1: {fileID: 6780759118645713137}
   SpriteColor3: {fileID: 4273386911958751234}
   SpriteColor5: {fileID: 127534059412047868}

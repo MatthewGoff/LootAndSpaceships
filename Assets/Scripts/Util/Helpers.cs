@@ -32,40 +32,50 @@ public static class Helpers
         {
             returnString = returnString.Substring(0, returnString.Length - 2);
         }
-        returnString =  returnString + "]";
+        returnString = returnString + "]";
         return returnString;
     }
 
     public static string XMLfromODS(string path)
     {
-        string xml;
+        string xml = "";
 
-        using (ZipArchive archive = ZipFile.OpenRead(path))
+        ZipArchive archive = null;
+        try
         {
-            ZipArchiveEntry content = null;
-            foreach (ZipArchiveEntry entry in archive.Entries)
-            {
-                if (entry.Name.ToLower() == "content.xml")
-                {
-                    content = entry;
-                }
-            }
+            archive = ZipFile.OpenRead(path);
+        }
+        catch
+        {
+            Debug.LogError("Error opening file: "+path);
+        }
 
-            using (Stream stream = content.Open())
+        ZipArchiveEntry content = null;
+        foreach (ZipArchiveEntry entry in archive.Entries)
+        {
+            if (entry.Name.ToLower() == "content.xml")
             {
-                var bytesResult = new byte[] { };
-                var bytes = new byte[2000];
-                var i = 0;
-
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                {
-                    var arrayLength = bytesResult.Length;
-                    Array.Resize<byte>(ref bytesResult, arrayLength + i);
-                    Array.Copy(bytes, 0, bytesResult, arrayLength, i);
-                }
-                xml = Encoding.UTF8.GetString(bytesResult);
+                content = entry;
             }
         }
+
+        using (Stream stream = content.Open())
+        {
+            var bytesResult = new byte[] { };
+            var bytes = new byte[2000];
+            var i = 0;
+
+            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+            {
+                var arrayLength = bytesResult.Length;
+                Array.Resize<byte>(ref bytesResult, arrayLength + i);
+                Array.Copy(bytes, 0, bytesResult, arrayLength, i);
+            }
+            xml = Encoding.UTF8.GetString(bytesResult);
+        }
+
+        archive.Dispose();
+
         return xml;
     }
 
@@ -94,7 +104,7 @@ public static class Helpers
                 if (attribute != null)
                 {
                     int columnsRepeated = int.Parse(attribute.Value);
-                    for (int i = 0; i < columnsRepeated; i++)
+                    for (int i = 0; i < columnsRepeated - 1; i++)
                     {
                         tableRow.Add(text);
                     }
@@ -115,5 +125,109 @@ public static class Helpers
         }
 
         return arrayTable;
+    }
+
+    public static AttackType ParseAttackType(string value)
+    {
+        try
+        {
+            return (AttackType)Enum.Parse(typeof(AttackType), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse AttackType: \"" + value + "\". Defaulting to AttackType.Bullet");
+            return AttackType.Bullet;
+        }
+    }
+
+    public static AttackMode ParseAttackMode(string value)
+    {
+        try
+        {
+            return (AttackMode)Enum.Parse(typeof(AttackMode), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse AttackMode: \"" + value + "\". Defaulting to AttackMode.Self");
+            return AttackMode.Self;
+        }
+    }
+
+    public static VehicleType ParseVehicleType(string value)
+    {
+        try
+        {
+            return (VehicleType)Enum.Parse(typeof(VehicleType), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse VehicleType: \"" + value + "\". Defaulting to VehicleType.Directed");
+            return VehicleType.Directed;
+        }
+    }
+
+    public static TargetingType ParseTargetingType(string value)
+    {
+        try
+        {
+            return (TargetingType)Enum.Parse(typeof(TargetingType), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse TargetingType: \"" + value + "\". Defaulting to TargetingType.Bound");
+            return TargetingType.Bound;
+        }
+    }
+
+    public static AIType ParseAIType(string value)
+    {
+        try
+        {
+            return (AIType)Enum.Parse(typeof(AIType), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse AIType: \"" + value + "\". Defaulting to AIType.PassiveAI");
+            return AIType.PassiveAI;
+        }
+    }
+
+    public static int ParseInt(string value)
+    {
+        try
+        {
+            return int.Parse(value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse int: \"" + value + "\". Defaulting to 0");
+            return 0;
+        }
+    }
+
+    public static float ParseFloat(string value)
+    {
+        try
+        {
+            return float.Parse(value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse float: \"" + value + "\". Defaulting to 0");
+            return 0f;
+        }
+    }
+
+    public static SpaceshipModel ParseSpaceshipModel(string value)
+    {
+        try
+        {
+            return (SpaceshipModel)Enum.Parse(typeof(SpaceshipModel), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse SpaceshipModel: \"" + value + "\". Defaulting to SpaceshipModel.Alpha1");
+            return SpaceshipModel.Alpha1;
+        }
     }
 }

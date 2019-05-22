@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class TurretAI : AI
 {
-    private static readonly float AGRO_DISTANCE = 10f;
-    private static readonly float DEAGRO_DISTANCE = 20f;
-    private static readonly float DEAGRO_TIME = 3f;
-
-    private readonly Vector2 Home;
-
     private bool Aggroed;
     private float AggroCountdown;
     private AttackType AttackType;
+    private float AgroDistance;
+    private float DeagroDistance;
+    private float DeagroTime;
 
     public TurretAI(Spaceship spaceship, Autopilot autopilot, string[] parameters) : base(spaceship, autopilot)
     {
-        Home = spaceship.Position;
-        AttackType = (AttackType)Enum.Parse(typeof(AttackType), parameters[0]);
+        spaceship.AttackType = Helpers.ParseAttackType(parameters[0]);
+        spaceship.AttackMode = Helpers.ParseAttackMode(parameters[1]);
+        AgroDistance = Helpers.ParseFloat(parameters[2]);
+        DeagroDistance = Helpers.ParseFloat(parameters[3]);
+        DeagroTime = Helpers.ParseFloat(parameters[4]);
     }
 
     public override void Update(Dictionary<int, RadarProfile> radarProfiles)
@@ -37,12 +37,12 @@ public class TurretAI : AI
             }
         }
 
-        if (closestEnemyDistance < AGRO_DISTANCE)
+        if (closestEnemyDistance < AgroDistance)
         {
             Aggroed = true;
-            AggroCountdown = DEAGRO_TIME;
+            AggroCountdown = DeagroTime;
         }
-        else if (Aggroed == true && closestEnemyDistance > DEAGRO_DISTANCE)
+        else if (Aggroed == true && closestEnemyDistance > DeagroDistance)
         {
             AggroCountdown -= Time.deltaTime;
             if (AggroCountdown <= 0f)
@@ -54,7 +54,7 @@ public class TurretAI : AI
         if (Aggroed & closestEnemyUID != SpaceshipRegistry.NULL_UID)
         {
             Spaceship.SelectTarget(closestEnemyUID);
-            Spaceship.QueueAttacks(AttackType);
+            Spaceship.QueueAttack();
         }
         else
         {
@@ -70,6 +70,6 @@ public class TurretAI : AI
     public override void AlertDamage(Spaceship attacker)
     {
         Aggroed = true;
-        AggroCountdown = DEAGRO_TIME;
+        AggroCountdown = DeagroTime;
     }
 }

@@ -1,0 +1,25 @@
+﻿public enum SpaceshipModel
+{
+    Alpha1,
+    Alpha1Omni,
+    Alpha2,
+    Alpha3,
+    Alpha4,
+    Beta1,
+    Delta1,
+    Eta1,
+    Gamma1,
+    Iota1,
+    Nu1,
+    Omicron1,
+    Phi1,
+    Pi1,
+    Pi2,
+    Sigma1,
+    Tau1,
+    Theta1,
+    Turret,
+    Upsilon1,
+    Xi1,
+    Zeta1
+}

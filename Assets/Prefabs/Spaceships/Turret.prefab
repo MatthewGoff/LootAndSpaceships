@@ -5269,6 +5269,7 @@ MonoBehaviour:
   MaxFuel: 0
   CurrentFuel: 0
   Team: 0
+  AttackType: 0
   AttackMode: 0
   SpriteColor1: {fileID: 6225306925703377378}
   SpriteColor5: {fileID: 4889250337174840004}

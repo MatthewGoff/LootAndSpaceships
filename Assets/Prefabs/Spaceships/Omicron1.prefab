@@ -5221,7 +5221,7 @@ GameObject:
   - component: {fileID: 4354032782895105283}
   - component: {fileID: 1285942722816504165}
   m_Layer: 0
-  m_Name: Omikron1
+  m_Name: Omicron1
   m_TagString: Hitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5236,7 +5236,7 @@ Transform:
   m_GameObject: {fileID: 7276081396334225095}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3747797857518680040}
   - {fileID: 3116264347882685714}
@@ -5333,6 +5333,13 @@ MonoBehaviour:
   FireFlamethrower: 0
   FireLaser: 0
   FireMine: 0
+  Credits: 0
+  Scrap: 0
+  Bullets: 0
+  Rockets: 0
+  Mines: 0
+  Drones: 0
+  Turrets: 0
   HasTarget: 0
   TargetUID: 0
   MaxShield: 0
@@ -5344,6 +5351,8 @@ MonoBehaviour:
   MaxFuel: 0
   CurrentFuel: 0
   Team: 0
+  AttackType: 0
+  AttackMode: 0
   SpriteColor1: {fileID: 198554315229421007}
   SpriteColor3: {fileID: 7463993617864613180}
   SpriteColor4: {fileID: 999938338338441866}

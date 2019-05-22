@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Omikron1Controller : Spaceship
+public class Omicron1Controller : Spaceship
 {
     public GameObject SpriteColor1;
     public GameObject SpriteColor3;
