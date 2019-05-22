@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SimpleAI : AI
@@ -23,9 +22,11 @@ public class SimpleAI : AI
         DeagroDistance = Helpers.ParseFloat(parameters[3]);
         DeagroTime = Helpers.ParseFloat(parameters[4]);
     }
-	
-	public override void Update (Dictionary<int, RadarProfile> radarProfiles)
+
+    public override void Update(Dictionary<int, RadarProfile> radarProfiles)
     {
+        CheckReload();
+
         int closestEnemyUID = SpaceshipRegistry.NULL_UID;
         float closestEnemyDistance = float.MaxValue;
         foreach (RadarProfile radarProfile in radarProfiles.Values)

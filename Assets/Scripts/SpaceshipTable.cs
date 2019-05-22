@@ -40,6 +40,7 @@ public static class SpaceshipTable
             MaxEnergy = Helpers.ParseFloat(table[column, GetRow(table, "Maximum Energy")]),
             EnergyRegen = Helpers.ParseFloat(table[column, GetRow(table, "Energy Regen")]),
             MaxFuel = Helpers.ParseFloat(table[column, GetRow(table, "Maximum Fuel")]),
+            HullSpaceMultiplier = Helpers.ParseFloat(table[column, GetRow(table, "Hull Space Multiplier")]),
             FuelUsage = Helpers.ParseFloat(table[column, GetRow(table, "Fuel Usage")]),
             AttackEnergy = Helpers.ParseFloat(table[column, GetRow(table, "Attack Energy")]),
             ThrustEnergy = Helpers.ParseFloat(table[column, GetRow(table, "Thrust Energy")]),

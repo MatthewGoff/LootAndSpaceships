@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class DroneAI : AI
@@ -29,6 +28,8 @@ public class DroneAI : AI
 
     public override void Update(Dictionary<int, RadarProfile> radarProfiles)
     {
+        CheckReload();
+
         int closestEnemyUID = SpaceshipRegistry.NULL_UID;
         float closestEnemyDistance = float.MaxValue;
         foreach (RadarProfile radarProfile in radarProfiles.Values)

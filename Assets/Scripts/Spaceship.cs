@@ -77,8 +77,7 @@ public class Spaceship : MonoBehaviour
     public float MaxFuel;
     public float CurrentFuel;
     private float FuelUsage;
-    private float MaxHullSpace;
-    private float CurrentHullSpace;
+    public float MaxHullSpace;
     private Cooldown AttackCooldown;
     protected float AttackEnergy;
     protected float ThrustEnergy;
@@ -115,7 +114,7 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    public void Initialize(Player player, SpaceshipParameters parameters)
+    public void Initialize(Player player, Spaceship mother, SpaceshipParameters parameters)
     {
         ShowFDN = (Team != 0);
         NumberOfDrones = 0;
@@ -129,14 +128,6 @@ public class Spaceship : MonoBehaviour
         UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
         RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
 
-        Credits = 0f;
-        Scrap = 100f;
-        Bullets = 10;
-        Rockets = 10;
-        Mines = 10;
-        Drones = 10;
-        Turrets = 10;
-
         if (parameters.VehicleType == VehicleType.Directed)
         {
             VehicleController = new DirectedVehicleController
@@ -145,7 +136,7 @@ public class Spaceship : MonoBehaviour
                 thrustForce: parameters.ThrustForce,
                 turnRate: parameters.TurnRate,
                 maximumSpeed: parameters.MaximumSpeed,
-                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                mass: parameters.MassMultiplier * (4f / 3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
         else if (parameters.VehicleType == VehicleType.Omnidirectional)
@@ -155,7 +146,7 @@ public class Spaceship : MonoBehaviour
                 rb2d: GetComponent<Rigidbody2D>(),
                 thrustForce: parameters.ThrustForce,
                 maximumSpeed: parameters.MaximumSpeed,
-                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                mass: parameters.MassMultiplier * (4f / 3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
         else if (parameters.VehicleType == VehicleType.Stationary)
@@ -165,7 +156,7 @@ public class Spaceship : MonoBehaviour
                 rb2d: GetComponent<Rigidbody2D>(),
                 thrustForce: parameters.ThrustForce,
                 maximumSpeed: parameters.MaximumSpeed,
-                mass: parameters.MassMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+                mass: parameters.MassMultiplier * (4f / 3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
             );
         }
 
@@ -181,7 +172,7 @@ public class Spaceship : MonoBehaviour
         {
             Autopilot = new StationaryAutopilot(VehicleController);
         }
-        AI = AI.CreateAI(parameters.AIType, this, Autopilot, null, parameters.AIParameters);
+        AI = AI.CreateAI(parameters.AIType, this, Autopilot, mother, parameters.AIParameters);
 
         Player = player;
         TargetingType = parameters.TargetingType;
@@ -200,8 +191,7 @@ public class Spaceship : MonoBehaviour
         MaxFuel = parameters.MaxFuel;
         CurrentFuel = MaxFuel;
         FuelUsage = parameters.FuelUsage;
-        MaxHullSpace = 0;
-        CurrentHullSpace = MaxHullSpace;
+        MaxHullSpace = parameters.HullSpaceMultiplier * (4f/3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3);
         Name = parameters.Name;
         AttackEnergy = parameters.AttackEnergy;
         ThrustEnergy = parameters.ThrustEnergy;
@@ -213,6 +203,14 @@ public class Spaceship : MonoBehaviour
         LootFuel = parameters.LootFuel;
         LootScrap = parameters.LootScrap;
         LootItems = parameters.LootItems;
+
+        Credits = 0f;
+        Scrap = MaxHullSpace;
+        Bullets = 0;
+        Rockets = 0;
+        Mines = 0;
+        Drones = 0;
+        Turrets = 0;
 
         ModelSpecificInitialization();
     }
@@ -360,6 +358,10 @@ public class Spaceship : MonoBehaviour
         {
             Die();
         }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayerReload();
+        }
 
         PlayerUpdateVehicleInputs();
 
@@ -448,6 +450,75 @@ public class Spaceship : MonoBehaviour
         if ((AttackType & AttackType.Mine) > 0)
         {
             FireMine = true;
+        }
+    }
+
+    private void PlayerReload()
+    {
+        if ((AttackType & AttackType.Bullet) > 0)
+        {
+            ReloadBullets();
+        }
+        if ((AttackType & AttackType.Rocket) > 0)
+        {
+            ReloadRockets();
+        }
+        if ((AttackType & AttackType.Mine) > 0)
+        {
+            ReloadMines();
+        }
+        if (AttackMode == AttackMode.Drone)
+        {
+            ReloadDrones();
+        }
+        if (AttackMode == AttackMode.Turret)
+        {
+            ReloadTurrets();
+        }
+    }
+
+    public void ReloadBullets()
+    {
+        if (Scrap >= 10)
+        {
+            Bullets += 10;
+            Scrap -= 10;
+        }
+    }
+    
+    public void ReloadRockets()
+    {
+        if (Scrap >= 10)
+        {
+            Rockets += 10;
+            Scrap -= 10;
+        }
+    }
+
+    public void ReloadMines()
+    {
+        if (Scrap >= 10)
+        {
+            Mines += 10;
+            Scrap -= 10;
+        }
+    }
+
+    public void ReloadDrones()
+    {
+        if (Scrap >= 1)
+        {
+            Drones += 1;
+            Scrap -= 1;
+        }
+    }
+    
+    public void ReloadTurrets()
+    {
+        if (Scrap >= 1)
+        {
+            Turrets += 1;
+            Scrap -= 1;
         }
     }
 
@@ -574,7 +645,7 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    private void UpdateEngineDrain()
+    private void UpdateVehicle()
     {
         float energyCost = ThrustEnergy * Time.fixedDeltaTime;
         Thrusting = VehicleController.UpdateVehicle(CurrentEnergy >= energyCost);
@@ -589,36 +660,42 @@ public class Spaceship : MonoBehaviour
         if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            if ((AttackMode & AttackMode.Self) > 0)
+            if ((AttackMode & AttackMode.Self) > 0 && Bullets >= 1)
             {
+                Bullets--;
                 int damage = Mathf.RoundToInt(Random.Range(60, 100));
                 new BulletAttackManager(this, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
                 VehicleController.ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
             }
-            else if ((AttackMode & AttackMode.Drone) > 0)
+            else if ((AttackMode & AttackMode.Drone) > 0 && Bullets >= 10)
             {
+                Bullets -= 10;
                 SpawnDrone(AttackType.Bullet);
             }
-            else if ((AttackMode & AttackMode.Turret) > 0 )
+            else if ((AttackMode & AttackMode.Turret) > 0 && Bullets >= 10)
             {
+                Bullets -= 10;
                 SpawnTurret(AttackType.Bullet);
             }
         }
         if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
             CurrentEnergy -= AttackEnergy;
-            if ((AttackMode & AttackMode.Self) > 0)
+            if ((AttackMode & AttackMode.Self) > 0 && Rockets >= 1)
             {
+                Rockets--;
                 int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
                 new RocketAttackManager(this, HasValidTarget, TargetUID, VehicleController.Position, AttackVector(), VehicleController.Velocity, damage);
                 VehicleController.ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
             }
-            else if ((AttackMode & AttackMode.Drone) > 0)
+            else if ((AttackMode & AttackMode.Drone) > 0 && Rockets >= 10)
             {
+                Rockets -= 10;
                 SpawnDrone(AttackType.Rocket);
             }
-            else if ((AttackMode & AttackMode.Turret) > 0)
+            else if ((AttackMode & AttackMode.Turret) > 0 && Rockets >= 10)
             {
+                Rockets -= 10;
                 SpawnTurret(AttackType.Rocket);
             }
         }
@@ -698,18 +775,21 @@ public class Spaceship : MonoBehaviour
         }
         if (FireMine && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
         {
-            if ((AttackMode & AttackMode.Self) > 0)
+            if ((AttackMode & AttackMode.Self) > 0 && Mines >= 1)
             {
+                Mines--;
                 CurrentEnergy -= AttackEnergy;
                 int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
                 new MineAttackManager(this, VehicleController.Position, damage);
             }
-            else if ((AttackMode & AttackMode.Drone) > 0)
+            else if ((AttackMode & AttackMode.Drone) > 0 && Mines >= 10)
             {
+                Mines -= 10;
                 SpawnDrone(AttackType.Mine);
             }
-            else if ((AttackMode & AttackMode.Turret) > 0)
+            else if ((AttackMode & AttackMode.Turret) > 0 && Mines >= 10)
             {
+                Mines -= 10;
                 SpawnTurret(AttackType.Mine);
             }
         }
@@ -721,7 +801,7 @@ public class Spaceship : MonoBehaviour
         UpdateEnergyRegen();
         UpdateLifeSupport();
         UpdateShieldDrain();
-        UpdateEngineDrain();
+        UpdateVehicle();
         SubmitRadarProfile();
         ExecuteAttacks();  
     }
@@ -761,19 +841,30 @@ public class Spaceship : MonoBehaviour
 
     private void SpawnDrone(AttackType attackType)
     {
-        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "(" + Name + ")'s drone #" + (++NumberOfDrones), Team);
-        parameters.AIParameters[0] = attackType.ToString();
-        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Alpha1], Position, Quaternion.Euler(0, 0, AttackAngle()));
-        spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
+        if (Drones >= 1)
+        {
+            Drones--;
+            SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "(" + Name + ")'s drone #" + (++NumberOfDrones), Team);
+            parameters.AIType = AIType.DroneAI;
+            parameters.AIParameters[0] = attackType.ToString();
+            GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Alpha1], Position, Quaternion.Euler(0, 0, AttackAngle()));
+            spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+            spaceship.GetComponent<Spaceship>().Initialize(null, this, parameters);
+            spaceship.GetComponent<Spaceship>().Scrap = 10;
+        }
     }
 
     private void SpawnTurret(AttackType attackType)
     {
-        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Turret, "(" + Name + ")'s turret #" + (++NumberOfTurrets), Team);
-        parameters.AIParameters[0] = attackType.ToString();
-        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Turret], Position, Quaternion.Euler(0, 0, AttackAngle()));
-        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
+        if (Turrets >= 1)
+        {
+            Turrets--;
+            SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Turret, "(" + Name + ")'s turret #" + (++NumberOfTurrets), Team);
+            parameters.AIParameters[0] = attackType.ToString();
+            GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Turret], Position, Quaternion.Euler(0, 0, AttackAngle()));
+            spaceship.GetComponent<Spaceship>().Initialize(null, this, parameters);
+            spaceship.GetComponent<Spaceship>().Scrap = 10;
+        }
     }
 
     protected void ZeroAttackInputs()
@@ -871,7 +962,7 @@ public class Spaceship : MonoBehaviour
 
     public virtual void PickupScrap(float quantity)
     {
-
+        Scrap += quantity;
     }
 
     public virtual void PickupCrate(int quantity)

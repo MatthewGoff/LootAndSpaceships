@@ -230,4 +230,11 @@ public static class Helpers
             return SpaceshipModel.Alpha1;
         }
     }
+
+    public static string FormatNumber(float number, int length)
+    {
+        //int digits = Mathf.FloorToInt(Mathf.Log10(number));
+        string value = number.ToString();
+        return value.Substring(0, Mathf.Min(value.Length, length));
+    }
 }

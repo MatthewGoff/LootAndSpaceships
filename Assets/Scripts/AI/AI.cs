@@ -41,4 +41,31 @@ public abstract class AI
             return null;
         }
     }
+
+    protected void CheckReload()
+    {
+        if (Spaceship.AttackMode == AttackMode.Self)
+        {
+            if ((Spaceship.AttackType & AttackType.Bullet) > 0 && Spaceship.Bullets == 0)
+            {
+                Spaceship.ReloadBullets();
+            }
+            if ((Spaceship.AttackType & AttackType.Rocket) > 0 && Spaceship.Rockets == 0)
+            {
+                Spaceship.ReloadRockets();
+            }
+            if ((Spaceship.AttackType & AttackType.Mine) > 0 && Spaceship.Mines == 0)
+            {
+                Spaceship.ReloadMines();
+            }
+        }
+        else if (Spaceship.AttackMode == AttackMode.Drone)
+        {
+            Spaceship.ReloadDrones();
+        }
+        else if (Spaceship.AttackMode == AttackMode.Turret)
+        {
+            Spaceship.ReloadTurrets();
+        }
+    }
 }

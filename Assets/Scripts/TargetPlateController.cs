@@ -29,7 +29,7 @@ public class TargetPlateController : MonoBehaviour
         if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
         {
             Spaceship newTarget = spaceships[subject.TargetUID];
-            if (!HasTarget ||  Target != newTarget)
+            if (!HasTarget || Target != newTarget)
             {
                 if (HasTarget)
                 {

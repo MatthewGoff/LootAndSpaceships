@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour
         }
         GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[parameters.Model], new Vector2(0f, 0f), Quaternion.identity);
         PlayerController = spaceship.GetComponent<Spaceship>();
-        PlayerController.Initialize(Player, parameters);
+        PlayerController.Initialize(Player, null, parameters);
     }
 
     private void SpawnEnemies(int level)
@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviour
         SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(model, "Enemy " + enemyCount, 1);
         GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[model], spawnLocation, Quaternion.Euler(0f, 0f, 180f));
         spaceship.transform.localScale = new Vector2(parameters.Size, parameters.Size);
-        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
+        spaceship.GetComponent<Spaceship>().Initialize(null, null, parameters);
     }
 
     public GameObject Instantiate(GameObject prefab, Vector2 position, Quaternion rotation, Transform transform = null)

@@ -29,6 +29,7 @@ public class SpaceshipParameters
     public float EnergyRegen;
     public float MaxFuel;
     public float FuelUsage;
+    public float HullSpaceMultiplier;
     public float AttackEnergy;
     public float ThrustEnergy;
     public float LifeSupportEnergy;
