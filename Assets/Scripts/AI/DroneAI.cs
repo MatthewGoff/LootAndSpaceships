@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DroneAI : AI
@@ -15,10 +16,10 @@ public class DroneAI : AI
     private AttackType AttackType;
     private Spaceship Mother;
 
-    public DroneAI(Spaceship spaceship, Autopilot autopilot, AttackType attackType, Spaceship mother) : base(spaceship, autopilot)
+    public DroneAI(Spaceship spaceship, Autopilot autopilot, Spaceship mother, string[] parameters) : base(spaceship, autopilot)
     {
-        AttackType = attackType;
         Mother = mother;
+        AttackType = (AttackType)Enum.Parse(typeof(AttackType), parameters[0]);
         OrbitAngle = 0f;
     }
 

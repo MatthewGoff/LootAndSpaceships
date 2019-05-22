@@ -15,7 +15,7 @@ public class SpaceshipPrefabs : MonoBehaviour
     public GameObject Gamma1;
     public GameObject Iota1;
     public GameObject Nu1;
-    public GameObject Omikron1;
+    public GameObject Omicron1;
     public GameObject Phi1;
     public GameObject Pi1;
     public GameObject Pi2;

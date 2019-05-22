@@ -110,61 +110,69 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    protected void Initialize(
-        Player player,
-        Autopilot autopilot,
-        AI ai,
-        bool showFDN,
-        VehicleController vehicleController,
-        TargetingType targetingType,
-        int team,
-        float burnDuration,
-        float maxShield,
-        float shieldRegen,
-        float shieldEnergy,
-        float maxHP,
-        float hpRegen,
-        float maxEnergy,
-        float energyRegen,
-        float maxFuel,
-        float fuelUsage,
-        float maxHullSpace,
-        string name,
-        float attackEnergy,
-        float thrustEnergy,
-        float lifeSupportEnergy,
-        float lifeSupportDegen
-        )
+    public void Initialize(Player player, SpaceshipParameters parameters)
     {
-        Player = player;
-        Autopilot = autopilot;
-        AI = ai;
-        ShowFDN = showFDN;
-        VehicleController = vehicleController;
-        TargetingType = targetingType;
-        Team = team;
-        BurnDuration = burnDuration;
-        MaxShield = maxShield;
-        CurrentShield = MaxShield;
-        ShieldRegen = shieldRegen;
-        ShieldEnergy = shieldEnergy;
-        MaxHealth = maxHP;
-        CurrentHealth = MaxHealth;
-        HealthRegen = hpRegen;
-        MaxEnergy = maxEnergy;
-        CurrentEnergy = MaxEnergy;
-        EnergyRegen = energyRegen;
-        MaxFuel = maxFuel;
-        CurrentFuel = MaxFuel;
-        FuelUsage = fuelUsage;
-        MaxHullSpace = maxHullSpace;
-        CurrentHullSpace = MaxHullSpace;
-        Name = name;
-        AttackEnergy = attackEnergy;
-        ThrustEnergy = thrustEnergy;
-        LifeSupportEnergy = lifeSupportEnergy;
-        LifeSupportDegen = lifeSupportDegen;
+        if (parameters.VehicleType == VehicleType.Directed)
+        {
+            VehicleController = new DirectedVehicleController
+            (
+                rb2d: GetComponent<Rigidbody2D>(),
+                thrustForce: parameters.ThrustForce,
+                turnRate: parameters.TurnRate,
+                maximumSpeed: parameters.MaximumSpeed,
+                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+            );
+        }
+        else if (parameters.VehicleType == VehicleType.Omnidirectional)
+        {
+            VehicleController = new OmnidirectionalVehicleController
+            (
+                rb2d: GetComponent<Rigidbody2D>(),
+                thrustForce: 10f,
+                maximumSpeed: 30f,
+                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+            );
+        }
+        else if (parameters.VehicleType == VehicleType.Stationary)
+        {
+            VehicleController = new StationaryVehicleController
+            (
+                rb2d: GetComponent<Rigidbody2D>(),
+                thrustForce: 10f,
+                maximumSpeed: 30f,
+                mass: Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+            );
+        }
 
+        Autopilot = new FastAutopilotDirected(VehicleController);
+        AI = AI.CreateAI(parameters.AIType, this, Autopilot, null, parameters.AIParameters);
+
+        Player = player;
+        TargetingType = parameters.TargetingType;
+        Team = parameters.Team;
+        BurnDuration = parameters.BurnDuration;
+        MaxShield = parameters.MaxShield;
+        CurrentShield = MaxShield;
+        ShieldRegen = parameters.ShieldRegen;
+        ShieldEnergy = parameters.ShieldEnergy;
+        MaxHealth = parameters.MaxHealth;
+        CurrentHealth = MaxHealth;
+        HealthRegen = parameters.HealthRegen;
+        MaxEnergy = parameters.MaxEnergy;
+        CurrentEnergy = MaxEnergy;
+        EnergyRegen = parameters.EnergyRegen;
+        MaxFuel = parameters.MaxFuel;
+        CurrentFuel = MaxFuel;
+        FuelUsage = parameters.FuelUsage;
+        MaxHullSpace = 0;
+        CurrentHullSpace = MaxHullSpace;
+        Name = parameters.Name;
+        AttackEnergy = parameters.AttackEnergy;
+        ThrustEnergy = parameters.ThrustEnergy;
+        LifeSupportEnergy = parameters.LifeSupportEnergy;
+        LifeSupportDegen = parameters.LifeSupportDegen;
+
+        ShowFDN = (Team != 0);
         NumberOfDrones = 0;
         NumberOfTurrets = 0;
         AttackType = AttackType.Bullet;
@@ -184,6 +192,13 @@ public class Spaceship : MonoBehaviour
         Mines = 10;
         Drones = 10;
         Turrets = 10;
+
+        ModelSpecificInitialization();
+    }
+
+    protected virtual void ModelSpecificInitialization()
+    {
+
     }
 
     public virtual void TakeDamage(AttackManager attackManager, float damage, DamageType damageType)
@@ -727,15 +742,19 @@ public class Spaceship : MonoBehaviour
     {
         GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Alpha1, Position, Quaternion.Euler(0, 0, AttackAngle()));
         spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        Alpha1Controller controller = spaceship.GetComponent<Alpha1Controller>();
-        controller.Initialize(null, "("+Name + ")'s drone #" + ++NumberOfDrones, AIType.DroneAI, attackType, this, true, Team, TargetingType.Bound);
+        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Alpha1");
+        parameters.AIParameters[0] = AttackType.ToString();
+        parameters.Name = "(" + Name + ")'s drone #" + (++NumberOfDrones);
+        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
     }
 
     private void SpawnTurret(AttackType attackType)
     {
-        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Turret, Position, Quaternion.identity);
-        TurretController controller = spaceship.GetComponent<TurretController>();
-        controller.Initialize("(" + Name + ")'s Turret #" + ++NumberOfTurrets, AIType.TurretAI, attackType, this, true, Team, TargetingType.Unbound);
+        GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Turret, Position, Quaternion.Euler(0, 0, AttackAngle()));
+        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters("Turret");
+        parameters.AIParameters[0] = AttackType.ToString();
+        parameters.Name = "(" + Name + ")'s turret #" + (++NumberOfTurrets);
+        spaceship.GetComponent<Spaceship>().Initialize(null, parameters);
     }
 
     protected void ZeroAttackInputs()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TurretAI : AI
@@ -13,10 +14,10 @@ public class TurretAI : AI
     private float AggroCountdown;
     private AttackType AttackType;
 
-    public TurretAI(Spaceship spaceship, Autopilot autopilot, AttackType attackType) : base(spaceship, autopilot)
+    public TurretAI(Spaceship spaceship, Autopilot autopilot, string[] parameters) : base(spaceship, autopilot)
     {
         Home = spaceship.Position;
-        AttackType = attackType;
+        AttackType = (AttackType)Enum.Parse(typeof(AttackType), parameters[0]);
     }
 
     public override void Update(Dictionary<int, RadarProfile> radarProfiles)
