@@ -105,18 +105,18 @@ public class GameManager : MonoBehaviour
         SpaceshipParameters parameters = null;
         if (PlayerParadigm == 1)
         {
-            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "Player 1", 0);
+            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1, "Player 1", 0);
             parameters.AIType = AIType.Player;
         }
         else if (PlayerParadigm == 2)
         {
-            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1, "Player 1", 0);
+            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1, "Player 1", 0);
             parameters.AIType = AIType.Player;
             parameters.TargetingType = TargetingType.Unbound;
         }
         else if (PlayerParadigm == 3)
         {
-            parameters = SpaceshipTable.PrepareSpaceshipParameters(SpaceshipModel.Alpha1Omni, "Player 1", 0);
+            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1Omni, "Player 1", 0);
             parameters.AIType = AIType.Player;
         }
         GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[parameters.Model], new Vector2(0f, 0f), Quaternion.identity);
@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
     private void SpawnEnemy(SpaceshipModel model, int enemyCount)
     {
         Vector2 spawnLocation = new Vector2(40, 0) + 10 * Random.insideUnitCircle;
-        SpaceshipParameters parameters = SpaceshipTable.PrepareSpaceshipParameters(model, "Enemy " + enemyCount, 1);
+        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters(model, "Enemy " + enemyCount, 1);
         GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[model], spawnLocation, Quaternion.Euler(0f, 0f, 180f));
         spaceship.transform.localScale = new Vector2(parameters.Size, parameters.Size);
         spaceship.GetComponent<Spaceship>().Initialize(null, null, parameters);

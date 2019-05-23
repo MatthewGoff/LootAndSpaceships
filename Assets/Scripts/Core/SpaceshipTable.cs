@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class SpaceshipTable
 {
-    private static readonly string SPACESHIP_TABLE_PATH = Application.dataPath + "/../SpaceshipTable.ods";
+    private static readonly string SPACESHIP_TABLE_PATH = Application.dataPath + "/Configuration/SpaceshipTable.ods";
 
-    public static SpaceshipParameters PrepareSpaceshipParameters(SpaceshipModel model, string name, int team)
+    public static SpaceshipParameters GetModelParameters(SpaceshipModel model, string name, int team)
     {
         string[,] table = OpenTable();
         int column = GetColumn(table, model);
@@ -15,12 +15,11 @@ public static class SpaceshipTable
             Model = model,
             Name = name,
             Team = team,
-            VehicleType = Helpers.ParseVehicleType(table[column, GetRow(table, "Vehicle Type")]),
             TargetingType = Helpers.ParseTargetingType(table[column, GetRow(table, "Targeting Type")]),
             Size = Helpers.ParseFloat(table[column, GetRow(table, "Size")]),
             MassMultiplier = Helpers.ParseFloat(table[column, GetRow(table, "Mass Multiplier")]),
-            ThrustForce = Helpers.ParseFloat(table[column, GetRow(table, "Thrust Force")]),
-            TurnRate = Helpers.ParseFloat(table[column, GetRow(table, "Turn Rate")]),
+            ThrustForceMultiplier = Helpers.ParseFloat(table[column, GetRow(table, "Thrust Force Multiplier")]),
+            TurnForceMultiplier = Helpers.ParseFloat(table[column, GetRow(table, "Turn Force Multiplier")]),
             MaximumSpeed = Helpers.ParseFloat(table[column, GetRow(table, "Maximum Speed")]),
             AIType = Helpers.ParseAIType(table[column, GetRow(table, "AI Type")]),
             AIParameters = new string[]

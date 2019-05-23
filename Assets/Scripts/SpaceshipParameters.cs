@@ -1,19 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SpaceshipParameters
+﻿public class SpaceshipParameters
 {
     public SpaceshipModel Model;
     public string Name;
     public int Team;
 
-    public VehicleType VehicleType;
     public TargetingType TargetingType;
     public float Size;
     public float MassMultiplier;
-    public float ThrustForce;
-    public float TurnRate;
+    public float ThrustForceMultiplier;
+    public float TurnForceMultiplier;
     public float MaximumSpeed;
 
     public AIType AIType;

@@ -153,19 +153,6 @@ public static class Helpers
         }
     }
 
-    public static VehicleType ParseVehicleType(string value)
-    {
-        try
-        {
-            return (VehicleType)Enum.Parse(typeof(VehicleType), value);
-        }
-        catch
-        {
-            Debug.LogWarning("Failed to parse VehicleType: \"" + value + "\". Defaulting to VehicleType.Directed");
-            return VehicleType.Directed;
-        }
-    }
-
     public static TargetingType ParseTargetingType(string value)
     {
         try

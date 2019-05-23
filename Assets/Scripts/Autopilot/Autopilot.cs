@@ -4,16 +4,16 @@ public abstract class Autopilot
 {
     private static readonly float TARGET_RADIUS = 0.5f;
 
-    protected VehicleController VehicleController;
+    protected Vehicle Vehicle;
 
     protected AutopilotBehaviour Behaviour;
     public Vector2 Target;
 
     public bool OnStandby;
 
-    protected Autopilot(VehicleController vehicleController)
+    protected Autopilot(Vehicle vehicle)
     {
-        VehicleController = vehicleController;
+        Vehicle = vehicle;
         Standby();
     }
 
@@ -51,7 +51,7 @@ public abstract class Autopilot
         }
         else if (Behaviour == AutopilotBehaviour.Arrive)
         {
-            if (AtTarget() && VehicleController.Velocity == Vector2.zero)
+            if (AtTarget() && Vehicle.Velocity == Vector2.zero)
             {
                 return true;
             }
@@ -68,7 +68,7 @@ public abstract class Autopilot
         }
         else if (Behaviour == AutopilotBehaviour.Halt)
         {
-            if (VehicleController.Velocity.magnitude != 0)
+            if (Vehicle.Velocity.magnitude != 0)
             {
                 HaltUpdate();
                 return false;
@@ -94,6 +94,6 @@ public abstract class Autopilot
 
     protected bool AtTarget()
     {
-        return (VehicleController.Position - Target).magnitude < TARGET_RADIUS;
+        return (Vehicle.Position - Target).magnitude < TARGET_RADIUS;
     }
 }

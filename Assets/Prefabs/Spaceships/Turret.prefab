@@ -5185,7 +5185,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7949491879374553302}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -5268,6 +5268,7 @@ MonoBehaviour:
   CurrentEnergy: 0
   MaxFuel: 0
   CurrentFuel: 0
+  MaxHullSpace: 0
   Team: 0
   AttackType: 0
   AttackMode: 0
