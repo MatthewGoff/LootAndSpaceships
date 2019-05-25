@@ -52,7 +52,7 @@ public class ExplosionController : MonoBehaviour
         }
     }
 
-    public void AssignManager(CollisionTypeAttackManager manager)
+    public void Initialize(CollisionTypeAttackManager manager)
     {
         Manager = manager;
     }

@@ -1,15 +1,29 @@
 ﻿public class Reactor : Item
 {
-    public float EnergyCacheSize;
+    public float EnergyCapacity;
+    public float CurrentEnergy;
     public float EnergyRegen;
     public float FuelCapacity;
-    public float FuelUsage;
+    public float CurrentFuel;
+    public float FuelConsumption;
 
-    public Reactor(float weight, float volume, float energyCacheSize, float energyRegen, float fuelCapacity, float fuelUsage): base(weight, volume, ItemClass.Reactor)
+    public Reactor(float weight, float volume, float energyCapacity, float energyRegen, float fuelCapacity, float fuelUsage): base(weight, volume, ItemClass.Reactor)
     {
-        EnergyCacheSize = energyCacheSize;
+        EnergyCapacity = energyCapacity;
+        CurrentEnergy = EnergyCapacity;
         EnergyRegen = energyRegen;
         FuelCapacity = fuelCapacity;
-        FuelUsage = fuelUsage;
+        CurrentFuel = FuelCapacity;
+        FuelConsumption = fuelUsage;
+    }
+
+    public Reactor(ReactorParameters parameters): base(parameters.Weight, parameters.Volume, ItemClass.Reactor)
+    {
+        EnergyCapacity = parameters.EnergyCapacity;
+        CurrentEnergy = EnergyCapacity;
+        EnergyRegen = parameters.EnergyRegen;
+        FuelCapacity = parameters.FuelCapacity;
+        CurrentFuel = FuelCapacity;
+        FuelConsumption = parameters.FuelConsumption;
     }
 }

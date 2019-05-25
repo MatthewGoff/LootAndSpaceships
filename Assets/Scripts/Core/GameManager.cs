@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     public GameObject LevelUpText;
     public Transform Scene;
     private Transform VolatileSceneObjects;
-    private int PlayerParadigm;
 
     private int CurrentLevel;
     private bool SceneActive;
@@ -27,8 +26,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        SpaceshipTable.Initialize();
         Player = new Player();
-        PlayerParadigm = 1;
     }
 
     private void Start()
@@ -39,8 +38,7 @@ public class GameManager : MonoBehaviour
 
     private void OpenScene(int level)
     {
-        RadarOmniscience.Initialize();
-        SpaceshipRegistry.Initialize();
+        Omniscience.Initialize();
         VolatileSceneObjects = new GameObject("VolatileSceneObjects").transform;
         VolatileSceneObjects.transform.SetParent(Scene);
 
@@ -61,17 +59,6 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Alpha1) && !PlayerAlive)
             {
-                PlayerParadigm = 1;
-                SpawnPlayer();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2) && !PlayerAlive)
-            {
-                PlayerParadigm = 2;
-                SpawnPlayer();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3) && !PlayerAlive)
-            {
-                PlayerParadigm = 3;
                 SpawnPlayer();
             }
         }
@@ -102,49 +89,38 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        SpaceshipParameters parameters = null;
-        if (PlayerParadigm == 1)
-        {
-            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1, "Player 1", 0);
-            parameters.AIType = AIType.Player;
-        }
-        else if (PlayerParadigm == 2)
-        {
-            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1, "Player 1", 0);
-            parameters.AIType = AIType.Player;
-            parameters.TargetingType = TargetingType.Unbound;
-        }
-        else if (PlayerParadigm == 3)
-        {
-            parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1Omni, "Player 1", 0);
-            parameters.AIType = AIType.Player;
-        }
-        GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[parameters.Model], new Vector2(0f, 0f), Quaternion.identity);
-        PlayerController = spaceship.GetComponent<Spaceship>();
-        PlayerController.Initialize(Player, null, parameters);
+        GameObject prefab = SpaceshipPrefabs.Instance.Prefabs[SpaceshipTable.Instance.GetHullParameters("Player").Model];
+        GameObject gameObject = Instantiate(prefab, Vector2.zero, Quaternion.identity);
+        Spaceship spaceship = gameObject.GetComponent<Spaceship>();
+        int UID = Omniscience.Instance.RegisterNewEntity(spaceship);
+        Liscense liscense = new Liscense(UID, "Player 1", 0, Player, null);
+        spaceship.Initialize(liscense, "Player");
+        PlayerController = spaceship;
     }
 
     private void SpawnEnemies(int level)
     {
-        Dictionary<SpaceshipModel, int> spawnNumbers = SpaceshipTable.GetSpawnNumbers(level);
+        Dictionary<string, int> spawnNumbers = SpaceshipTable.Instance.GetSpawnQuantities(level);
 
         int enemyCount = 0;
-        foreach (SpaceshipModel model in spawnNumbers.Keys)
+        foreach (string configuration in spawnNumbers.Keys)
         {
-            for (int i = 0; i < spawnNumbers[model]; i++)
+            for (int i = 0; i < spawnNumbers[configuration]; i++)
             {
-                SpawnEnemy(model, ++enemyCount);
+                SpawnEnemy(configuration, ++enemyCount);
             }
         }
     }
 
-    private void SpawnEnemy(SpaceshipModel model, int enemyCount)
+    private void SpawnEnemy(string configuration, int enemyCount)
     {
         Vector2 spawnLocation = new Vector2(40, 0) + 10 * Random.insideUnitCircle;
-        SpaceshipParameters parameters = SpaceshipTable.GetModelParameters(model, "Enemy " + enemyCount, 1);
-        GameObject spaceship = Instantiate(SpaceshipPrefabs.Instance.Prefabs[model], spawnLocation, Quaternion.Euler(0f, 0f, 180f));
-        spaceship.transform.localScale = new Vector2(parameters.Size, parameters.Size);
-        spaceship.GetComponent<Spaceship>().Initialize(null, null, parameters);
+        GameObject prefab = SpaceshipPrefabs.Instance.Prefabs[SpaceshipTable.Instance.GetHullParameters(configuration).Model];
+        GameObject gameObject = Instantiate(prefab, spawnLocation, Quaternion.Euler(0f, 0f, 180f));
+        Spaceship spaceship = gameObject.GetComponent<Spaceship>();
+        int UID = Omniscience.Instance.RegisterNewEntity(spaceship);
+        Liscense liscense = new Liscense(UID, "Enemy " + enemyCount.ToString(), 1, null, null);
+        spaceship.Initialize(liscense, configuration);
     }
 
     public GameObject Instantiate(GameObject prefab, Vector2 position, Quaternion rotation, Transform transform = null)
@@ -188,7 +164,7 @@ public class GameManager : MonoBehaviour
 
     public void CheckLevelCleared()
     {
-        if (SpaceshipRegistry.Instance.CountTeamMembers(1) == 0)
+        if (Omniscience.Instance.CountTeamMembers(1) == 0)
         {
             LevelCleared();
         }

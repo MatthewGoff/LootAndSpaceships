@@ -4,33 +4,34 @@ using UnityEngine;
 
 public class FlamethrowerParticleController : MonoBehaviour
 {
-    public float ParticleLifetime;
     public AnimationCurve ParticleSize;
     public Gradient ParticleColor;
 
+    private float Range;
     private FlamethrowerAttackManager Manager;
-    private float Age;
+    private float Distance;
     private Vector2 Velocity;
 
-    public void Initialize(FlamethrowerAttackManager manager, Vector2 velocity)
+    public void Initialize(FlamethrowerAttackManager manager, Vector2 velocity, float range)
     {
         Manager = manager;
-        Age = 0f;
+        Range = range;
         Velocity = velocity;
+        Distance = 0;
 
         FixedUpdate();
     }
 
     private void FixedUpdate()
     {
-        Age += Time.fixedDeltaTime;
-        if (Age > ParticleLifetime)
+        Distance += Velocity.magnitude * Time.fixedDeltaTime;
+        if (Distance > Range)
         {
             Destroy(gameObject);
         }
         transform.position += (Vector3)Velocity * Time.fixedDeltaTime;
-        transform.localScale = ParticleSize.Evaluate(Age / ParticleLifetime) * new Vector2(1, 1);
-        GetComponent<SpriteRenderer>().color = ParticleColor.Evaluate(Age / ParticleLifetime);
+        transform.localScale = ParticleSize.Evaluate(Distance / Range) * new Vector2(1, 1);
+        GetComponent<SpriteRenderer>().color = ParticleColor.Evaluate(Distance / Range);
     }
 
     public void OnTriggerEnter2D(Collider2D collider)

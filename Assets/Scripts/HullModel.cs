@@ -1,7 +1,6 @@
-﻿public enum SpaceshipModel
+﻿public enum HullModel
 {
     Alpha1,
-    Alpha1Omni,
     Alpha2,
     Alpha3,
     Alpha4,

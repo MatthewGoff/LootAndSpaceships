@@ -14,58 +14,31 @@ public abstract class AI
     public abstract void Update(Dictionary<int, RadarProfile> radarProfiles);
     public abstract void AlertDamage(Spaceship attacker);
 
-    public static AI CreateAI(AIType aiType, Spaceship spaceship, Autopilot autopilot, Spaceship mother, string[] parameters)
+    public static AI CreateAI(AIParameters parameters, Spaceship spaceship, Autopilot autopilot, Spaceship mother)
     {
-        if (aiType == AIType.Player)
+        if (parameters.AIType == AIType.Player)
         {
             return null;
         }
-        else if (aiType == AIType.PassiveAI)
+        else if (parameters.AIType == AIType.PassiveAI)
         {
             return new PassiveAI(spaceship, autopilot);
         }
-        else if (aiType == AIType.SimpleAI)
+        else if (parameters.AIType == AIType.SimpleAI)
         {
-            return new SimpleAI(spaceship, autopilot, parameters);
+            return new SimpleAI(parameters, spaceship, autopilot);
         }
-        else if (aiType == AIType.DroneAI)
+        else if (parameters.AIType == AIType.DroneAI)
         {
-            return new DroneAI(spaceship, autopilot, mother, parameters);
+            return new DroneAI(parameters, spaceship, autopilot, mother);
         }
-        else if (aiType == AIType.TurretAI)
+        else if (parameters.AIType == AIType.TurretAI)
         {
-            return new TurretAI(spaceship, autopilot, parameters);
+            return new TurretAI(parameters, spaceship, autopilot);
         }
         else
         {
             return null;
-        }
-    }
-
-    protected void CheckReload()
-    {
-        if (Spaceship.AttackMode == AttackMode.Self)
-        {
-            if ((Spaceship.AttackType & AttackType.Bullet) > 0 && Spaceship.Bullets == 0)
-            {
-                Spaceship.ReloadBullets();
-            }
-            if ((Spaceship.AttackType & AttackType.Rocket) > 0 && Spaceship.Rockets == 0)
-            {
-                Spaceship.ReloadRockets();
-            }
-            if ((Spaceship.AttackType & AttackType.Mine) > 0 && Spaceship.Mines == 0)
-            {
-                Spaceship.ReloadMines();
-            }
-        }
-        else if (Spaceship.AttackMode == AttackMode.Drone)
-        {
-            Spaceship.ReloadDrones();
-        }
-        else if (Spaceship.AttackMode == AttackMode.Turret)
-        {
-            Spaceship.ReloadTurrets();
         }
     }
 }

@@ -14,23 +14,19 @@ public class DroneAI : AI
     private float DeagroDistance;
     private float DeagroTime;
 
-    public DroneAI(Spaceship spaceship, Autopilot autopilot, Spaceship mother, string[] parameters) : base(spaceship, autopilot)
+    public DroneAI(AIParameters parameters, Spaceship spaceship, Autopilot autopilot, Spaceship mother) : base(spaceship, autopilot)
     {
         Mother = mother;
-        spaceship.AttackType = Helpers.ParseAttackType(parameters[0]);
-        spaceship.AttackMode = Helpers.ParseAttackMode(parameters[1]);
-        AgroDistance = Helpers.ParseFloat(parameters[2]);
-        DeagroDistance = Helpers.ParseFloat(parameters[3]);
-        DeagroTime = Helpers.ParseFloat(parameters[4]);
+        AgroDistance = Helpers.ParseFloat(parameters.Param1);
+        DeagroDistance = Helpers.ParseFloat(parameters.Param2);
+        DeagroTime = Helpers.ParseFloat(parameters.Param3);
 
         OrbitAngle = 0f;
     }
 
     public override void Update(Dictionary<int, RadarProfile> radarProfiles)
     {
-        CheckReload();
-
-        int closestEnemyUID = SpaceshipRegistry.NULL_UID;
+        int closestEnemyUID = Omniscience.NULL_UID;
         float closestEnemyDistance = float.MaxValue;
         foreach (RadarProfile radarProfile in radarProfiles.Values)
         {
@@ -59,11 +55,11 @@ public class DroneAI : AI
             }
         }
 
-        if (Aggroed & closestEnemyUID != SpaceshipRegistry.NULL_UID)
+        if (Aggroed & closestEnemyUID != Omniscience.NULL_UID)
         {
             Autopilot.SetTarget(radarProfiles[closestEnemyUID].Position, AutopilotBehaviour.Seek);
             Spaceship.SelectTarget(closestEnemyUID);
-            Spaceship.QueueAttack();
+            Spaceship.QueueAttack(0);
         }
         else
         {

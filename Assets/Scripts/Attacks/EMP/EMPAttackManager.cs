@@ -2,17 +2,16 @@
 
 public class EMPAttackManager : AttackManager
 {
-    private float AOE = 4f;
-    private int Damage;
+    private readonly float Damage;
 
-    public EMPAttackManager(Spaceship attacker, Vector2 position, int damage)
+    public EMPAttackManager(Spaceship attacker, Vector2 position, float aoe, float damage)
     {
         Attacker = attacker;
         Damage = damage;
 
         GameObject explosion = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.EMP, position, Quaternion.identity);
-        explosion.GetComponent<EMPController>().AssignManager(this);
-        explosion.transform.localScale = new Vector2(AOE, AOE);
+        explosion.GetComponent<EMPController>().Initialize(this);
+        explosion.transform.localScale = new Vector2(aoe, aoe);
     }
 
     public void ResolveCollision(Spaceship other)

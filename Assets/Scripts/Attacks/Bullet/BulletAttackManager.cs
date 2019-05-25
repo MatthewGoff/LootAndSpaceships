@@ -2,19 +2,16 @@
 
 public class BulletAttackManager : AttackManager
 {
-    public static readonly float Recoil = 1f;
+    private readonly float Damage;
 
-    private float Speed = 10f; // In units per second
-    private int Damage;
-
-    public BulletAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public BulletAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, float damage, float projectileSpeed, float range)
     {
         Attacker = attacker;
         Damage = damage;
 
         GameObject bullet = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Bullet, position, Quaternion.identity);
-        bullet.GetComponent<BulletController>().AssignManager(this);
-        bullet.GetComponent<Rigidbody2D>().velocity = Speed * direction.normalized + initialVelocity;
+        bullet.GetComponent<BulletController>().Initialize(this, projectileSpeed, range);
+        bullet.GetComponent<Rigidbody2D>().velocity = projectileSpeed * direction.normalized + initialVelocity;
     }
 
     public void ResolveCollision(Spaceship other)

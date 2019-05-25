@@ -18,11 +18,11 @@ public class BottomHUDController : MonoBehaviour
     {
         if (GameManager.Instance.PlayerAlive)
         {
-            Spaceship subject = GameManager.Instance.PlayerController;
-            HealthBar.transform.localScale = new Vector2(1, subject.CurrentHealth / subject.MaxHealth);
-            ShieldBar.transform.localScale = new Vector2(1, subject.CurrentShield / subject.MaxShield);
-            EnergyBar.transform.localScale = new Vector2(1, subject.CurrentEnergy / subject.MaxEnergy);
-            FuelBar.transform.localScale = new Vector2(1, subject.CurrentFuel / subject.MaxFuel);
+            RadarProfile profile = GameManager.Instance.PlayerController.GetRadarProfile();
+            HealthBar.transform.localScale = new Vector2(1, profile.CurrentHealth / profile.MaxHealth);
+            ShieldBar.transform.localScale = new Vector2(1, profile.CurrentShield / profile.MaxShield);
+            EnergyBar.transform.localScale = new Vector2(1, profile.CurrentEnergy / profile.MaxEnergy);
+            FuelBar.transform.localScale = new Vector2(1, profile.CurrentFuel / profile.MaxFuel);
         }
         else
         {

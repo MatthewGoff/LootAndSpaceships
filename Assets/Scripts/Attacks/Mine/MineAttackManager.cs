@@ -2,12 +2,13 @@
 
 public class MineAttackManager : CollisionTypeAttackManager
 {
-    private readonly float AOE = 2f;
-    private readonly int Damage;
+    private readonly float AOE;
+    private readonly float Damage;
 
-    public MineAttackManager(Spaceship attacker, Vector2 position, int damage)
+    public MineAttackManager(Spaceship attacker, Vector2 position, float aoe, float damage)
     {
         Attacker = attacker;
+        AOE = aoe;
         Damage = damage;
 
         GameObject mine = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Mine, position, Quaternion.identity);
@@ -17,7 +18,7 @@ public class MineAttackManager : CollisionTypeAttackManager
     public void Explode(Vector2 position)
     {
         GameObject explosion = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Explosion, position, Quaternion.identity);
-        explosion.GetComponent<ExplosionController>().AssignManager(this);
+        explosion.GetComponent<ExplosionController>().Initialize(this);
         explosion.transform.localScale = new Vector2(AOE, AOE);
     }
 

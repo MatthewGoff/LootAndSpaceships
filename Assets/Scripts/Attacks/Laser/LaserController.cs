@@ -14,7 +14,7 @@ public class LaserController : MonoBehaviour
     private List<Spaceship> Spaceships;
     private bool Active;
 
-    public void Initialize(LaserAttackManager manager)
+    public void Initialize(LaserAttackManager manager, float range)
     {
         Manager = manager;
         StopWatch = 0f;
@@ -25,7 +25,7 @@ public class LaserController : MonoBehaviour
         LaserTip.transform.SetParent(transform);
         LaserTip.transform.localPosition = new Vector2(1, 0);
         LaserTip.transform.localRotation = Quaternion.identity;
-        LaserTip.transform.localScale = new Vector2(Manager.BEAM_WIDTH / Manager.BEAM_LENGTH, 1);
+        LaserTip.transform.localScale = new Vector2(Manager.BEAM_WIDTH / range, 1);
     }
 
     private void Update()
@@ -87,7 +87,7 @@ public class LaserController : MonoBehaviour
         float angle = 0f;
         if (hasTarget)
         {
-            Vector2 position = RadarOmniscience.Instance.PingRadar()[targetUID].Position;
+            Vector2 position = Omniscience.Instance.PingRadar()[targetUID].Position;
             Vector2 targetVector = position - (Vector2)transform.position;
             angle = Vector2.SignedAngle(attackVector, targetVector);
             angle = Mathf.Clamp(angle, -Manager.ANGLE_LENIENCE, Manager.ANGLE_LENIENCE);

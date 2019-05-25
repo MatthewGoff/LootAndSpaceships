@@ -45,7 +45,7 @@ public class EMPController : MonoBehaviour
         }
     }
 
-    public void AssignManager(EMPAttackManager manager)
+    public void Initialize(EMPAttackManager manager)
     {
         Manager = manager;
     }

@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class FlamethrowerController : MonoBehaviour
 {
-    public float ParticleSpeed;
-    public float EmissionRate;
-    public float EmissionArc;
+    private readonly float ParticleSpeed = 10;
+    private readonly float EmissionRate = 60;
+    private readonly float EmissionArc = 10;
+    private float Range;
 
     private FlamethrowerAttackManager Manager;
     private bool Active;
@@ -31,21 +32,19 @@ public class FlamethrowerController : MonoBehaviour
                 float angle = Random.Range(-EmissionArc / 2f, EmissionArc / 2f) + transform.eulerAngles.z;
                 Vector2 velocity = ParticleSpeed * (Quaternion.Euler(0, 0, angle) * Vector2.right);
                 velocity += Manager.Attacker.GetComponent<Rigidbody2D>().velocity;
-                particle.GetComponent<FlamethrowerParticleController>().Initialize(Manager, velocity);
-
+                particle.GetComponent<FlamethrowerParticleController>().Initialize(Manager, velocity, Range);
             }
         }
     }
 
-    public void AssignManager(FlamethrowerAttackManager manager)
+    public void Initialize(FlamethrowerAttackManager manager, float range)
     {
         Manager = manager;
+        Range = range;
     }
 
-    public void TurnOn(Vector2 attackVector)
+    public void TurnOn()
     {
-        float attackAngle = Vector2.SignedAngle(Vector2.right, attackVector);
-        transform.rotation = Quaternion.Euler(0, 0, attackAngle);
         Active = true;
     }
 

@@ -31,7 +31,7 @@ public class FlotsamController : MonoBehaviour
 
     private void ApplyPlayerAttraction()
     {
-        Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
+        Dictionary<int, RadarProfile> radarProfiles = Omniscience.Instance.PingRadar();
         foreach (RadarProfile radarProfile in radarProfiles.Values)
         {
             if (radarProfile.PlayerControlled)

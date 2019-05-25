@@ -7,16 +7,16 @@ public class SpaceshipPrefabs : MonoBehaviour
 
     public GameObject[] PrefabsArray;
 
-    public Dictionary<SpaceshipModel, GameObject> Prefabs;
+    public Dictionary<HullModel, GameObject> Prefabs;
 
     private void Awake()
     {
         Instance = this;
 
-        Prefabs = new Dictionary<SpaceshipModel, GameObject>();
+        Prefabs = new Dictionary<HullModel, GameObject>();
         foreach (GameObject prefab in PrefabsArray)
         {
-            Prefabs.Add(Helpers.ParseSpaceshipModel(prefab.name), prefab);
+            Prefabs.Add(Helpers.ParseHullModel(prefab.name), prefab);
         }
     }
 }

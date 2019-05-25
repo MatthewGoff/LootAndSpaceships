@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class HarpoonController : MonoBehaviour
 {
-    private readonly float MAXIMUM_DISTANCE = 10f;
-    private readonly float LOCK_DURATION = 10f;
-    private readonly float FIRE_SPEED = 10f; // In units per second
     private readonly float EXTENSION_SPEED = 2f;
     private readonly float RETRIEVAL_SPEED = 2f;
     private readonly float VERTICAL_LINK_LENGTH = 0.4f;
     private readonly float HORIZONTAL_LINK_LENGTH = 0.2f;
     private readonly float MINIMUM_DISTANCE_JOINT_LENGTH = 0.1f;
 
+    private float Speed;
+    private float Range;
+    private float Duration;
     private Vector2 HookVelocity;
     private GameObject RootLink;
     private GameObject Hook;
@@ -26,15 +26,18 @@ public class HarpoonController : MonoBehaviour
     private float LockCountdown;
     private Rigidbody2D LockedRigidbody;
 
-    public void Initialize(HarpoonAttackManager manager, Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity)
+    public void Initialize(HarpoonAttackManager manager, Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, float speed, float range, float duration)
     {
         Manager = manager;
         Attacker = attacker;
+        Speed = speed;
+        Range = range;
+        Duration = duration;
 
         float angle = Vector2.SignedAngle(Vector2.right, direction);
         Hook = Instantiate(GeneralPrefabs.Instance.HarpoonHook, position + (MINIMUM_DISTANCE_JOINT_LENGTH * direction.normalized), Quaternion.Euler(0, 0, angle));
         Hook.transform.SetParent(transform);
-        HookVelocity = FIRE_SPEED * direction.normalized + initialVelocity;
+        HookVelocity = Speed * direction.normalized + initialVelocity;
         Hook.GetComponent<Rigidbody2D>().velocity = HookVelocity;
         Hook.GetComponent<HarpoonHookController>().AssignManager(manager);
         RootLink = Hook;
@@ -77,13 +80,13 @@ public class HarpoonController : MonoBehaviour
         }
         else if (Manager.State == HarpoonState.Fireing)
         {
-            if (TotalDistanceJoint.distance > MAXIMUM_DISTANCE)
+            if (TotalDistanceJoint.distance > Range)
             {
                 Manager.Retrieve();
             }
             else
             {
-                ModifyChainLength(FIRE_SPEED * Time.fixedDeltaTime);
+                ModifyChainLength(Speed * Time.fixedDeltaTime);
                 Hook.GetComponent<Rigidbody2D>().velocity = HookVelocity;
             }
         }
@@ -95,7 +98,7 @@ public class HarpoonController : MonoBehaviour
                 return;
             }
 
-            //LockCountdown -= Time.fixedDeltaTime;
+            LockCountdown -= Time.fixedDeltaTime;
             if (LockCountdown <= 0)
             {
                 Manager.Retrieve();
@@ -248,7 +251,7 @@ public class HarpoonController : MonoBehaviour
         TotalDistanceJoint.connectedAnchor = Vector2.zero;
         TotalDistanceJoint.distance += (Hook.GetComponent<HarpoonLinkData>().AnchorOffset - Hook.GetComponent<HarpoonLinkData>().ConnectedAnchorOffset).magnitude;
 
-        LockCountdown = LOCK_DURATION;
+        LockCountdown = Duration;
     }
 
     public void Unlock()

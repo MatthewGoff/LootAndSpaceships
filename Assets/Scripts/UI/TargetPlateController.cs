@@ -25,10 +25,9 @@ public class TargetPlateController : MonoBehaviour
         }
 
         Spaceship subject = GameManager.Instance.PlayerController;
-        Dictionary<int, Spaceship> spaceships = SpaceshipRegistry.Instance.Spaceships;
-        if (subject.HasTarget && spaceships.ContainsKey(subject.TargetUID))
+        Spaceship newTarget = Omniscience.Instance.GetSpaceship(subject.TargetUID);
+        if (subject.HasTarget && newTarget != null)
         {
-            Spaceship newTarget = spaceships[subject.TargetUID];
             if (!HasTarget || Target != newTarget)
             {
                 if (HasTarget)
@@ -45,10 +44,11 @@ public class TargetPlateController : MonoBehaviour
                 ContentHolder.SetActive(true);
             }
 
-            HealthBar.transform.localScale = new Vector2(1, Target.CurrentHealth / Target.MaxHealth);
-            ShieldBar.transform.localScale = new Vector2(1, Target.CurrentShield / Target.MaxShield);
-            EnergyBar.transform.localScale = new Vector2(1, Target.CurrentEnergy / Target.MaxEnergy);
-            FuelBar.transform.localScale = new Vector2(1, Target.CurrentFuel / Target.MaxFuel);
+            RadarProfile profile = Target.GetRadarProfile();
+            HealthBar.transform.localScale = new Vector2(1, profile.CurrentHealth / profile.MaxHealth);
+            ShieldBar.transform.localScale = new Vector2(1, profile.CurrentShield / profile.MaxShield);
+            EnergyBar.transform.localScale = new Vector2(1, profile.CurrentEnergy / profile.MaxEnergy);
+            FuelBar.transform.localScale = new Vector2(1, profile.CurrentFuel / profile.MaxFuel);
         }
         else
         {

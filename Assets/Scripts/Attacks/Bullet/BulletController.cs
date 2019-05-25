@@ -3,19 +3,27 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    private float Duration = 3f; // In seconds
+    private float Speed;
+    private float Range;
+    private float Distance;
 
     private BulletAttackManager Manager;
-    
-    private void Awake()
+
+    public void Initialize(BulletAttackManager manager, float speed, float range)
     {
-        StartCoroutine("ExpirationCountdown");
+        Manager = manager;
+        Speed = speed;
+        Range = range;
+        Distance = 0;
     }
 
-    private IEnumerator ExpirationCountdown()
+    private void FixedUpdate()
     {
-        yield return new WaitForSeconds(Duration);
-        Destroy(gameObject);
+        Distance += Speed * Time.deltaTime;
+        if (Distance > Range)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -29,10 +37,5 @@ public class BulletController : MonoBehaviour
                 Manager.ResolveCollision(other);
             }
         }
-    }
-
-    public void AssignManager(BulletAttackManager manager)
-    {
-        Manager = manager;
     }
 }

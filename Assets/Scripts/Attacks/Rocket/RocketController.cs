@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class RocketController : MonoBehaviour
 {
-    private readonly float Duration = 20f; // In seconds
-    private readonly float TurnRate = 90f; // In degrees per second
-    private readonly float MaxSpeed = 10f; // In units per second
-    private readonly float Acceleration = 5f; // In units per second squared
+    private float Range;
+    private float TurnRate;
+    private float MaximumSpeed;
+    private float Acceleration;
+    private float Distance;
 
     private RocketAttackManager Manager;
     private Rigidbody2D RB2D;
@@ -15,20 +16,29 @@ public class RocketController : MonoBehaviour
 
     private void Awake()
     {
-        RB2D = GetComponent<Rigidbody2D>();
         StartCoroutine("ExpirationCountdown");
-        Heading = Quaternion.Euler(0, 0, transform.eulerAngles.z) * Vector2.right;
     }
 
-    private IEnumerator ExpirationCountdown()
+    public void Initialize(RocketAttackManager manager, float range, float turnRate, float maximumSpeed, float acceleration)
     {
-        yield return new WaitForSeconds(Duration);
-        Explode();
+        Manager = manager;
+        Range = range;
+        TurnRate = turnRate;
+        MaximumSpeed = maximumSpeed;
+        Acceleration = acceleration;
+        Distance = 0;
+        RB2D = GetComponent<Rigidbody2D>();
+        Heading = Quaternion.Euler(0, 0, RB2D.rotation) * Vector2.right;
     }
 
     private void FixedUpdate()
     {
-        Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
+        Distance += RB2D.velocity.magnitude * Time.fixedDeltaTime;
+        if (Distance > Range)
+        {
+            Destroy(gameObject);
+        }
+        Dictionary<int, RadarProfile> radarProfiles = Omniscience.Instance.PingRadar();
         if (Manager.HasTarget && radarProfiles.ContainsKey(Manager.TargetUID))
         {
             Vector2 targetPosition = radarProfiles[Manager.TargetUID].Position;
@@ -40,7 +50,7 @@ public class RocketController : MonoBehaviour
             transform.eulerAngles = new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, Heading));
         }
         RB2D.velocity += Heading.normalized * Acceleration * Time.fixedDeltaTime;
-        RB2D.velocity = RB2D.velocity.normalized * Mathf.Clamp(RB2D.velocity.magnitude, 0, MaxSpeed);
+        RB2D.velocity = RB2D.velocity.normalized * Mathf.Clamp(RB2D.velocity.magnitude, 0, MaximumSpeed);
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -59,10 +69,5 @@ public class RocketController : MonoBehaviour
     {
         Manager.Explode((Vector2)transform.position + RB2D.velocity.normalized * 0.5f);
         Destroy(gameObject);
-    }
-
-    public void AssignManager(RocketAttackManager manager)
-    {
-        Manager = manager;
     }
 }

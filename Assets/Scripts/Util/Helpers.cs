@@ -205,16 +205,29 @@ public static class Helpers
         }
     }
 
-    public static SpaceshipModel ParseSpaceshipModel(string value)
+    public static HullModel ParseHullModel(string value)
     {
         try
         {
-            return (SpaceshipModel)Enum.Parse(typeof(SpaceshipModel), value);
+            return (HullModel)Enum.Parse(typeof(HullModel), value);
         }
         catch
         {
-            Debug.LogWarning("Failed to parse SpaceshipModel: \"" + value + "\". Defaulting to SpaceshipModel.Alpha1");
-            return SpaceshipModel.Alpha1;
+            Debug.LogWarning("Failed to parse HullModel: \"" + value + "\". Defaulting to HullModel.Alpha1");
+            return HullModel.Alpha1;
+        }
+    }
+
+    public static WeaponType ParseWeaponType(string value)
+    {
+        try
+        {
+            return (WeaponType)Enum.Parse(typeof(WeaponType), value);
+        }
+        catch
+        {
+            Debug.LogWarning("Failed to parse WeaponType: \"" + value + "\". Defaulting to WeaponType.Cannon");
+            return WeaponType.Cannon;
         }
     }
 

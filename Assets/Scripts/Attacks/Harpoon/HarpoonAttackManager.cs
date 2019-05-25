@@ -2,21 +2,19 @@
 
 public class HarpoonAttackManager : AttackManager
 {
-    public static readonly float Recoil = 1f;
-
     public HarpoonState State;
 
     private GameObject Harpoon;
-    private readonly int Damage;
+    private readonly float Damage;
 
-    public HarpoonAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, int damage)
+    public HarpoonAttackManager(Spaceship attacker, Vector2 position, Vector2 direction, Vector2 initialVelocity, float damage, float speed, float range, float duration)
     {
         Attacker = attacker;
         Damage = damage;
         State = HarpoonState.Fireing;
 
         Harpoon = GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Harpoon, Vector2.zero, Quaternion.identity);
-        Harpoon.GetComponent<HarpoonController>().Initialize(this, attacker, position, direction, initialVelocity);
+        Harpoon.GetComponent<HarpoonController>().Initialize(this, attacker, position, direction, initialVelocity, speed, range, duration);
     }
 
     public void LockHarpoon(Spaceship other)

@@ -1,50 +1,97 @@
 ﻿using System.Collections.Generic;
 
 /// <summary>
-/// The Radar Omniscience is a singleton class responsible for
+/// The Omniscience is a singleton class responsible for
 /// administering visibility of information between spaceships. All spaceships
-/// are responsible to update the radar omniscience with a RadarProfile once
+/// are responsible to update the omniscience with a RadarProfile once
 /// per fixed update. Spaceships can ping the radar omniscience with a
 /// clearance level to recieve a list of redacted RadarProfiles for all the
 /// spaceships in the scene.
 /// </summary>
-public class RadarOmniscience
+public class Omniscience
 {
-    public static RadarOmniscience Instance;
+    public static readonly int NULL_UID = -1;
+
+    public static Omniscience Instance;
+
+    private bool[] UIDInUse;
+    private Dictionary<int, Spaceship> Spaceships;
     private Dictionary<int, RadarProfile> RadarProfiles;
 
     public static void Initialize()
     {
-        Instance = new RadarOmniscience();
+        Instance = new Omniscience();
     }
 
-    private RadarOmniscience()
+    private Omniscience()
     {
         RadarProfiles = new Dictionary<int, RadarProfile>();
+        UIDInUse = new bool[10];
+        Spaceships = new Dictionary<int, Spaceship>();
     }
 
     /// <summary>
-    /// Register a new radar entity with the radar omnicience
+    /// Register a new entity with the omnicience
     /// </summary>
     /// <param name="uid"></param>
-    public void RegisterNewRadarEntity(int uid)
+    public int RegisterNewEntity(Spaceship spaceship)
     {
-        RadarProfiles.Add(uid, null);
+        int newUID = GetUnusedUID();
+        UIDInUse[newUID] = true;
+        Spaceships.Add(newUID, spaceship);
+        RadarProfiles.Add(newUID, null);
+        return newUID;
     }
 
     /// <summary>
-    /// Inform the radar omniscience that a registered radar entity is no
+    /// Inform the omniscience that a registered entity is no
     /// longer present in the scene.
     /// </summary>
     /// <param name="uid"></param>
-    public void UnregisterRadarEntity(int uid)
+    public void UnregisterEntity(int uid)
     {
         RadarProfiles.Remove(uid);
+        Spaceships.Remove(uid);
+        UIDInUse[uid] = false;
     }
 
     public void SubmitRadarProfile(int uid, RadarProfile profile)
     {
         RadarProfiles[uid] = profile;
+    }
+    private int GetUnusedUID()
+    {
+        for (int i = 0; i < UIDInUse.Length; i++)
+        {
+            if (!UIDInUse[i])
+            {
+                return i;
+            }
+        }
+        ExpandUIDArray();
+        return GetUnusedUID();
+    }
+    private void ExpandUIDArray()
+    {
+        bool[] newUIDINUse = new bool[UIDInUse.Length * 2];
+        for (int i = 0; i < UIDInUse.Length; i++)
+        {
+            newUIDINUse[i] = UIDInUse[i];
+        }
+        UIDInUse = newUIDINUse;
+    }
+
+    public int CountTeamMembers(int team)
+    {
+        int count = 0;
+        foreach (int key in Spaceships.Keys)
+        {
+            if (Spaceships[key].Team == team)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     /// <summary>
@@ -81,5 +128,17 @@ public class RadarOmniscience
             }
         }
         return profiles;
+    }
+
+    public Spaceship GetSpaceship(int UID)
+    {
+        if (Spaceships.ContainsKey(UID))
+        {
+            return Spaceships[UID];
+        }
+        else
+        {
+            return null;
+        }
     }
 }

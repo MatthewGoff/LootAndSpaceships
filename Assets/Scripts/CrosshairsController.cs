@@ -20,8 +20,8 @@ public class CrosshairsController : MonoBehaviour {
         }
 
         Spaceship subject = GameManager.Instance.PlayerController;
-        Dictionary<int, RadarProfile> radarProfiles = RadarOmniscience.Instance.PingRadar();
-        if (subject.HasTarget && radarProfiles.ContainsKey(subject.TargetUID))
+        Dictionary<int, RadarProfile> radarProfiles = Omniscience.Instance.PingRadar();
+        if (subject.HasValidTarget && radarProfiles.ContainsKey(subject.TargetUID))
         {
             SpriteRenderer.enabled = true;
             transform.position = radarProfiles[subject.TargetUID].Position;

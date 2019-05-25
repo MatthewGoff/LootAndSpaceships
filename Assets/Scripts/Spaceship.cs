@@ -7,16 +7,6 @@ public class Spaceship : Vehicle
     public GameObject PortraitCamera;
     public GameObject FireEffect;
 
-    public string Name;
-
-    public bool FireBullet;
-    public bool FireRocket;
-    public bool FireEMP;
-    public bool FireHarpoon;
-    public bool FireFlamethrower;
-    public bool FireLaser;
-    public bool FireMine;
-
     public float Credits;
     public float Scrap;
     public int Bullets;
@@ -27,7 +17,7 @@ public class Spaceship : Vehicle
 
     public bool HasTarget;
     public int TargetUID;
-    private bool HasValidTarget
+    public bool HasValidTarget
     {
         get
         {
@@ -36,51 +26,27 @@ public class Spaceship : Vehicle
         }
     }
 
-    protected bool ShowFDN;
+    private bool ShowFDN;
 
-    protected int UID;
-    private float BurnDuration;
     private float BurnEndTime;
     private bool Burning;
-    public float MaxShield;
-    public float CurrentShield;
-    private float ShieldRegen;
-    private float ShieldEnergy;
-    public float MaxHealth;
-    public float CurrentHealth;
-    private float HealthRegen;
-    public float MaxEnergy;
-    public float CurrentEnergy;
-    private float EnergyRegen;
-    public float MaxFuel;
-    public float CurrentFuel;
-    private float FuelUsage;
-    public float MaxHullSpace;
-    private Cooldown AttackCooldown;
-    protected float AttackEnergy;
-    protected float ThrustEnergy;
-    protected float LifeSupportEnergy;
-    protected float LifeSupportDegen;
 
-    private HarpoonAttackManager Harpoon;
-    private FlamethrowerAttackManager Flamethrower;
-    private LaserAttackManager Laser;
     private List<AttackImmunityRecord> Immunities;
-    public int Team;
     public Autopilot Autopilot;
     private AI AI;
-    public AttackType AttackType;
-    public AttackMode AttackMode;
-    private TargetingType TargetingType;
     protected bool Thrusting;
-    private int NumberOfDrones;
-    private int NumberOfTurrets;
-    public Player Player;
-    private int LootExperience;
-    private int LootCredits;
-    private int LootFuel;
-    private int LootScrap;
-    private int LootItems;
+    private bool[] WeaponInputs;
+    private int SelectedWeapon;
+
+    private Dictionary<FlotsamType, int> LootDrops;
+
+    private Liscense Liscense;
+    private Hull Hull;
+    private Engine Engine;
+    private Reactor Reactor;
+    private ShieldGenerator ShieldGenerator;
+    private LifeSupport LifeSupport;
+    private Weapon[] Weapons;
 
     public bool PlayerControlled
     {
@@ -89,64 +55,88 @@ public class Spaceship : Vehicle
             return AI == null;
         }
     }
-
-    public void Initialize(Player player, Spaceship mother, SpaceshipParameters parameters)
+    public int Team
     {
+        get
+        {
+            return Liscense.Team;
+        }
+    }
+    public string Name
+    {
+        get
+        {
+            return Liscense.Name;
+        }
+    }
+    public float HullSpace
+    {
+        get
+        {
+            return Hull.HullSpace;
+        }
+    }
+
+    public void Initialize(Liscense liscense, string configuration)
+    {
+        WeaponParameters[] weaponParameters = SpaceshipTable.Instance.GetWeaponParameters(configuration);
+        Weapon[] weapons = new Weapon[weaponParameters.Length];
+        for (int i = 0; i < weapons.Length; i++)
+        {
+            weapons[i] = Weapon.CreateWeapon(weaponParameters[i]);
+        }
+        Initialize(
+            liscense,
+            SpaceshipTable.Instance.GetAIParameters(configuration),
+            SpaceshipTable.Instance.GetLootDrops(configuration),
+            new Hull(SpaceshipTable.Instance.GetHullParameters(configuration)),
+            new Engine(SpaceshipTable.Instance.GetEngineParameters(configuration)),
+            new Reactor(SpaceshipTable.Instance.GetReactorParameters(configuration)),
+            new ShieldGenerator(SpaceshipTable.Instance.GetShieldGeneratorParameters(configuration)),
+            new LifeSupport(SpaceshipTable.Instance.GetLifeSupportParameters(configuration)),
+            weapons
+        );
+    }
+
+    public void Initialize
+    (
+        Liscense liscense,
+        AIParameters aiParameters,
+        Dictionary<FlotsamType, int> lootDrops,
+        Hull hull,
+        Engine engine,
+        Reactor reactor,
+        ShieldGenerator shieldGenerator,
+        LifeSupport lifeSupport,
+        Weapon[] weapons
+    )
+    {
+        Hull = hull;
+        Engine = engine;
+        Reactor = reactor;
+        ShieldGenerator = shieldGenerator;
+        LifeSupport = lifeSupport;
+        Weapons = weapons;
+        WeaponInputs = new bool[Weapons.Length];
+
         base.Initialize
         (
-            thrustForce: parameters.ThrustForceMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 2),
-            turnForce: parameters.TurnForceMultiplier * Mathf.PI * Mathf.Pow(transform.localScale.x, 2),
-            maximumSpeed: parameters.MaximumSpeed,
-            mass: parameters.MassMultiplier * (4f / 3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3)
+            thrustForce: Engine.ThrustForceMultiplier * Mathf.PI * Mathf.Pow(Hull.Size, 2),
+            turnForce: Engine.TurnForceMultiplier * Mathf.PI * Mathf.Pow(Hull.Size, 2),
+            maximumSpeed: Engine.MaximumSpeed,
+            mass: Hull.Mass
         );
 
+        transform.localScale = new Vector2(Hull.Size, Hull.Size);
+        Liscense = liscense;
+        SelectedWeapon = 0;
         ShowFDN = (Team != 0);
-        NumberOfDrones = 0;
-        NumberOfTurrets = 0;
-        AttackType = AttackType.Bullet;
-        AttackMode = AttackMode.Self;
-        RB2D = GetComponent<Rigidbody2D>();
-        Flamethrower = new FlamethrowerAttackManager(this, 10f);
-        Laser = new LaserAttackManager(this, 10f);
         Immunities = new List<AttackImmunityRecord>();
-        UID = SpaceshipRegistry.Instance.RegisterSpaceship(this);
-        RadarOmniscience.Instance.RegisterNewRadarEntity(UID);
-
         Autopilot = new FastAutopilot(this);
-        AI = AI.CreateAI(parameters.AIType, this, Autopilot, mother, parameters.AIParameters);
-
-        Player = player;
-        TargetingType = parameters.TargetingType;
-        Team = parameters.Team;
-        BurnDuration = parameters.BurnDuration;
-        MaxShield = parameters.MaxShield;
-        CurrentShield = MaxShield;
-        ShieldRegen = parameters.ShieldRegen;
-        ShieldEnergy = parameters.ShieldEnergy;
-        MaxHealth = parameters.MaxHealth;
-        CurrentHealth = MaxHealth;
-        HealthRegen = parameters.HealthRegen;
-        MaxEnergy = parameters.MaxEnergy;
-        CurrentEnergy = MaxEnergy;
-        EnergyRegen = parameters.EnergyRegen;
-        MaxFuel = parameters.MaxFuel;
-        CurrentFuel = MaxFuel;
-        FuelUsage = parameters.FuelUsage;
-        MaxHullSpace = parameters.HullSpaceMultiplier * (4f/3f) * Mathf.PI * Mathf.Pow(transform.localScale.x, 3);
-        Name = parameters.Name;
-        AttackEnergy = parameters.AttackEnergy;
-        ThrustEnergy = parameters.ThrustEnergy;
-        LifeSupportEnergy = parameters.LifeSupportEnergy;
-        LifeSupportDegen = parameters.LifeSupportDegen;
-        AttackCooldown = new Cooldown(parameters.AttackCooldown);
-        LootExperience = parameters.LootExperience;
-        LootCredits = parameters.LootCredits;
-        LootFuel = parameters.LootFuel;
-        LootScrap = parameters.LootScrap;
-        LootItems = parameters.LootItems;
-
+        AI = AI.CreateAI(aiParameters, this, Autopilot, Liscense.Mother);
+        LootDrops = lootDrops;
         Credits = 0f;
-        Scrap = MaxHullSpace;
+        Scrap = Hull.HullSpace;
         Bullets = 0;
         Rockets = 0;
         Mines = 0;
@@ -187,19 +177,19 @@ public class Spaceship : Vehicle
 
         if (damageType == DamageType.Explosion || damageType == DamageType.Fire)
         {
-            BurnEndTime = Time.time + BurnDuration;
+            BurnEndTime = Time.time + LifeSupport.BurnDuration;
             if (!Burning)
             {
                 StartCoroutine("Burn");
             }
         }
 
-        float shieldDamage = Mathf.Min(CurrentShield, damage);
-        CurrentShield -= shieldDamage;
+        float shieldDamage = Mathf.Min(ShieldGenerator.CurrentHitPoints, damage);
+        ShieldGenerator.CurrentHitPoints -= shieldDamage;
         float remainingDamage = damage - shieldDamage;
-        CurrentHealth -= remainingDamage;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
-        if (CurrentHealth == 0)
+        Hull.CurrentHitPoints -= remainingDamage;
+        Hull.CurrentHitPoints = Mathf.Clamp(Hull.CurrentHitPoints, 0, Hull.MaximumHitPoints);
+        if (Hull.CurrentHitPoints == 0)
         {
             Die();
         }
@@ -258,17 +248,18 @@ public class Spaceship : Vehicle
         };
         Immunities.Add(record);
     }
+
     private void OnMouseDown()
     {
         if (!GameManager.MouseOverUI())
         {
-            GameManager.Instance.SelectPlayerTarget(UID);
+            GameManager.Instance.SelectPlayerTarget(Liscense.UID);
         }
     }
 
     private void Update()
     {
-        ZeroAttackInputs();
+        ZeroWeaponInputs();
 
         if (PlayerControlled)
         {
@@ -276,7 +267,7 @@ public class Spaceship : Vehicle
         }
         else
         {
-            AI.Update(RadarOmniscience.Instance.PingRadar(UID));
+            AI.Update(Omniscience.Instance.PingRadar(Liscense.UID));
         }
 
         bool destinationReached = Autopilot.Update();
@@ -286,6 +277,14 @@ public class Spaceship : Vehicle
         }
 
         ModelSpecificUpdate();
+    }
+
+    private void ZeroWeaponInputs()
+    {
+        for (int i = 0; i < WeaponInputs.Length; i++)
+        {
+            WeaponInputs[i] = false;
+        }
     }
 
     protected virtual void ModelSpecificUpdate()
@@ -299,10 +298,6 @@ public class Spaceship : Vehicle
         {
             Die();
         }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            PlayerReload();
-        }
 
         PlayerUpdateVehicleInputs();
 
@@ -312,110 +307,17 @@ public class Spaceship : Vehicle
             Autopilot.SetTarget(target, AutopilotBehaviour.Seek);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            AttackType = AttackType.Bullet;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            AttackType = AttackType.Rocket;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            AttackType = AttackType.EMP;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            AttackType = AttackType.Harpoon;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            AttackType = AttackType.Flamethrower;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            AttackType = AttackType.Laser;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            AttackType = AttackType.Mine;
-        }
-
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            AttackMode = AttackMode.Self;
-        }
-        else if (Input.GetKeyDown(KeyCode.B))
-        {
-            AttackMode = AttackMode.Drone;
-        }
-        else if (Input.GetKeyDown(KeyCode.N))
-        {
-            AttackMode = AttackMode.Turret;
-        }
-
         if (Input.GetKey(KeyCode.Space))
         {
-            QueueAttack();
+            QueueAttack(0);
         }
 
         CollectTargetingInput();
     }
 
-    public void QueueAttack()
+    public void QueueAttack(int weaponSlot)
     {
-        if ((AttackType & AttackType.Bullet) > 0)
-        {
-            FireBullet = true;
-        }
-        if ((AttackType & AttackType.Rocket) > 0)
-        {
-            FireRocket = true;
-        }
-        if ((AttackType & AttackType.EMP) > 0)
-        {
-            FireEMP = true;
-        }
-        if ((AttackType & AttackType.Harpoon) > 0)
-        {
-            FireHarpoon = true;
-        }
-        if ((AttackType & AttackType.Flamethrower) > 0)
-        {
-            FireFlamethrower = true;
-        }
-        if ((AttackType & AttackType.Laser) > 0)
-        {
-            FireLaser = true;
-        }
-        if ((AttackType & AttackType.Mine) > 0)
-        {
-            FireMine = true;
-        }
-    }
-
-    private void PlayerReload()
-    {
-        if ((AttackType & AttackType.Bullet) > 0)
-        {
-            ReloadBullets();
-        }
-        if ((AttackType & AttackType.Rocket) > 0)
-        {
-            ReloadRockets();
-        }
-        if ((AttackType & AttackType.Mine) > 0)
-        {
-            ReloadMines();
-        }
-        if (AttackMode == AttackMode.Drone)
-        {
-            ReloadDrones();
-        }
-        if (AttackMode == AttackMode.Turret)
-        {
-            ReloadTurrets();
-        }
+        WeaponInputs[weaponSlot] = true;
     }
 
     public void ReloadBullets()
@@ -506,7 +408,7 @@ public class Spaceship : Vehicle
 
     private void ValidateTarget()
     {
-        if (!RadarOmniscience.Instance.PingRadar().ContainsKey(TargetUID))
+        if (!Omniscience.Instance.PingRadar().ContainsKey(TargetUID))
         {
             DropTarget();
         }
@@ -532,165 +434,46 @@ public class Spaceship : Vehicle
     
     private void UpdateLifeSupport()
     {
-        float energyCost = LifeSupportEnergy * Time.deltaTime;
-        if (CurrentEnergy >= energyCost)
+        float energyCost = LifeSupport.EnergyUsage * Time.deltaTime;
+        if (Reactor.CurrentEnergy >= energyCost)
         {
-            CurrentEnergy -= energyCost;
-            CurrentHealth += HealthRegen * Time.fixedDeltaTime;
+            Reactor.CurrentEnergy -= energyCost;
         }
         else
         {
-            TakeDamage(null, LifeSupportDegen, DamageType.Physical);
-            CurrentEnergy = 0;
+            TakeDamage(null, LifeSupport.Degen, DamageType.Physical);
+            Reactor.CurrentEnergy = 0;
         }
     }
 
     private void UpdateVehicle()
     {
-        float energyCost = ThrustEnergy * Time.fixedDeltaTime;
-        Thrusting = UpdateVehicle(CurrentEnergy >= energyCost);
+        float energyCost = Engine.ThrustEnergy * Time.fixedDeltaTime;
+        Thrusting = UpdateVehicle(Reactor.CurrentEnergy >= energyCost);
         if (Thrusting)
         {
-            CurrentEnergy -= energyCost;
+            Reactor.CurrentEnergy -= energyCost;
         }
     }
 
     private void ExecuteAttacks()
     {
-        if (FireBullet && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
+        for (int i = 0; i < WeaponInputs.Length; i++)
         {
-            CurrentEnergy -= AttackEnergy;
-            if ((AttackMode & AttackMode.Self) > 0 && Bullets >= 1)
+            if (WeaponInputs[i]
+                && Scrap >= Weapons[i].ScrapCost
+                && Reactor.CurrentEnergy >= Weapons[i].MarginalEnergyCost(Time.fixedDeltaTime)
+                && Weapons[i].CooldownAvailable())
             {
-                Bullets--;
-                int damage = Mathf.RoundToInt(Random.Range(60, 100));
-                new BulletAttackManager(this, Position, AttackVector(), Velocity, damage);
-                ApplyRecoil(-AttackVector() * BulletAttackManager.Recoil);
+                Scrap -= Weapons[i].ScrapCost;
+                Reactor.CurrentEnergy -= Weapons[i].MarginalEnergyCost(Time.fixedDeltaTime);
+                Weapons[i].UseCooldown();
+                Weapons[i].ExecuteAttack(this, HasValidTarget, TargetUID, Position, AttackVector(), Velocity);
+                ApplyRecoil(-AttackVector() * Weapons[i].Recoil);
             }
-            else if ((AttackMode & AttackMode.Drone) > 0 && Bullets >= 10)
+            else
             {
-                Bullets -= 10;
-                SpawnDrone(AttackType.Bullet);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0 && Bullets >= 10)
-            {
-                Bullets -= 10;
-                SpawnTurret(AttackType.Bullet);
-            }
-        }
-        if (FireRocket && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-        {
-            CurrentEnergy -= AttackEnergy;
-            if ((AttackMode & AttackMode.Self) > 0 && Rockets >= 1)
-            {
-                Rockets--;
-                int damage = Mathf.RoundToInt(Random.Range(10f, 30f));
-                new RocketAttackManager(this, HasValidTarget, TargetUID, Position, AttackVector(), Velocity, damage);
-                ApplyRecoil(-AttackVector() * RocketAttackManager.Recoil);
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0 && Rockets >= 10)
-            {
-                Rockets -= 10;
-                SpawnDrone(AttackType.Rocket);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0 && Rockets >= 10)
-            {
-                Rockets -= 10;
-                SpawnTurret(AttackType.Rocket);
-            }
-        }
-        if (FireEMP && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-        {
-            if ((AttackMode & AttackMode.Self) > 0)
-            {
-                CurrentEnergy -= AttackEnergy;
-                int damage = Mathf.RoundToInt(Random.Range(30f, 60f));
-                new EMPAttackManager(this, Position, damage);
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0)
-            {
-                SpawnDrone(AttackType.EMP);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0)
-            {
-                SpawnTurret(AttackType.EMP);
-            }
-        }
-        if (FireHarpoon && CurrentEnergy >= AttackEnergy && !HarpoonDeployed() && AttackCooldown.Use())
-        {
-            if ((AttackMode & AttackMode.Self) > 0)
-            {
-                CurrentEnergy -= AttackEnergy;
-                int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-                Harpoon = new HarpoonAttackManager(this, Position, AttackVector(), Velocity, damage);
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0)
-            {
-                SpawnDrone(AttackType.Harpoon);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0)
-            {
-                SpawnTurret(AttackType.Harpoon);
-            }
-        }
-        if (FireFlamethrower && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
-        {
-            if ((AttackMode & AttackMode.Self) > 0)
-            {
-                CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-                Flamethrower.TurnOn(AttackVector());
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-            {
-                SpawnDrone(AttackType.Flamethrower);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-            {
-                SpawnTurret(AttackType.Flamethrower);
-            }
-        }
-        else
-        {
-            Flamethrower.TurnOff();
-        }
-        if (FireLaser && CurrentEnergy >= AttackEnergy * Time.fixedDeltaTime)
-        {
-            if ((AttackMode & AttackMode.Self) > 0)
-            {
-                CurrentEnergy -= AttackEnergy * Time.fixedDeltaTime;
-                Laser.TurnOn(AttackVector(), HasValidTarget, TargetUID);
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-            {
-                SpawnDrone(AttackType.Laser);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0 && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-            {
-                SpawnTurret(AttackType.Laser);
-            }
-        }
-        else
-        {
-            Laser.TurnOff();
-        }
-        if (FireMine && CurrentEnergy >= AttackEnergy && AttackCooldown.Use())
-        {
-            if ((AttackMode & AttackMode.Self) > 0 && Mines >= 1)
-            {
-                Mines--;
-                CurrentEnergy -= AttackEnergy;
-                int damage = Mathf.RoundToInt(Random.Range(20f, 50f));
-                new MineAttackManager(this, Position, damage);
-            }
-            else if ((AttackMode & AttackMode.Drone) > 0 && Mines >= 10)
-            {
-                Mines -= 10;
-                SpawnDrone(AttackType.Mine);
-            }
-            else if ((AttackMode & AttackMode.Turret) > 0 && Mines >= 10)
-            {
-                Mines -= 10;
-                SpawnTurret(AttackType.Mine);
+                Weapons[i].Cease();
             }
         }
     }
@@ -702,110 +485,77 @@ public class Spaceship : Vehicle
         UpdateLifeSupport();
         UpdateShieldDrain();
         UpdateVehicle();
+        ExecuteAttacks();
         SubmitRadarProfile();
-        ExecuteAttacks();  
     }
 
     private void UpdateEnergyRegen()
     {
-        if (CurrentEnergy < MaxEnergy)
+        float energyDeficit = Reactor.EnergyCapacity - Reactor.CurrentEnergy;
+        if (energyDeficit > 0)
         {
-            float fuelCost = FuelUsage * Time.fixedDeltaTime;
-            if (CurrentFuel >= fuelCost)
+            float fuelCost = Mathf.Clamp01(energyDeficit / (Reactor.EnergyRegen * Time.fixedDeltaTime)) * Reactor.FuelConsumption * Time.fixedDeltaTime;
+            if (Reactor.CurrentFuel >= fuelCost)
             {
-                CurrentFuel -= fuelCost;
-                CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
-                CurrentEnergy += EnergyRegen * Time.fixedDeltaTime;
-                CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, MaxEnergy);
+                Reactor.CurrentFuel -= fuelCost;
+                Reactor.CurrentFuel = Mathf.Clamp(Reactor.CurrentFuel, 0, Reactor.FuelCapacity);
+                Reactor.CurrentEnergy += Reactor.EnergyRegen * Time.fixedDeltaTime;
+                Reactor.CurrentEnergy = Mathf.Clamp(Reactor.CurrentEnergy, 0, Reactor.EnergyCapacity);
             }
             else
             {
-                CurrentFuel = 0f;
+                Reactor.CurrentFuel = 0f;
             }
         }
     }
 
     private void UpdateShieldDrain()
     {
-        if (CurrentShield < MaxShield)
+        if (ShieldGenerator.CurrentHitPoints < ShieldGenerator.MaximumHitPoints)
         {
-            float energyCost = ShieldEnergy * Time.fixedDeltaTime;
-            if (CurrentEnergy >= energyCost)
+            float energyCost = ShieldGenerator.EnergyUsage * Time.fixedDeltaTime;
+            if (Reactor.CurrentEnergy >= energyCost)
             {
-                CurrentEnergy -= energyCost;
-                CurrentShield += ShieldRegen * Time.fixedDeltaTime;
-                CurrentShield = Mathf.Clamp(CurrentShield, 0, MaxShield);
+                Reactor.CurrentEnergy -= energyCost;
+                ShieldGenerator.CurrentHitPoints += ShieldGenerator.Regen * Time.fixedDeltaTime;
+                ShieldGenerator.CurrentHitPoints = Mathf.Clamp(ShieldGenerator.CurrentHitPoints, 0, ShieldGenerator.MaximumHitPoints);
             }
         }
     }
 
-    private void SpawnDrone(AttackType attackType)
-    {
-        if (Drones >= 1)
-        {
-            Drones--;
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Alpha1, "(" + Name + ")'s drone #" + (++NumberOfDrones), Team);
-            parameters.AIType = AIType.DroneAI;
-            parameters.AIParameters[0] = attackType.ToString();
-            GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Alpha1], Position, Quaternion.Euler(0, 0, AttackAngle()));
-            spaceship.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-            spaceship.GetComponent<Spaceship>().Initialize(null, this, parameters);
-            spaceship.GetComponent<Spaceship>().Scrap = 10;
-        }
-    }
-
-    private void SpawnTurret(AttackType attackType)
-    {
-        if (Turrets >= 1)
-        {
-            Turrets--;
-            SpaceshipParameters parameters = SpaceshipTable.GetModelParameters(SpaceshipModel.Turret, "(" + Name + ")'s turret #" + (++NumberOfTurrets), Team);
-            parameters.AIParameters[0] = attackType.ToString();
-            GameObject spaceship = GameManager.Instance.Instantiate(SpaceshipPrefabs.Instance.Prefabs[SpaceshipModel.Turret], Position, Quaternion.Euler(0, 0, AttackAngle()));
-            spaceship.GetComponent<Spaceship>().Initialize(null, this, parameters);
-            spaceship.GetComponent<Spaceship>().Scrap = 10;
-        }
-    }
-
-    protected void ZeroAttackInputs()
-    {
-        FireBullet = false;
-        FireRocket = false;
-        FireEMP = false;
-        FireHarpoon = false;
-        FireFlamethrower = false;
-        FireLaser = false;
-        FireMine = false;
-    }
-
     private void SubmitRadarProfile()
     {
-        RadarProfile profile = new RadarProfile(
-            UID,
-            Name,
+        Omniscience.Instance.SubmitRadarProfile(Liscense.UID, GetRadarProfile());
+    }
+
+    public RadarProfile GetRadarProfile()
+    {
+        return new RadarProfile
+        (
+            Liscense.UID,
+            Liscense.Name,
             Team,
             PlayerControlled,
             Position,
-            MaxShield,
-            CurrentShield,
-            MaxHealth,
-            CurrentHealth,
-            MaxEnergy,
-            CurrentEnergy,
-            MaxFuel,
-            CurrentFuel);
-        RadarOmniscience.Instance.SubmitRadarProfile(UID, profile);
+            ShieldGenerator.MaximumHitPoints,
+            ShieldGenerator.CurrentHitPoints,
+            Hull.MaximumHitPoints,
+            Hull.CurrentHitPoints,
+            Reactor.EnergyCapacity,
+            Reactor.CurrentEnergy,
+            Reactor.FuelCapacity,
+            Reactor.CurrentFuel
+        );
     }
 
     protected virtual void Die()
     {
-        CurrentHealth = 0f;
-        CurrentShield = 0f;
-        CurrentEnergy = 0f;
-        CurrentFuel = 0f;
+        Hull.CurrentHitPoints = 0f;
+        ShieldGenerator.CurrentHitPoints = 0f;
+        Reactor.CurrentEnergy = 0f;
+        Reactor.CurrentFuel = 0f;
 
-        RadarOmniscience.Instance.UnregisterRadarEntity(UID);
-        SpaceshipRegistry.Instance.UnregisterSpaceship(UID);
+        Omniscience.Instance.UnregisterEntity(Liscense.UID);
         Destroy(gameObject);
         DropLoot();
         if (PlayerControlled)
@@ -818,23 +568,23 @@ public class Spaceship : Vehicle
     {
         if (Team == 1)
         {
-            for (int i = 0; i < LootExperience; i++)
+            for (int i = 0; i < LootDrops[FlotsamType.Experience]; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.ExpMorsel, Position, Quaternion.identity);
             }
-            for (int i = 0; i < LootCredits; i++)
+            for (int i = 0; i < LootDrops[FlotsamType.Credits]; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Coin, Position, Quaternion.identity);
             }
-            for (int i = 0; i < LootFuel; i++)
+            for (int i = 0; i < LootDrops[FlotsamType.Fuel]; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.FuelRod, Position, Quaternion.identity);
             }
-            for (int i = 0; i < LootScrap; i++)
+            for (int i = 0; i < LootDrops[FlotsamType.Scrap]; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Scrap, Position, Quaternion.identity);
             }
-            for (int i = 0; i < LootItems; i++)
+            for (int i = 0; i < LootDrops[FlotsamType.Items]; i++)
             {
                 GameManager.Instance.Instantiate(GeneralPrefabs.Instance.Crate, Position, Quaternion.identity);
             }
@@ -845,7 +595,7 @@ public class Spaceship : Vehicle
     {
         if (PlayerControlled)
         {
-            Player.EarnExperience(quantity);
+            Liscense.Player.EarnExperience(quantity);
         }
     }
 
@@ -856,8 +606,8 @@ public class Spaceship : Vehicle
 
     public virtual void PickupFuel(float quantity)
     {
-        CurrentFuel += quantity;
-        CurrentFuel = Mathf.Clamp(CurrentFuel, 0, MaxFuel);
+        Reactor.CurrentFuel += quantity;
+        Reactor.CurrentFuel = Mathf.Clamp(Reactor.CurrentFuel, 0, Reactor.FuelCapacity);
     }
 
     public virtual void PickupScrap(float quantity)
@@ -883,28 +633,16 @@ public class Spaceship : Vehicle
 
     public Dictionary<int, RadarProfile> GetRadarReading()
     {
-        return RadarOmniscience.Instance.PingRadar(UID);
+        return Omniscience.Instance.PingRadar(Liscense.UID);
     }
 
-    private bool HarpoonDeployed()
+    public Vector2 AttackVector()
     {
-        if (Harpoon == null)
-        {
-            return false;
-        }
-        else
-        {
-            return (Harpoon.State != HarpoonState.Expired);
-        }
-    }
-
-    private Vector2 AttackVector()
-    {
-        if (TargetingType == TargetingType.Bound)
+        if (Hull.TargetingType == TargetingType.Bound)
         {
             return HeadingVector;
         }
-        else if (TargetingType == TargetingType.Unbound)
+        else if (Hull.TargetingType == TargetingType.Unbound)
         {
             if (PlayerControlled)
             {
@@ -925,7 +663,7 @@ public class Spaceship : Vehicle
         }
     }
 
-    private float AttackAngle()
+    public float AttackAngle()
     {
         return Vector2.SignedAngle(Vector2.right, AttackVector());
     }

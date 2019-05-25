@@ -1,18 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LaserAttackManager : AttackManager
 {
     public readonly float IMMUNITY_DURATION = 0.1f;
-    public readonly float BEAM_LENGTH = 10f;
     public readonly float BEAM_WIDTH = 0.5f;
     public readonly float ANGLE_LENIENCE = 10f;
 
-    private float Damage;
-    private LaserController Laser;
+    private readonly float Damage;
+    private readonly LaserController Laser;
 
-    public LaserAttackManager(Spaceship attacker, float damage)
+    public LaserAttackManager(Spaceship attacker, float range, float damage)
     {
         Attacker = attacker;
         Damage = damage;
@@ -22,9 +19,9 @@ public class LaserAttackManager : AttackManager
         gameObject.transform.SetParent(attacker.transform);
         gameObject.transform.localPosition = Vector2.zero;
         gameObject.transform.localRotation = Quaternion.identity;
-        gameObject.transform.localScale = new Vector2(BEAM_LENGTH, BEAM_WIDTH);
+        gameObject.transform.localScale = new Vector2(range, BEAM_WIDTH) / attacker.transform.localScale.x;
         Laser = gameObject.GetComponent<LaserController>();
-        Laser.Initialize(this);
+        Laser.Initialize(this, range);
         TurnOff();
     }
 

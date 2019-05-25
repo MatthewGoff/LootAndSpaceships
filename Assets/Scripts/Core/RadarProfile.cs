@@ -9,8 +9,8 @@ public class RadarProfile
     public Vector2 Position;
     public float MaxShield;
     public float CurrentShield;
-    public float MaxHP;
-    public float CurrentHP;
+    public float MaxHealth;
+    public float CurrentHealth;
     public float MaxEnergy;
     public float CurrentEnergy;
     public float MaxFuel;
@@ -38,8 +38,8 @@ public class RadarProfile
         Position = position;
         MaxShield = maxShield;
         CurrentShield = currentShield;
-        MaxHP = maxHP;
-        CurrentHP = currentHP;
+        MaxHealth = maxHP;
+        CurrentHealth = currentHP;
         MaxEnergy = maxEnergy;
         CurrentEnergy = currentEnergy;
         MaxFuel = maxFuel;

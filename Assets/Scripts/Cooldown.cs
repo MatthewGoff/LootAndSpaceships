@@ -6,6 +6,16 @@
 public class Cooldown
 {
     /// <summary>
+    /// Whether this cooldown is available for use
+    /// </summary>
+    public bool Available
+    {
+        get
+        {
+            return Time.time - LastUseTime > Duration;
+        }
+    }
+    /// <summary>
     /// The time which must elapse before the cooldown is ready again
     /// </summary>
     private float Duration;
@@ -29,20 +39,11 @@ public class Cooldown
     /// <summary>
     /// Attempt to use this cooldown
     /// </summary>
-    /// <returns>
-    /// True if the cooldown was available
-    /// </returns>
-    public bool Use()
+    public void Use()
     {
-        float currentTime = Time.time;
-        if (currentTime - LastUseTime > Duration)
+        if (Available)
         {
-            LastUseTime = currentTime;
-            return true;
-        }
-        else
-        {
-            return false;
+            LastUseTime = Time.time;
         }
     }
 

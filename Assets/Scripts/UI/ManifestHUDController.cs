@@ -31,7 +31,7 @@ public class ManifestHUDController : MonoBehaviour
 
             CreditsText.GetComponent<Text>().text = Helpers.FormatNumber(subject.Credits, 5);
             ScrapNumerator.GetComponent<Text>().text = Helpers.FormatNumber(subject.Scrap, 5);
-            ScrapDenominator.GetComponent<Text>().text = Helpers.FormatNumber(subject.MaxHullSpace, 5);
+            ScrapDenominator.GetComponent<Text>().text = Helpers.FormatNumber(subject.HullSpace, 5);
             BulletText.GetComponent<Text>().text = Helpers.FormatNumber(subject.Bullets, 5);
             RocketText.GetComponent<Text>().text = Helpers.FormatNumber(subject.Rockets, 5);
             MineText.GetComponent<Text>().text = Helpers.FormatNumber(subject.Mines, 5);

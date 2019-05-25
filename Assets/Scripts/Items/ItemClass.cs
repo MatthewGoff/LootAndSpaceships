@@ -5,5 +5,6 @@ public enum ItemClass
     Weapon,
     Reactor,
     ShieldGenerator,
-    Drone
+    Hull,
+    LifeSupport
 }
