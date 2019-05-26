@@ -18,6 +18,9 @@ public class EquipmentSlotController : MonoBehaviour
 
     public void Refresh(Item item)
     {
+        Item = null;
+        Destroy(ItemIcon);
+
         if (item == null)
         {
             EmptyIcon.SetActive(true);
@@ -26,7 +29,7 @@ public class EquipmentSlotController : MonoBehaviour
         {
             Item = item;
             ItemIcon = Instantiate(ItemIconPrefab, transform);
-            ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.HullSprites, item.Colors);
+            ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(Item.ItemType), Item.Colors);
             EmptyIcon.SetActive(false);
         }
     }

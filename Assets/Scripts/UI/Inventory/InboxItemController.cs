@@ -15,7 +15,7 @@ public class InboxItemController : MonoBehaviour
         InventoryGUIController = inventoryGUIController;
 
         GameObject gameObject = Instantiate(ItemIconPrefab, transform);
-        gameObject.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.HullSprites, Item.Colors);
+        gameObject.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(Item.ItemType), Item.Colors);
     }
 
     public void Keep()

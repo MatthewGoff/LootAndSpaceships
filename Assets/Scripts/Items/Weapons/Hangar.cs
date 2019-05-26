@@ -13,7 +13,7 @@ public class Hangar : Weapon
         float energyCost,
         float cooldown,
         string minionConfiguration
-    ) : base(weight, volume, WeaponType.Hangar, 10, 0)
+    ) : base(weight, volume, ItemType.Hangar, 10, 0)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -48,5 +48,10 @@ public class Hangar : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static Hangar CreateRandomHangar(int level)
+    {
+        return new Hangar(0, 0, 0, 0, "Alpha1");
     }
 }

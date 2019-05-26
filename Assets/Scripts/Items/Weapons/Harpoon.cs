@@ -28,7 +28,7 @@ public class Harpoon : Weapon
         float speed,
         float range,
         float duration
-    ) : base(weight, volume, WeaponType.Harpoon, 0, recoil)
+    ) : base(weight, volume, ItemType.Harpoon, 0, recoil)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -61,5 +61,10 @@ public class Harpoon : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static Harpoon CreateRandomHarpoon(int level)
+    {
+        return new Harpoon(0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 }

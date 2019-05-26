@@ -27,7 +27,7 @@ public class RocketLauncher : Weapon
         float turnRate,
         float aoe,
         float damage
-    ) : base(weight, volume, WeaponType.RocketLauncher, scrapCost, recoil)
+    ) : base(weight, volume, ItemType.RocketLauncher, scrapCost, recoil)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -78,5 +78,10 @@ public class RocketLauncher : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static RocketLauncher CreateRandomRocketLauncher(int level)
+    {
+        return new RocketLauncher(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 }

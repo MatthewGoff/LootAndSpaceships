@@ -11,10 +11,11 @@ public class Player
     public Player()
     {
         Inventory = new Inventory();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 100; i++)
         {
-            Hull myHull = new Hull(HullModel.Alpha1, 0, 0, 0, 0, TargetingType.Bound);
-            Inventory.Pickup(myHull);
+            ItemType itemType = Item.GetRandomItemType();
+            Item item = Item.CreateRandomItem(0, itemType);
+            Inventory.Pickup(item);
         }
         Experience = 0;
         Level = 0;

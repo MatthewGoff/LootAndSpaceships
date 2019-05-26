@@ -7,7 +7,8 @@
     public float CurrentFuel;
     public float FuelConsumption;
 
-    public Reactor(float weight, float volume, float energyCapacity, float energyRegen, float fuelCapacity, float fuelUsage): base(weight, volume, ItemClass.Reactor)
+    public Reactor(float weight, float volume, float energyCapacity, float energyRegen, float fuelCapacity, float fuelUsage)
+        : base(weight, volume, ItemClass.Reactor, ItemType.Reactor)
     {
         EnergyCapacity = energyCapacity;
         CurrentEnergy = EnergyCapacity;
@@ -17,7 +18,7 @@
         FuelConsumption = fuelUsage;
     }
 
-    public Reactor(ReactorParameters parameters): base(parameters.Weight, parameters.Volume, ItemClass.Reactor)
+    public Reactor(ReactorParameters parameters): base(parameters.Weight, parameters.Volume, ItemClass.Reactor, ItemType.Reactor)
     {
         EnergyCapacity = parameters.EnergyCapacity;
         CurrentEnergy = EnergyCapacity;
@@ -25,5 +26,10 @@
         FuelCapacity = parameters.FuelCapacity;
         CurrentFuel = FuelCapacity;
         FuelConsumption = parameters.FuelConsumption;
+    }
+
+    public static Reactor CreateRandomReactor(int level)
+    {
+        return new Reactor(0, 0, 0, 0, 0, 0);
     }
 }

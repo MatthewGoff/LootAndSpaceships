@@ -152,7 +152,17 @@ public class InventoryGUIController : MonoBehaviour
     {
         if (CursorItem != null)
         {
-            DepositCursorItem(inventoryAddress);
+            if (inventoryAddress.InventorySection == InventorySection.Equipment)
+            {
+                if (PlayerInventory.GetClassRestrictions(inventoryAddress.EquipmentIndex).Contains(CursorItem.ItemClass))
+                {
+                    DepositCursorItem(inventoryAddress);
+                }
+            }
+            else
+            {
+                DepositCursorItem(inventoryAddress);
+            }
         }
     }
 

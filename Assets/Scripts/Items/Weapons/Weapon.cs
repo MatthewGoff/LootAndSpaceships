@@ -2,13 +2,11 @@
 
 public abstract class Weapon : Item
 {
-    public WeaponType WeaponType;
     public float ScrapCost;
     public float Recoil;
 
-    protected Weapon(float weight, float volume, WeaponType weaponType, float scrapCost, float recoil) : base(weight, volume, ItemClass.Weapon)
+    protected Weapon(float weight, float volume, ItemType itemType, float scrapCost, float recoil) : base(weight, volume, ItemClass.Weapon, itemType)
     {
-        WeaponType = weaponType;
         ScrapCost = scrapCost;
         Recoil = recoil;
     }
@@ -21,7 +19,7 @@ public abstract class Weapon : Item
 
     public static Weapon CreateWeapon(WeaponParameters parameters)
     {
-        if (parameters.WeaponType == WeaponType.Cannon)
+        if (parameters.WeaponType == ItemType.Cannon)
         {
             return new Cannon
             (
@@ -36,7 +34,7 @@ public abstract class Weapon : Item
                 damage: Helpers.ParseFloat(parameters.Param7)
             );
         }
-        else if (parameters.WeaponType == WeaponType.EMPGenerator)
+        else if (parameters.WeaponType == ItemType.EMPGenerator)
         {
             return new EMPGenerator
             (
@@ -48,7 +46,7 @@ public abstract class Weapon : Item
                 damage: Helpers.ParseFloat(parameters.Param5)
             );
         }
-        else if (parameters.WeaponType == WeaponType.Flamethrower)
+        else if (parameters.WeaponType == ItemType.Flamethrower)
         {
             return new Flamethrower
             (
@@ -59,7 +57,7 @@ public abstract class Weapon : Item
                 damage: Helpers.ParseFloat(parameters.Param3)
             );
         }
-        else if (parameters.WeaponType == WeaponType.Hangar)
+        else if (parameters.WeaponType == ItemType.Hangar)
         {
             return new Hangar
             (
@@ -70,7 +68,7 @@ public abstract class Weapon : Item
                 minionConfiguration: parameters.Param3
             );
         }
-        else if (parameters.WeaponType == WeaponType.Harpoon)
+        else if (parameters.WeaponType == ItemType.Harpoon)
         {
             return new Harpoon
             (
@@ -85,7 +83,7 @@ public abstract class Weapon : Item
                 duration: Helpers.ParseFloat(parameters.Param7)
             );
         }
-        else if (parameters.WeaponType == WeaponType.Laser)
+        else if (parameters.WeaponType == ItemType.Laser)
         {
             return new Laser
             (
@@ -96,7 +94,7 @@ public abstract class Weapon : Item
                 damage: Helpers.ParseFloat(parameters.Param3)
             );
         }
-        else if (parameters.WeaponType == WeaponType.MineLayer)
+        else if (parameters.WeaponType == ItemType.MineLayer)
         {
             return new MineLayer
             (
@@ -109,7 +107,7 @@ public abstract class Weapon : Item
                 damage: Helpers.ParseFloat(parameters.Param5)
             );
         }
-        else if (parameters.WeaponType == WeaponType.RocketLauncher)
+        else if (parameters.WeaponType == ItemType.RocketLauncher)
         {
             return new RocketLauncher
             (

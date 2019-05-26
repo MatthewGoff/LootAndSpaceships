@@ -14,7 +14,7 @@ public class Flamethrower : Weapon
         float energyCost,
         float range,
         float damage
-    ) : base(weight, volume, WeaponType.Flamethrower, 0, 0)
+    ) : base(weight, volume, ItemType.Flamethrower, 0, 0)
     {
         EnergyCost = energyCost;
         Range = range;
@@ -52,5 +52,10 @@ public class Flamethrower : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static Flamethrower CreateRandomFlamethrower(int level)
+    {
+        return new Flamethrower(0, 0, 0, 0, 0);
     }
 }

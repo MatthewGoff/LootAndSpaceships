@@ -18,7 +18,7 @@ public class StorageSlotController : MonoBehaviour
         if (Item != null)
         {
             ItemIcon = Instantiate(ItemIconPrefab, transform);
-            ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.HullSprites, item.Colors);
+            ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(Item.ItemType), Item.Colors);
         }
     }
 

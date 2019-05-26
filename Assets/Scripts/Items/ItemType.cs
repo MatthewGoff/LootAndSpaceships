@@ -1,5 +1,10 @@
-﻿public enum WeaponType
+﻿public enum ItemType
 {
+    Engine,
+    Reactor,
+    ShieldGenerator,
+    Hull,
+    LifeSupport,
     Cannon,
     RocketLauncher,
     EMPGenerator,

@@ -15,7 +15,7 @@ public class EMPGenerator : Weapon
         float cooldown,
         float aoe,
         float damage
-    ) : base(weight, volume, WeaponType.EMPGenerator, 0, 0)
+    ) : base(weight, volume, ItemType.EMPGenerator, 0, 0)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -46,5 +46,10 @@ public class EMPGenerator : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static EMPGenerator CreateRandomEMPGenerator(int level)
+    {
+        return new EMPGenerator(0, 0, 0, 0, 0, 0);
     }
 }

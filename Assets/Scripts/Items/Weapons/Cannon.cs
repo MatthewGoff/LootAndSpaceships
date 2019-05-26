@@ -19,7 +19,7 @@ public class Cannon : Weapon
         float projectileSpeed,
         float range,
         float damage
-    ) : base(weight, volume, WeaponType.Cannon, scrapCost, recoil)
+    ) : base(weight, volume, ItemType.Cannon, scrapCost, recoil)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -51,5 +51,10 @@ public class Cannon : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static Cannon CreateRandomCannon(int level)
+    {
+        return new Cannon(0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 }

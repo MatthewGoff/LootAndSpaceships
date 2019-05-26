@@ -16,7 +16,7 @@ public class MineLayer : Weapon
         float scrapCost,
         float aoe,
         float damage
-    ) : base(weight, volume, WeaponType.MineLayer, scrapCost, 0)
+    ) : base(weight, volume, ItemType.MineLayer, scrapCost, 0)
     {
         EnergyCost = energyCost;
         Cooldown = new Cooldown(cooldown);
@@ -47,5 +47,10 @@ public class MineLayer : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static MineLayer CreateRandomMineLayer(int level)
+    {
+        return new MineLayer(0, 0, 0, 0, 0, 0, 0);
     }
 }

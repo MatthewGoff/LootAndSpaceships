@@ -7,7 +7,7 @@ public class Laser : Weapon
     private readonly float Damage;
     private LaserAttackManager AttackManager;
 
-    public Laser(float weight, float volume, float energyCost, float range, float damage) : base(weight, volume, WeaponType.Laser, 0, 0)
+    public Laser(float weight, float volume, float energyCost, float range, float damage) : base(weight, volume, ItemType.Laser, 0, 0)
     {
         EnergyCost = energyCost;
         Range = range;
@@ -45,5 +45,10 @@ public class Laser : Weapon
     public override float MarginalEnergyCost(float fixedDeltaTime)
     {
         return EnergyCost;
+    }
+
+    public static Laser CreateRandomLaser(int level)
+    {
+        return new Laser(0, 0, 0, 0, 0);
     }
 }

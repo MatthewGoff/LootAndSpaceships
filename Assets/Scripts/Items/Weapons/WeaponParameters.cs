@@ -2,7 +2,7 @@
 {
     public float Weight;
     public float Volume;
-    public WeaponType WeaponType;
+    public ItemType WeaponType;
     public string Param1;
     public string Param2;
     public string Param3;

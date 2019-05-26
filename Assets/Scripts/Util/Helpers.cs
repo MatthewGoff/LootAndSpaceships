@@ -218,16 +218,16 @@ public static class Helpers
         }
     }
 
-    public static WeaponType ParseWeaponType(string value)
+    public static ItemType ParseWeaponType(string value)
     {
         try
         {
-            return (WeaponType)Enum.Parse(typeof(WeaponType), value);
+            return (ItemType)Enum.Parse(typeof(ItemType), value);
         }
         catch
         {
             Debug.LogWarning("Failed to parse WeaponType: \"" + value + "\". Defaulting to WeaponType.Cannon");
-            return WeaponType.Cannon;
+            return ItemType.Cannon;
         }
     }
 

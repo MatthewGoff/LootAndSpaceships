@@ -18,7 +18,7 @@ public class Hull : Item
         float hullSpaceMultiplier,
         float hitPoints,
         TargetingType targetingType
-    ) : base(0, 0, ItemClass.Hull)
+    ) : base(0, 0, ItemClass.Hull, ItemType.Hull)
     {
         Model = model;
         Size = size;
@@ -29,7 +29,7 @@ public class Hull : Item
         TargetingType = targetingType;
     }
 
-    public Hull(HullParameters parameters) : base(0, 0, ItemClass.Hull)
+    public Hull(HullParameters parameters) : base(0, 0, ItemClass.Hull, ItemType.Hull)
     {
         Model = parameters.Model;
         Size = parameters.Size;
@@ -38,6 +38,10 @@ public class Hull : Item
         MaximumHitPoints = parameters.HitPoints;
         CurrentHitPoints = MaximumHitPoints;
         TargetingType = parameters.TargetingType;
+    }
 
+    public static Hull CreateRandomHull(int level)
+    {
+        return new Hull(0, 0, 0, 0, 0, TargetingType.Bound);
     }
 }
