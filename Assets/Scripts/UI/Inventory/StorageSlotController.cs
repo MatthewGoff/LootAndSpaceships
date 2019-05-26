@@ -7,15 +7,13 @@ public class StorageSlotController : MonoBehaviour
     private InventoryGUIController InventoryGUIController;
     private Item Item;
     private GameObject ItemIcon;
-    private int Column;
-    private int Row;
+    private InventoryAddress InventoryAddress;
 
-    public void Initialize(InventoryGUIController inventoryGUIController, int col, int row, Item item)
+    public void Initialize(InventoryGUIController inventoryGUIController, InventoryAddress inventoryAddress, Item item)
     {
         InventoryGUIController = inventoryGUIController;
         Item = item;
-        Column = col;
-        Row = row;
+        InventoryAddress = inventoryAddress;
 
         if (Item != null)
         {
@@ -28,15 +26,12 @@ public class StorageSlotController : MonoBehaviour
     {
         if (Item == null)
         {
-            InventoryGUIController.ItemRequestedByStorage(Column, Row);
+            InventoryGUIController.ItemRequested(InventoryAddress);
         }
         else
         {
-            bool itemTaken = InventoryGUIController.ItemSelected(Item, ItemIcon);
-            if (itemTaken)
-            {
-                Item = null;
-            }
+            InventoryGUIController.ItemSelected(Item, ItemIcon, InventoryAddress);
+            Item = null;
         }
     }
 }

@@ -21,20 +21,7 @@ public abstract class Item
         Colors = new Color[4];
         for (int i = 0; i < Colors.Length; i++)
         {
-            Colors[i] = Color.HSVToRGB(Random.value, 0.8f, 0.8f);
+            Colors[i] = Color.HSVToRGB(Random.value, Random.value, Random.value);
         }
-    }
-
-    protected void ChooseColors2()
-    {
-        Colors = new Color[4];
-        float hue = Random.value;
-        Colors[0] = Color.HSVToRGB(hue, 0.8f, 0.8f);
-        hue = (hue + 0.25f) % 1;
-        Colors[1] = Color.HSVToRGB(hue, 0.8f, 0.8f);
-        hue = (hue + 0.25f) % 1;
-        Colors[2] = Color.HSVToRGB(hue, 0.8f, 0.8f);
-        hue = (hue + 0.25f) % 1;
-        Colors[3] = Color.HSVToRGB(hue, 0.8f, 0.8f);
     }
 }

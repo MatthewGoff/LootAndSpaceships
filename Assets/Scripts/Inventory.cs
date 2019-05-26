@@ -3,15 +3,19 @@ using UnityEngine;
 
 public class Inventory
 {
-    private static readonly int INVENTORY_PAGES = 4;
-    private static readonly int INVENTORY_ROWS = 20;
+    private static readonly int STORAGE_PAGES = 4;
+    private static readonly int STORAGE_ROWS = 20;
+    public static readonly int EQUIPMENT_SLOTS = 20;
+
     public List<Item> Inbox { get; private set; }
     public Item[,,] Storage { get; private set; }
+    public Item[] Equipment { get; private set; }
 
     public Inventory()
     {
         Inbox = new List<Item>();
-        Storage = new Item[INVENTORY_PAGES, 5, INVENTORY_ROWS];
+        Storage = new Item[STORAGE_PAGES, 5, STORAGE_ROWS];
+        Equipment = new Item[EQUIPMENT_SLOTS];
     }
 
     public void Pickup(Item item)
@@ -38,10 +42,17 @@ public class Inventory
         }
     }
 
-    public void MoveItemToStorage(Item item, int destinationPage, int destinationCol, int destinationRow)
+    public void MoveItem(Item item, InventoryAddress address)
     {
         RemoveItemFromInventory(item);
-        Storage[destinationPage, destinationCol, destinationRow] = item;
+        if (address.InventorySection == InventorySection.Storage)
+        {
+            Storage[address.StoragePage, address.StorageColumn, address.StorageRow] = item;
+        }
+        else if (address.InventorySection == InventorySection.Equipment)
+        {
+            Equipment[address.EquipmentIndex] = item;
+        }
     }
 
     public void RemoveItemFromInventory(Item item)
@@ -55,8 +66,17 @@ public class Inventory
                     if (Storage[page, col, row] == item)
                     {
                         Storage[page, col, row] = null;
+                        return;
                     }
                 }
+            }
+        }
+        for (int i = 0; i < Equipment.Length; i++)
+        {
+            if (Equipment[i] == item)
+            {
+                Equipment[i] = null;
+                return;
             }
         }
     }
