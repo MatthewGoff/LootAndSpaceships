@@ -307,9 +307,17 @@ public class Spaceship : Vehicle
             Autopilot.SetTarget(target, AutopilotBehaviour.Seek);
         }
 
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            SelectedWeapon = 1;
+        }
+        else if (Input.GetKey(KeyCode.Alpha2))
+        {
+            SelectedWeapon = 2;
+        }
         if (Input.GetKey(KeyCode.Space))
         {
-            QueueAttack(0);
+            QueueAttack(SelectedWeapon);
         }
 
         CollectTargetingInput();
@@ -317,7 +325,7 @@ public class Spaceship : Vehicle
 
     public void QueueAttack(int weaponSlot)
     {
-        WeaponInputs[weaponSlot] = true;
+        WeaponInputs[weaponSlot - 1] = true;
     }
 
     public void ReloadBullets()

@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public Spaceship PlayerController;
     public GameObject LevelUpText;
     public Transform Scene;
+    public GameObject RootCanvas;
     private Transform VolatileSceneObjects;
 
     private int CurrentLevel;
@@ -27,11 +28,11 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         SpaceshipTable.Initialize();
-        Player = new Player();
     }
 
     private void Start()
     {
+        Player = new Player();
         LevelButtons.GetComponent<LevelButtonsController>().UnlockButton(1);
         SelectLevel(1);
     }

@@ -237,4 +237,95 @@ public static class Helpers
         string value = number.ToString();
         return value.Substring(0, Mathf.Min(value.Length, length));
     }
+
+    public static Texture2D ColorMask(Texture2D texture, Color color)
+    {
+        Texture2D result = new Texture2D(texture.width, texture.height);
+        Color resultColor;
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                resultColor = color;
+                resultColor.a = texture.GetPixel(x, y).a;
+                result.SetPixel(x, y, resultColor);
+            }
+        }
+        result.Apply();
+        return result;
+    }
+
+    public static Texture2D ComposeTextures(Texture2D forground, Texture2D background)
+    {
+        Texture2D result = new Texture2D(background.width, background.height);
+        for (int x = 0; x < background.width; x++)
+        {
+            for (int y = 0; y < background.height; y++)
+            {
+                result.SetPixel(x, y, ComposePixels(forground.GetPixel(x, y), background.GetPixel(x, y)));
+            }
+        }
+        result.Apply();
+        return result;
+    }
+
+    public static Color ComposePixels(Color forgroundPixel, Color backgroundPixel)
+    {
+        float r = ((forgroundPixel.r * forgroundPixel.a) + (backgroundPixel.r * backgroundPixel.a) * (1f - forgroundPixel.a)) / (forgroundPixel.a + backgroundPixel.a * (1f - forgroundPixel.a));
+        float g = ((forgroundPixel.g * forgroundPixel.a) + (backgroundPixel.g * backgroundPixel.a) * (1f - forgroundPixel.a)) / (forgroundPixel.a + backgroundPixel.a * (1f - forgroundPixel.a));
+        float b = ((forgroundPixel.b * forgroundPixel.a) + (backgroundPixel.b * backgroundPixel.a) * (1f - forgroundPixel.a)) / (forgroundPixel.a + backgroundPixel.a * (1f - forgroundPixel.a));
+        float a = forgroundPixel.a + backgroundPixel.a * (1f - forgroundPixel.a);
+        return new Color(r, g, b, a);
+    }
+
+    public static Texture2D ApplyMask(Texture2D texture, Texture2D mask)
+    {
+        Texture2D result = new Texture2D(texture.width, texture.height);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                Color color = texture.GetPixel(x, y);
+                color.a = mask.GetPixel(x, y).a;
+                result.SetPixel(x, y, color);
+            }
+        }
+        result.Apply();
+        return result;
+    }
+
+    public static Texture2D CreateTextureFromMasks(Texture2D[] masks, Color[] colors)
+    {
+        Texture2D result = new Texture2D(masks[0].width, masks[0].height);
+        Color resultColor;
+        for (int x = 0; x < result.width; x++)
+        {
+            for (int y = 0; y < result.height; y++)
+            {
+                resultColor = new Color(0, 0, 1, 1);
+                for (int i = 0; i < masks.Length; i++)
+                {
+                    if (masks[i].GetPixel(x, y).a == 0)
+                    {
+                        resultColor = colors[i];
+                    }
+                }
+                result.SetPixel(x, y, resultColor);
+            }
+        }
+        result.Apply();
+        return result;
+    }
+
+    public static void ClearTexture(Texture2D texture, Color background)
+    {
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                texture.SetPixel(x, y, background);
+            }
+        }
+        texture.Apply();
+    }
 }

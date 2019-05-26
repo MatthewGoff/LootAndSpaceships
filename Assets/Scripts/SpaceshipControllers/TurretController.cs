@@ -9,6 +9,7 @@ public class TurretController : Spaceship
 
     protected override void ModelSpecificInitialization()
     {
+        transform.localRotation = Quaternion.identity;
         ColorPalett colorPalett = ConfigurationColorPaletts.Instance.GetColorPalett("Team " + Team);
         SpriteColor1.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(1);
         SpriteColor5.GetComponent<SpriteRenderer>().color = colorPalett.GetColor(5);

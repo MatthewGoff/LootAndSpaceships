@@ -14,11 +14,6 @@ public class RocketController : MonoBehaviour
     private Rigidbody2D RB2D;
     private Vector2 Heading;
 
-    private void Awake()
-    {
-        StartCoroutine("ExpirationCountdown");
-    }
-
     public void Initialize(RocketAttackManager manager, float range, float turnRate, float maximumSpeed, float acceleration)
     {
         Manager = manager;

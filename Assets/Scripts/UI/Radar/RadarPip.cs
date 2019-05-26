@@ -4,15 +4,15 @@ public class RadarPip
 {
     private readonly GameObject Pip;
     private readonly GameObject Arrow;
-    private readonly RadarController RadarController;
+    private readonly RadarGUIController RadarController;
 
-    public RadarPip(RadarController radarController)
+    public RadarPip(RadarGUIController radarController)
     {
         RadarController = radarController;
-        Pip = GameObject.Instantiate(GeneralPrefabs.Instance.RadarPip, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Pip = GameObject.Instantiate(GeneralPrefabs.Instance.RadarPip, Vector2.zero, Quaternion.identity);
         Pip.transform.SetParent(RadarController.ContentsTransform.transform);
         Pip.SetActive(false);
-        Arrow = GameObject.Instantiate(GeneralPrefabs.Instance.RadarArrow, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        Arrow = GameObject.Instantiate(GeneralPrefabs.Instance.RadarArrow, Vector2.zero, Quaternion.identity);
         Arrow.transform.SetParent(RadarController.ContentsTransform.transform);
         Arrow.SetActive(false);
     }

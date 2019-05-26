@@ -51,7 +51,7 @@ public class TurretAI : AI
         if (Aggroed & closestEnemyUID != Omniscience.NULL_UID)
         {
             Spaceship.SelectTarget(closestEnemyUID);
-            Spaceship.QueueAttack(0);
+            Spaceship.QueueAttack(1);
         }
         else
         {

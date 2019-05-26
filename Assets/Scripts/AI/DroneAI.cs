@@ -59,7 +59,7 @@ public class DroneAI : AI
         {
             Autopilot.SetTarget(radarProfiles[closestEnemyUID].Position, AutopilotBehaviour.Seek);
             Spaceship.SelectTarget(closestEnemyUID);
-            Spaceship.QueueAttack(0);
+            Spaceship.QueueAttack(1);
         }
         else
         {
