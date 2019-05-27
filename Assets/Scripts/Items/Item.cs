@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class Item
 {
@@ -15,10 +16,10 @@ public abstract class Item
         ItemClass = itemClass;
         ItemType = itemType;
 
-        ChooseRandomColors();
+        ChooseRandomColors2();
     }
 
-    protected void ChooseRandomColors()
+    private void ChooseRandomColors()
     {
         int numberOfColors = 4;
         float minimumHueDistance = 0.15f;
@@ -51,6 +52,41 @@ public abstract class Item
         else
         {
             return Color.HSVToRGB(hue, Random.Range(0.75f, 1f), 1f);
+        }
+    }
+
+    private void ChooseRandomColors2()
+    {
+        int numberOfColors = 4;
+        Colors = new Color[numberOfColors];
+
+        List<float> valueOptions = new List<float>() { 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f };
+        float[] values = new float[numberOfColors];
+        for (int i = 0; i < values.Length; i++)
+        {
+            int selection = Random.Range(0, valueOptions.Count);
+            values[i] = valueOptions[selection];
+            valueOptions.Remove(valueOptions[selection]);
+        }
+
+        int colorIndex = Random.Range(0, numberOfColors);
+        for (int i = 0; i < Colors.Length; i++)
+        {
+            if (i == colorIndex)
+            {
+                if (Random.value < 0.5)
+                {
+                    Colors[i] = Color.HSVToRGB(Random.value, 1f, Random.Range(0.75f, 1f));
+                }
+                else
+                {
+                    Colors[i] = Color.HSVToRGB(Random.value, Random.Range(0.75f, 1f), 1f);
+                }
+            }
+            else
+            {
+                Colors[i] = Color.HSVToRGB(0, 0, values[i]);
+            }
         }
     }
 

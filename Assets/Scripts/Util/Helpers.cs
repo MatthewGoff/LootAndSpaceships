@@ -328,4 +328,38 @@ public static class Helpers
         }
         texture.Apply();
     }
+
+    public static void ShuffleArray<T>(ref T[] array)
+    {
+        if (array.Length == 0)
+        {
+            return;
+        }
+        List<int> indicies = new List<int>();
+        for (int i = 0; i < array.Length; i++)
+        {
+            indicies.Add(i);
+        }
+        T moving = array[indicies[0]];
+        while (indicies.Count > 0)
+        {
+            int destination = indicies[UnityEngine.Random.Range(0, indicies.Count)];
+            if (destination == indicies[0])
+            {
+                array[destination] = moving;
+                indicies.Remove(destination);
+                if (indicies.Count > 0)
+                {
+                    moving = array[indicies[0]];
+                }
+            }
+            else
+            {
+                T temp = array[destination];
+                array[destination] = moving;
+                moving = temp;
+                indicies.Remove(destination);
+            }
+        }
+    }
 }

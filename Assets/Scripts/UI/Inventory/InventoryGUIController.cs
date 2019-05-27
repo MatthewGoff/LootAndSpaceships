@@ -138,7 +138,6 @@ public class InventoryGUIController : MonoBehaviour
     {
         GameObject newInboxEntry = Instantiate(InboxEntryPrefab, InboxContent.transform);
 
-
         int spaceing;
         if (GameManager.Instance.Player.Inventory.Inbox.Count == 1)
         {
@@ -151,11 +150,9 @@ public class InventoryGUIController : MonoBehaviour
         newInboxEntry.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, - InboxContent.GetComponent<RectTransform>().sizeDelta.y - spaceing);
         InboxContent.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 64 + spaceing);
 
-        
         int index = GameManager.Instance.Player.Inventory.Inbox.Count - 1;
         newInboxEntry.GetComponent<InboxEntryController>().Initialize(this, GameManager.Instance.Player.Inventory.Inbox[index], index);
         InboxEntries.Add(newInboxEntry.GetComponent<InboxEntryController>());
-
     }
 
     /// <summary>
