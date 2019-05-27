@@ -625,7 +625,12 @@ public class Spaceship : Vehicle
 
     public virtual void PickupCrate(int quantity)
     {
-
+        if (PlayerControlled)
+        {
+            ItemType itemType = Item.GetRandomItemType();
+            Item item = Item.CreateRandomItem(0, itemType);
+            Liscense.Player.PickupItem(item);
+        }
     }
 
     public void SelectTarget(int uid)

@@ -11,12 +11,6 @@ public class Player
     public Player()
     {
         Inventory = new Inventory();
-        for (int i = 0; i < 100; i++)
-        {
-            ItemType itemType = Item.GetRandomItemType();
-            Item item = Item.CreateRandomItem(0, itemType);
-            Inventory.Pickup(item);
-        }
         Experience = 0;
         Level = 0;
     }

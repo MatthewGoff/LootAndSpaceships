@@ -19,10 +19,11 @@ public class GameManager : MonoBehaviour
     public GameObject LevelUpText;
     public Transform Scene;
     public GameObject RootCanvas;
-    private Transform VolatileSceneObjects;
 
+    private Transform VolatileSceneObjects;
     private int CurrentLevel;
     private bool SceneActive;
+    private bool InventoryOpen;
 
     private void Awake()
     {
@@ -42,6 +43,8 @@ public class GameManager : MonoBehaviour
         Omniscience.Initialize();
         VolatileSceneObjects = new GameObject("VolatileSceneObjects").transform;
         VolatileSceneObjects.transform.SetParent(Scene);
+        InventoryGUIController.Instance.Close();
+        InventoryOpen = false;
 
         SpawnPlayer();
         SpawnEnemies(level);
@@ -74,6 +77,19 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (InventoryOpen)
+            {
+                InventoryGUIController.Instance.Close();
+                InventoryOpen = false;
+            }
+            else
+            {
+                InventoryGUIController.Instance.Open();
+                InventoryOpen = true;
+            }
         }
     }
 

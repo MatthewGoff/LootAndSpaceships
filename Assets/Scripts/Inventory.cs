@@ -28,6 +28,7 @@ public class Inventory
     public void Pickup(Item item)
     {
         Inbox.Add(item);
+        InventoryGUIController.Instance.NewInboxItem();
     }
 
     /// <summary>

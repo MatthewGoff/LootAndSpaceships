@@ -23,7 +23,7 @@ public class InboxEntryController : MonoBehaviour
     private void Update()
     {
         float distance = TargetHeight - GetComponent<RectTransform>().anchoredPosition.y;
-        if (distance != 0)
+        if (distance >= 0)
         {
             float step = 10 * distance * Time.deltaTime;
             if (step < 1)
