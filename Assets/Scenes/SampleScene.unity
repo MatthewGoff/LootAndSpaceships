@@ -2944,7 +2944,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 896.88}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &262861533
 GameObject:
@@ -5817,8 +5817,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 905907881}
   m_HandleRect: {fileID: 905907880}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.75372404
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -24213,8 +24213,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1180733961}
   m_HandleRect: {fileID: 1180733960}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.6712158
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -27182,7 +27182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23b84eeb49580da439bf04757712aeb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InboxItemPrefab: {fileID: 3651727492507567457, guid: 99503ec824ac60944a4d55fc1a504e74,
+  ItemIconPrefab: {fileID: 1215186039885946696, guid: de41629dc1c29754699ded3094bbac7d,
+    type: 3}
+  InboxEntryPrefab: {fileID: 3651727492507567457, guid: 99503ec824ac60944a4d55fc1a504e74,
     type: 3}
   StorageSlotPrefab: {fileID: 8439216569575357131, guid: e863d10c0be632e449681bb08d0fecb6,
     type: 3}
@@ -28942,7 +28944,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 896.88}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &2002942656
 GameObject:
@@ -31149,11 +31151,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 487522490}
     m_Modifications:
-    - target: {fileID: 1060420901665994603, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
-        type: 3}
-      propertyPath: m_Name
-      value: EquipmentSlot
-      objectReference: {fileID: 0}
     - target: {fileID: 891888325274829445, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -31259,25 +31256,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7145384711025474216, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
+    - target: {fileID: 1060420901665994603, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
         type: 3}
-      propertyPath: InventoryGUIController
-      value: 
-      objectReference: {fileID: 1855754106}
-    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.25
+      propertyPath: m_Name
+      value: EquipmentSlot
       objectReference: {fileID: 0}
     - target: {fileID: 1165415655003250586, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
         type: 3}
@@ -31299,6 +31281,26 @@ PrefabInstance:
       propertyPath: m_Transition
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6433990950356744094, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7145384711025474216, guid: 6d9b662fd68114d48b5da4165b0cb4e0,
+        type: 3}
+      propertyPath: InventoryGUIController
+      value: 
+      objectReference: {fileID: 1855754106}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d9b662fd68114d48b5da4165b0cb4e0, type: 3}
 --- !u!114 &7145384711025474216

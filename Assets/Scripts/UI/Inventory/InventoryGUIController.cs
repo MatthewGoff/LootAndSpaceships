@@ -1,85 +1,89 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryGUIController : MonoBehaviour
 {
-    public GameObject InboxItemPrefab;
+    public GameObject ItemIconPrefab;
+    public GameObject InboxEntryPrefab;
     public GameObject StorageSlotPrefab;
     public GameObject InboxContent;
     public GameObject StorageContent;
     public EquipmentSlotController[] EquipmentSlots;
 
+    public bool ItemOnCursor
+    {
+        get
+        {
+            return CursorItem != null;
+        }
+    }
     private Inventory PlayerInventory;
-    private List<GameObject> InboxItems;
-    private GameObject[,] StorageSlots;
-    private int InboxCount;
+    private List<InboxEntryController> InboxEntries;
+    private StorageSlotController[,] StorageSlots;
     private Item CursorItem;
     private GameObject CursorIcon;
     private int CurrentStoragePage;
 
     private void Start()
     {
-        InboxItems = new List<GameObject>();
+        InboxEntries = new List<InboxEntryController>();
         PlayerInventory = GameManager.Instance.Player.Inventory;
-        InboxCount = 0;
         CurrentStoragePage = 0;
-        RefreshInbox();
-        RefreshStorage();
-        RefreshEquipment();
+        InitializeInbox();
+        InitializeEquipmentSlots();
+        InitializeStorageSlots();
+    }
+
+    private void InitializeEquipmentSlots()
+    {
+        for (int i = 0; i < EquipmentSlots.Length; i++)
+        {
+            EquipmentSlots[i].Initialize(PlayerInventory.Equipment[i]);
+        }
     }
 
     private void Update()
     {
-        if (InboxCount != PlayerInventory.Inbox.Count)
-        {
-            RefreshInbox();
-        }
-        InboxCount = PlayerInventory.Inbox.Count;
-
-        if (CursorItem != null)
+        if (ItemOnCursor)
         {
             CursorIcon.GetComponent<RectTransform>().anchoredPosition = Input.mousePosition;
         }
     }
 
-    private void RefreshInbox()
+    private void InitializeInbox()
     {
-        ClearInbox();
+        InboxContent.GetComponent<RectTransform>().sizeDelta = new Vector2(InboxEntryPrefab.GetComponent<RectTransform>().sizeDelta.x, PlayerInventory.Inbox.Count * 74 - 10);
 
         int verticalOffset = 0;
-        foreach (Item item in PlayerInventory.Inbox)
+        for (int i = 0; i < PlayerInventory.Inbox.Count; i++)
         {
-            GameObject newInboxItem = Instantiate(InboxItemPrefab, InboxContent.transform);
-            newInboxItem.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, verticalOffset);
+            GameObject newInboxEntry = Instantiate(InboxEntryPrefab, InboxContent.transform);
+            newInboxEntry.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, verticalOffset);
             verticalOffset -= 74;
-            newInboxItem.GetComponent<InboxItemController>().Initialize(this, item);
-            InboxItems.Add(newInboxItem);
+            newInboxEntry.GetComponent<InboxEntryController>().Initialize(this, PlayerInventory.Inbox[i], i);
+            InboxEntries.Add(newInboxEntry.GetComponent<InboxEntryController>());
         }
-
-        InboxContent.GetComponent<RectTransform>().sizeDelta = new Vector2(InboxItemPrefab.GetComponent<RectTransform>().sizeDelta.x, -1 * verticalOffset);
     }
 
     private void ClearInbox()
     {
-        if (InboxItems != null)
+        if (InboxEntries != null)
         {
-            foreach (GameObject inboxItem in InboxItems)
+            foreach (InboxEntryController inboxEntry in InboxEntries)
             {
-                Destroy(inboxItem);
+                Destroy(inboxEntry.gameObject);
             }
         }
-        InboxItems = new List<GameObject>();
+        InboxEntries = new List<InboxEntryController>();
     }
 
-    private void RefreshStorage()
+    private void InitializeStorageSlots()
     {
-        ClearStorage();
-
         Vector2 sizeDelta = StorageContent.GetComponent<RectTransform>().sizeDelta;
         sizeDelta.y = PlayerInventory.Storage.GetLength(2) * 74 - 10;
         StorageContent.GetComponent<RectTransform>().sizeDelta = sizeDelta;
 
+        StorageSlots = new StorageSlotController[PlayerInventory.Storage.GetLength(1), PlayerInventory.Storage.GetLength(2)];
         for (int col = 0; col < StorageSlots.GetLength(0); col++)
         {
             for (int row = 0; row < StorageSlots.GetLength(1); row++)
@@ -88,69 +92,76 @@ public class InventoryGUIController : MonoBehaviour
                 newStorageSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(col * 74, - row * 74);
                 InventoryAddress address = InventoryAddress.NewStorageAddress(CurrentStoragePage, col, row);
                 newStorageSlot.GetComponent<StorageSlotController>().Initialize(this, address, PlayerInventory.Storage[CurrentStoragePage, col, row]);
-                StorageSlots[col, row] = newStorageSlot;
+                StorageSlots[col, row] = newStorageSlot.GetComponent<StorageSlotController>();
             }
         }
     }
 
-    private void ClearStorage()
+    public void Keep(Item item, int inboxIndex)
     {
-        if (StorageSlots != null)
+        InventoryAddress inventoryAddress = PlayerInventory.Keep(item);
+        if (inventoryAddress != null)
         {
-            for (int col = 0; col < StorageSlots.GetLength(0); col++)
-            {
-                for (int row = 0; row < StorageSlots.GetLength(1); row++)
-                {
-                    if (StorageSlots[col, row] != null)
-                    {
-                        Destroy(StorageSlots[col, row]);
-                    }
-                }
-            }
-        }
-
-        StorageSlots = new GameObject[PlayerInventory.Storage.GetLength(1), PlayerInventory.Storage.GetLength(2)];
-    }
-
-    private void RefreshEquipment()
-    {
-        for (int i = 0; i < EquipmentSlots.Length; i++)
-        {
-            EquipmentSlots[i].Refresh(PlayerInventory.Equipment[i]);
+            GetInventorySlot(inventoryAddress).TakeItem(item);
+            RemoveFromInbox(inboxIndex);
         }
     }
 
-    public void Keep(Item item)
-    {
-        PlayerInventory.Keep(item);
-        RefreshInbox();
-        RefreshStorage();
-
-    }
-
-    public void Scrap(Item item)
+    public void Scrap(Item item, int inboxIndex)
     {
         PlayerInventory.Scrap(item);
-        RefreshInbox();
+        RemoveFromInbox(inboxIndex);
     }
 
-    public void ItemSelected(Item item, GameObject icon, InventoryAddress inventoryAddress)
+    private void RemoveFromInbox(int inboxIndex)
     {
-        if (CursorItem != null)
+        InboxEntryController temp = InboxEntries[inboxIndex];
+        InboxEntries.Remove(temp);
+        Destroy(temp.gameObject);
+
+        for (int i = inboxIndex; i < InboxEntries.Count; i++)
         {
-            DepositCursorItem(inventoryAddress);
+            InboxEntries[i].MoveUp();
         }
 
-        CursorItem = item;
-        CursorIcon = icon;
-
-        CursorIcon.transform.SetParent(GameManager.Instance.RootCanvas.transform);
-        CursorIcon.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+        InboxContent.GetComponent<RectTransform>().sizeDelta -= new Vector2(0, 74);
     }
 
-    public void ItemRequested(InventoryAddress inventoryAddress)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="inventoryAddress"></param>
+    /// <returns>
+    /// true if the item was picked-up. false otherwise (i.e. There was an item
+    /// already on the cursor which could not be put down)
+    /// </returns>
+    public bool PickupItem(Item item, InventoryAddress inventoryAddress)
     {
-        if (CursorItem != null)
+        RequestCursorItem(inventoryAddress);
+
+        if (!ItemOnCursor)
+        {
+            CursorItem = item;
+            CursorIcon = Instantiate(ItemIconPrefab, GameManager.Instance.RootCanvas.transform);
+            CursorIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(CursorItem.ItemType), CursorItem.Colors);
+            CursorIcon.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Request that the item on the cursor be deposited at the specified
+    /// inventory address.
+    /// </summary>
+    /// <param name="inventoryAddress"></param>
+    public void RequestCursorItem(InventoryAddress inventoryAddress)
+    {
+        if (ItemOnCursor)
         {
             if (inventoryAddress.InventorySection == InventorySection.Equipment)
             {
@@ -169,9 +180,28 @@ public class InventoryGUIController : MonoBehaviour
     public void DepositCursorItem(InventoryAddress inventoryAddress)
     {
         PlayerInventory.MoveItem(CursorItem, inventoryAddress);
+        GetInventorySlot(inventoryAddress).TakeItem(CursorItem);
         CursorItem = null;
         Destroy(CursorIcon);
-        RefreshStorage();
-        RefreshEquipment();
+    }
+
+    private IAcceptsItems GetInventorySlot(InventoryAddress inventoryAddress)
+    {
+        if (inventoryAddress.InventorySection == InventorySection.Equipment)
+        {
+            return EquipmentSlots[inventoryAddress.EquipmentIndex];
+        }
+        else if (inventoryAddress.InventorySection == InventorySection.Storage)
+        {
+            if (inventoryAddress.StoragePage != CurrentStoragePage)
+            {
+                Debug.LogError("InventoryGUIController tried accessing a storage slot on an inactive page");
+            }
+            return StorageSlots[inventoryAddress.StorageColumn, inventoryAddress.StorageRow];
+        }
+        else
+        {
+            return null;
+        }
     }
 }

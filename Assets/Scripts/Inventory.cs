@@ -30,7 +30,15 @@ public class Inventory
         Inbox.Add(item);
     }
 
-    public void Keep(Item item)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns>
+    /// The address of the inventory slot the item has be placed in. Returns
+    /// null if the item was not placed (i.e. inventory is full)
+    /// </returns>
+    public InventoryAddress Keep(Item item)
     {
         for (int page = 0; page < Storage.GetLength(0); page++)
         {
@@ -42,11 +50,12 @@ public class Inventory
                     {
                         Storage[page, col, row] = item;
                         Inbox.Remove(item);
-                        return;
+                        return InventoryAddress.NewStorageAddress(page, col, row);
                     }
                 }
             }
         }
+        return null;
     }
 
     public void MoveItem(Item item, InventoryAddress address)

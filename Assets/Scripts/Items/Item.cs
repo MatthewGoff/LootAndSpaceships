@@ -20,10 +20,37 @@ public abstract class Item
 
     protected void ChooseRandomColors()
     {
-        Colors = new Color[4];
+        int numberOfColors = 4;
+        float minimumHueDistance = 0.15f;
+        Colors = new Color[numberOfColors];
+        float hueOffset = Random.value;
+        float[] hues = new float[numberOfColors];
+        hues[0] = 0;
+        for (int i = 1; i < hues.Length; i++)
+        {
+            hues[i] = Random.Range(hues[i-1] + minimumHueDistance,  i * (1 - minimumHueDistance) / (hues.Length - 1));
+        }
         for (int i = 0; i < Colors.Length; i++)
         {
-            Colors[i] = Color.HSVToRGB(Random.value, Random.value, Random.value);
+            Colors[i] = GetRandomItemColor((hueOffset+hues[i]) % 1);
+        }
+    }
+
+    private static Color GetRandomItemColor(float hue)
+    {
+        float sample = Random.value;
+        if (sample < 0.2)
+        {
+            float value = Mathf.RoundToInt(5 * hue) / 5f;
+            return Color.HSVToRGB(0, 0, value);
+        }
+        else if (sample < 0.6)
+        {
+            return Color.HSVToRGB(hue, 1f, Random.Range(0.75f, 1f));
+        }
+        else
+        {
+            return Color.HSVToRGB(hue, Random.Range(0.75f, 1f), 1f);
         }
     }
 

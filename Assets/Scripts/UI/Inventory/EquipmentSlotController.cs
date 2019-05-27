@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EquipmentSlotController : MonoBehaviour
+public class EquipmentSlotController : MonoBehaviour, IAcceptsItems
 {
     public int EquipmentIndex;
     public GameObject EmptyIcon;
@@ -16,21 +16,11 @@ public class EquipmentSlotController : MonoBehaviour
         InventoryAddress = InventoryAddress.NewEquipmentAddress(EquipmentIndex);
     }
 
-    public void Refresh(Item item)
+    public void Initialize(Item item)
     {
-        Item = null;
-        Destroy(ItemIcon);
-
-        if (item == null)
+        if (item != null)
         {
-            EmptyIcon.SetActive(true);
-        }
-        else
-        {
-            Item = item;
-            ItemIcon = Instantiate(ItemIconPrefab, transform);
-            ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(Item.ItemType), Item.Colors);
-            EmptyIcon.SetActive(false);
+            TakeItem(item);
         }
     }
 
@@ -38,13 +28,37 @@ public class EquipmentSlotController : MonoBehaviour
     {
         if (Item == null)
         {
-            InventoryGUIController.ItemRequested(InventoryAddress);
+            InventoryGUIController.RequestCursorItem(InventoryAddress);
         }
         else
         {
-            InventoryGUIController.ItemSelected(Item, ItemIcon, InventoryAddress);
-            Item = null;
-            EmptyIcon.SetActive(true);
+            Item previousItem = Item;
+            bool itemPickedup = InventoryGUIController.PickupItem(Item, InventoryAddress);
+            // If (our item was taken) and (our item wasn't replaced with a new item)
+            // Then: This slot is now empty.
+            if (itemPickedup && Item == previousItem)
+            {
+                Item = null;
+                Destroy(ItemIcon);
+                EmptyIcon.SetActive(true);
+            }
         }
+    }
+
+    public void TakeItem(Item item)
+    {
+        Clear();
+
+        Item = item;
+        ItemIcon = Instantiate(ItemIconPrefab, transform);
+        ItemIcon.GetComponent<ItemIconController>().Initialize(ItemSprites.Instance.GetItemSprites(Item.ItemType), Item.Colors);
+        EmptyIcon.SetActive(false);
+    }
+
+    private void Clear()
+    {
+        Item = null;
+        Destroy(ItemIcon);
+        EmptyIcon.SetActive(true);
     }
 }
